@@ -1,0 +1,25 @@
+{
+  "Title": "Dungeons",
+  "Type": "game",
+  "Org": "facepunch",
+  "Ident": "dungeons",
+  "Schema": 1,
+  "HasAssets": true,
+  "AssetsPath": "",
+  "ResourcePaths": null,
+  "HasCode": true,
+  "CodePath": "/code/",
+  "RootNamespace": "Dungeons",
+  "Metadata": {
+    "MaxPlayers": 10,
+    "MinPlayers": 1,
+    "GameNetworkType": 0,
+    "MapSelect": 4,
+    "MapList": [
+      "facepunch.construct"
+    ],
+    "RankType": 0,
+    "PerMapRanking": false,
+    "LeaderboardType": 0
+  }
+}
