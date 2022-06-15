@@ -10,14 +10,14 @@ partial class Pawn : Entity
 	{
 		base.Simulate( cl );
 
-		Rotation = Rotation.From(Input.Rotation.Angles().WithPitch( 0 ));
+		Rotation = Rotation.From( Input.Rotation.Angles().WithPitch( 0 ) );
 		EyeRotation = Input.Rotation;
 
 		var movement = new Vector3( Input.Forward, Input.Left, 0 ).Normal;
 		Velocity = EyeRotation * movement;
 		Velocity *= Input.Down( InputButton.Run ) ? 1000 : 200;
 
-		MoveHelper helper = new ( Position, Velocity );
+		MoveHelper helper = new( Position, Velocity );
 		helper.Trace = helper.Trace.Size( 16 );
 		if ( helper.TryMove( Time.Delta ) > 0 )
 		{

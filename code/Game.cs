@@ -10,11 +10,18 @@ public partial class DungeonsGame : Sandbox.Game
 	{
 		if ( IsServer )
 		{
-			var light = new EnvironmentLightEntity();
-			light.Rotation = Rotation.From( -45, 15, 0 );
-			light.Color = Color.Red;
-			var watermelon = new ModelEntity( "models/sbox_props/watermelon/watermelon.vmdl" );
-			watermelon.Position = Vector3.Zero;
+			new EnvironmentLightEntity()
+			{
+				Rotation = Rotation.From( -45, 15, 0 ),
+				Color = Color.White
+			};
+
+			new ModelEntity( "models/sbox_props/watermelon/watermelon.vmdl" )
+			{
+				Position = Vector3.Zero
+			};
+
+			Map.Scene.ClearColor = new Color( .08f );
 		}
 	}
 
@@ -25,10 +32,11 @@ public partial class DungeonsGame : Sandbox.Game
 		cl.Pawn = new Pawn();
 	}
 
-	[Event.Frame]
-	public void OnFrame()
+	public override void FrameSimulate( Client cl )
 	{
-		DebugOverlay.Sphere( Vector3.Zero, 100f, Color.Green );
+		base.FrameSimulate( cl );
+
+		DebugOverlay.Sphere( Vector3.Zero, 20f, Color.Green );
 	}
 
 }
