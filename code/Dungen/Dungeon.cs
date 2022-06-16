@@ -62,7 +62,8 @@ internal partial class Dungeon : Entity
 	}
 
 	// Customizable parameters, =>'s for now to test
-	private int MaxCells => 16;
+	private int DungeonWidth => 32;
+	private int DungeonHeight => 16;
 	private int MaxCellWidth => 7;
 	private int MaxCellHeight => 7;
 	private int CellScale => 128;
@@ -85,7 +86,7 @@ internal partial class Dungeon : Entity
 		Rand.SetSeed( Rand.Int( 99999 ) );
 		//Rand.SetSeed( Seed );
 
-		Cells = CreateGrid( MaxCells, MaxCells );
+		Cells = CreateGrid( DungeonWidth, DungeonHeight );
 
 		for ( int i = 0; i < MergeIterations; i++ )
 		{
