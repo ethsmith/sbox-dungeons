@@ -83,8 +83,8 @@ internal partial class Dungeon : Entity
 	[Event.Hotload]
 	private void Generate()
 	{
-		Rand.SetSeed( Rand.Int( 99999 ) );
-		//Rand.SetSeed( Seed );
+		//Rand.SetSeed( Rand.Int( 99999 ) );
+		Rand.SetSeed( Seed );
 
 		Cells = CreateGrid( DungeonWidth, DungeonHeight );
 
@@ -101,6 +101,9 @@ internal partial class Dungeon : Entity
 				break;
 			}
 		}
+
+		Cells[0].SetNode<DungeonNode>( "start" );
+		Cells[1].SetNode<DungeonNode>( "end" );
 	}
 
 	private bool CompatibleForMerge( DungeonCell a, DungeonCell b )
@@ -152,14 +155,20 @@ internal partial class Dungeon : Entity
 	{
 		if ( Cells == null ) return;
 
-		var offs = (CellOffset + System.Math.Sin( Time.Now * 4f ) * CellOffset) / 4f;
-
 		foreach ( var cell in Cells )
 		{
 			var mins = new Vector3( cell.Rect.BottomLeft * CellScale, 1 );
 			var maxs = new Vector3( cell.Rect.TopRight * CellScale, 1 );
-			var offsetv = new Vector3( offs * cell.Rect.Position, 0 );
+			var offsetv = new Vector3( cell.Rect.Position, 0 );
 
+			DebugOverlay.Box( mins + offsetv, maxs + offsetv, Color.Black );
+
+			if ( cell.Node == null ) continue;
+
+			var center = new Vector3( cell.Rect.Center, 0 ) * CellScale;
+			DebugOverlay.Text( cell.Node.Name, center, 0, 3000 );
+
+			maxs = maxs.WithZ( 256 );
 			DebugOverlay.Box( mins + offsetv, maxs + offsetv, Color.Green );
 		}
 	}
