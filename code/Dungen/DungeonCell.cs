@@ -6,9 +6,12 @@ namespace Dungeons;
 internal class DungeonCell
 {
 
-	//public bool Void;
 	public Rect Rect;
 	public DungeonNode Node;
+
+	// Pathfinding parameters (prolly separate this later)
+	public DungeonCell Parent;
+	public float Distance;
 
 	public DungeonCell( Rect rect )
 	{

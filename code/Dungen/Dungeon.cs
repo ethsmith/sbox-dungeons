@@ -44,6 +44,7 @@ internal partial class Dungeon : Entity
 	public Vector2 Size { get; set; } = new Vector2( 2000, 2000 );
 
 	private List<DungeonCell> Cells = new();
+	private List<DungeonCellEdge> Edges = new();
 
 	public override void Spawn()
 	{
@@ -67,12 +68,11 @@ internal partial class Dungeon : Entity
 	private int MaxCellWidth => 7;
 	private int MaxCellHeight => 7;
 	private int CellScale => 128;
-	private int CellOffset => 8;
 	private int MergeIterations => 512;
 	private bool MergeHuggers => true;
 
 	[Event.BuildInput]
-	private void OnBuildInput(InputBuilder b )
+	private void OnBuildInput( InputBuilder b )
 	{
 		if ( b.Pressed( InputButton.SecondaryAttack ) )
 		{
@@ -83,9 +83,10 @@ internal partial class Dungeon : Entity
 	[Event.Hotload]
 	private void Generate()
 	{
-		//Rand.SetSeed( Rand.Int( 99999 ) );
-		Rand.SetSeed( Seed );
+		Rand.SetSeed( Rand.Int( 99999 ) );
+		//Rand.SetSeed( Seed );
 
+		Edges = new();
 		Cells = CreateGrid( DungeonWidth, DungeonHeight );
 
 		for ( int i = 0; i < MergeIterations; i++ )
@@ -102,8 +103,81 @@ internal partial class Dungeon : Entity
 			}
 		}
 
-		Cells[0].SetNode<DungeonNode>( "start" );
-		Cells[1].SetNode<DungeonNode>( "end" );
+		// add a few random dummy nodes for testing
+		for( int i = 0; i < 4; i++ )
+		{
+			var idx1 = Rand.Int( Cells.Count - 1 );
+			var idx2 = Rand.Int( Cells.Count - 4 );
+			Cells[idx1].SetNode<DungeonNode>( "N" );
+			Cells[idx2].SetNode<DungeonNode>( "L" );
+			Edges.Add( new DungeonCellEdge( Cells[idx1], Cells[idx2] ) );
+		}
+
+		var cellsToKeep = new List<DungeonCell>();
+		foreach ( var edge in Edges )
+		{
+			cellsToKeep.AddRange( RouteEdge( edge ) );
+		}
+
+		Cells.RemoveAll( x => !cellsToKeep.Contains( x ) );
+	}
+
+	private List<DungeonCell> RouteEdge( DungeonCellEdge edge )
+	{
+		var result = new List<DungeonCell>();
+		var unexplored = new List<DungeonCell>( Cells );
+
+		foreach( var c in unexplored )
+		{
+			c.Distance = float.PositiveInfinity;
+			c.Parent = null;
+		}
+
+		edge.A.Distance = 0;
+
+		while ( unexplored.Count > 0 )
+		{
+			var current = unexplored.OrderBy( x => x.Distance ).First();
+			unexplored.Remove( current );
+
+			if ( current == edge.B )
+			{
+				while( current != null )
+				{
+					result.Add( current );
+					current = current.Parent;
+				}
+				break;
+			}
+
+			var neighbors = NeighborsOf( current );
+			foreach ( var n in neighbors )
+			{
+				var dist = current.Distance + n.Rect.Position.DistanceOrtho( current.Rect.Position );
+
+				if ( !unexplored.Contains( n ) ) continue;
+				if ( dist >= n.Distance ) continue;
+
+				n.Distance = dist;
+				n.Parent = current;
+			}
+		}
+
+		result.Reverse();
+		return result;
+	}
+
+	private List<DungeonCell> NeighborsOf( DungeonCell cell )
+	{
+		var result = new List<DungeonCell>();
+
+		foreach ( var c in Cells )
+		{
+			if ( c.Rect.IsInside( cell.Rect ) )
+				result.Add( c );
+		}
+
+		return result;
 	}
 
 	private bool CompatibleForMerge( DungeonCell a, DungeonCell b )
@@ -114,7 +188,7 @@ internal partial class Dungeon : Entity
 		if ( newrect.width > MaxCellWidth ) return false;
 		if ( newrect.height > MaxCellHeight ) return false;
 
-		if( MergeHuggers )
+		if ( MergeHuggers )
 		{
 			// early true for rects that are same width or height AND hugging each other
 			if ( a.Rect.left == b.Rect.left && a.Rect.width == b.Rect.width )
@@ -157,19 +231,18 @@ internal partial class Dungeon : Entity
 
 		foreach ( var cell in Cells )
 		{
+			var color = cell.Node != null ? Color.Green : Color.Black;
 			var mins = new Vector3( cell.Rect.BottomLeft * CellScale, 1 );
 			var maxs = new Vector3( cell.Rect.TopRight * CellScale, 1 );
 			var offsetv = new Vector3( cell.Rect.Position, 0 );
 
-			DebugOverlay.Box( mins + offsetv, maxs + offsetv, Color.Black );
+			DebugOverlay.Box( mins + offsetv, maxs + offsetv, color );
 
 			if ( cell.Node == null ) continue;
 
 			var center = new Vector3( cell.Rect.Center, 0 ) * CellScale;
-			DebugOverlay.Text( cell.Node.Name, center, 0, 3000 );
-
-			maxs = maxs.WithZ( 256 );
-			DebugOverlay.Box( mins + offsetv, maxs + offsetv, Color.Green );
+			DebugOverlay.Text( cell.Node.Name, center, 0, 6000 );
+			DebugOverlay.Box( mins + offsetv, maxs.WithZ( 256 ) + offsetv, color );
 		}
 	}
 

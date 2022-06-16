@@ -18,7 +18,7 @@ public partial class DungeonsGame : Sandbox.Game
 
 			new Dungeon() { Size = 2000f };
 
-			Map.Scene.ClearColor = new Color( .08f );
+			Map.Scene.ClearColor = Color.White;
 		}
 	}
 
