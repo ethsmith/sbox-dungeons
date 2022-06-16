@@ -35,19 +35,6 @@ using System.Linq;
 
 namespace Dungeons;
 
-internal class Cell
-{
-
-	//public bool Void;
-	public Rect Rect;
-
-	public Cell( Rect rect )
-	{
-		Rect = rect;
-	}
-
-}
-
 internal partial class Dungeon : Entity
 {
 
@@ -56,7 +43,7 @@ internal partial class Dungeon : Entity
 	[Net]
 	public Vector2 Size { get; set; } = new Vector2( 2000, 2000 );
 
-	private List<Cell> Cells = new();
+	private List<DungeonCell> Cells = new();
 
 	public override void Spawn()
 	{
@@ -64,7 +51,7 @@ internal partial class Dungeon : Entity
 
 		Transmit = TransmitType.Always;
 
-		Generate();
+		//Generate();
 	}
 
 	public override void ClientSpawn()
@@ -85,48 +72,55 @@ internal partial class Dungeon : Entity
 	[Event.Hotload]
 	private void Generate()
 	{
-		if ( IsServer ) return;
+		Rand.SetSeed( Seed );
 
-		Cells ??= new();
-		Cells.Clear();
-
-		for ( int x = 0; x < MaxCells; x++ )
-		{
-			for ( int y = 0; y < MaxCells; y++ )
-			{
-				var pos = new Vector2( x, y );
-				var rect = new Rect( pos, 1 );
-				Cells.Add( new( rect ) );
-			}
-		}
+		Cells = CreateGrid( MaxCells, MaxCells );
 
 		for ( int i = 0; i < MergeIterations; i++ )
 		{
-			var cell = Rand.FromList( Cells );
+			var randomCell = Rand.FromList( Cells );
 
-			var neighbors = Cells.Where( x => x.Rect.Position.DistanceOrtho( cell.Rect.Position ) == 1 ).ToList();
-			neighbors.RemoveAll( x => x.Rect.width != cell.Rect.width || x.Rect.height != x.Rect.height );
-
-			foreach ( var n in neighbors )
+			foreach ( var cell in Cells )
 			{
-				var newRect = cell.Rect;
-				newRect.Add( n.Rect );
+				if ( !CompatibleForMerge( randomCell, cell ) ) continue;
 
-				if ( newRect.width > MaxCellWidth ) continue;
-				if ( newRect.height > MaxCellHeight ) continue;
-
-				cell.Rect = newRect;
-
-				for( int j = Cells.Count - 1; j >= 0; j-- )
-				{
-					if ( Cells[j] == cell ) continue;
-					if ( !cell.Rect.IsInside( Cells[j].Rect.Center ) ) continue;
-					Cells.RemoveAt( j );
-				}
-
+				randomCell.Rect.Add( cell.Rect );
+				Cells.RemoveAll( x => x != randomCell && randomCell.Rect.IsInside( x.Rect.Center ) );
 				break;
 			}
 		}
+	}
+
+	private bool CompatibleForMerge( DungeonCell a, DungeonCell b )
+	{
+		if ( a.Rect.width != b.Rect.width ) return false;
+		if ( a.Rect.height != b.Rect.height ) return false;
+		if ( a.Rect.Position.DistanceOrtho( b.Rect.Position ) != 1 ) return false;
+
+		var newrect = a.Rect;
+		newrect.Add( b.Rect );
+
+		if ( newrect.width > MaxCellWidth ) return false;
+		if ( newrect.height > MaxCellHeight ) return false;
+
+		return true;
+	}
+
+	private List<DungeonCell> CreateGrid( int width, int height )
+	{
+		var result = new List<DungeonCell>();
+
+		for ( int x = 0; x < width; x++ )
+		{
+			for ( int y = 0; y < height; y++ )
+			{
+				var pos = new Vector2( x, y );
+				var rect = new Rect( pos, 1 );
+				result.Add( new( rect ) );
+			}
+		}
+
+		return result.OrderBy( x => Rand.Int( 999 ) ).ToList();
 	}
 
 	[Event.Frame]
