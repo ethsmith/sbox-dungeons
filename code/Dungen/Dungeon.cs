@@ -66,13 +66,24 @@ internal partial class Dungeon : Entity
 	private int MaxCellWidth => 7;
 	private int MaxCellHeight => 7;
 	private int CellScale => 128;
-	private int CellOffset => 32;
-	private int MergeIterations => 512 * 512;
+	private int CellOffset => 8;
+	private int MergeIterations => 512;
+	private bool MergeHuggers => true;
+
+	[Event.BuildInput]
+	private void OnBuildInput(InputBuilder b )
+	{
+		if ( b.Pressed( InputButton.SecondaryAttack ) )
+		{
+			Generate();
+		}
+	}
 
 	[Event.Hotload]
 	private void Generate()
 	{
-		Rand.SetSeed( Seed );
+		Rand.SetSeed( Rand.Int( 99999 ) );
+		//Rand.SetSeed( Seed );
 
 		Cells = CreateGrid( MaxCells, MaxCells );
 
@@ -93,15 +104,27 @@ internal partial class Dungeon : Entity
 
 	private bool CompatibleForMerge( DungeonCell a, DungeonCell b )
 	{
-		if ( a.Rect.width != b.Rect.width ) return false;
-		if ( a.Rect.height != b.Rect.height ) return false;
-		if ( a.Rect.Position.DistanceOrtho( b.Rect.Position ) != 1 ) return false;
-
 		var newrect = a.Rect;
 		newrect.Add( b.Rect );
 
 		if ( newrect.width > MaxCellWidth ) return false;
 		if ( newrect.height > MaxCellHeight ) return false;
+
+		if( MergeHuggers )
+		{
+			// early true for rects that are same width or height AND hugging each other
+			if ( a.Rect.left == b.Rect.left && a.Rect.width == b.Rect.width )
+				if ( a.Rect.IsInside( b.Rect ) )
+					return true;
+
+			if ( a.Rect.bottom == b.Rect.bottom && a.Rect.height == b.Rect.height )
+				if ( a.Rect.IsInside( b.Rect ) )
+					return true;
+		}
+
+		if ( a.Rect.width != b.Rect.width ) return false;
+		if ( a.Rect.height != b.Rect.height ) return false;
+		if ( a.Rect.Position.DistanceOrtho( b.Rect.Position ) != 1 ) return false;
 
 		return true;
 	}
@@ -128,11 +151,13 @@ internal partial class Dungeon : Entity
 	{
 		if ( Cells == null ) return;
 
+		var offs = (CellOffset + System.Math.Sin( Time.Now * 4f ) * CellOffset) / 4f;
+
 		foreach ( var cell in Cells )
 		{
 			var mins = new Vector3( cell.Rect.BottomLeft * CellScale, 1 );
 			var maxs = new Vector3( cell.Rect.TopRight * CellScale, 1 );
-			var offsetv = new Vector3( CellOffset * cell.Rect.Position, 0 );
+			var offsetv = new Vector3( offs * cell.Rect.Position, 0 );
 
 			DebugOverlay.Box( mins + offsetv, maxs + offsetv, Color.Green );
 		}
