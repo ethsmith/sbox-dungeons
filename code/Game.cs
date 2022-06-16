@@ -16,10 +16,7 @@ public partial class DungeonsGame : Sandbox.Game
 				Color = Color.White
 			};
 
-			new ModelEntity( "models/sbox_props/watermelon/watermelon.vmdl" )
-			{
-				Position = Vector3.Zero
-			};
+			new Dungeon() { Size = 2000f };
 
 			Map.Scene.ClearColor = new Color( .08f );
 		}
@@ -30,13 +27,6 @@ public partial class DungeonsGame : Sandbox.Game
 		base.ClientJoined( cl );
 
 		cl.Pawn = new Pawn();
-	}
-
-	public override void FrameSimulate( Client cl )
-	{
-		base.FrameSimulate( cl );
-
-		DebugOverlay.Sphere( Vector3.Zero, 20f, Color.Green );
 	}
 
 }
