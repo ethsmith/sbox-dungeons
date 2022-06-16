@@ -5,7 +5,7 @@
 //	3. Merge it with a neighboring cell of the same size
 //	4. Repeat steps 2 and 3 many times
 //	5. Insert Nodes at start, end, and other points of interest
-//	6. A* between each node, only keeping cells along the paths
+//	6. Pathfind between each node, only keeping cells along the paths
 
 // Why not BSP tree?
 //	This way makes it easy to parameterize dungeons with a graph
