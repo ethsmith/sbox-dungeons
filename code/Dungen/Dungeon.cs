@@ -85,7 +85,8 @@ internal partial class Dungeon : Entity
 	[Event.Hotload]
 	private void Generate()
 	{
-		Rand.SetSeed( 47374 );
+		//Rand.SetSeed( 47374 );
+		Rand.SetSeed( Rand.Int( 99999 ) );
 
 		Routes = new();
 		cells = CreateGrid( DungeonWidth, DungeonHeight );
@@ -104,7 +105,7 @@ internal partial class Dungeon : Entity
 			}
 		}
 
-		// add a few random dummy nodes for testing
+		// add a few random routes for testing
 		for( int i = 0; i < 4; i++ )
 		{
 			var idx1 = Rand.Int( cells.Count - 1 );
@@ -195,16 +196,34 @@ internal partial class Dungeon : Entity
 			var isroute = Routes.Any( x => x.Route.Contains( cell ) );
 			var mins = new Vector3( cell.Rect.BottomLeft * CellScale, 1 );
 			var maxs = new Vector3( cell.Rect.TopRight * CellScale, 1 );
-			var offsetv = new Vector3( cell.Rect.Position, 0 );
 
-			DebugOverlay.Box( mins + offsetv, maxs + offsetv, isroute ? Color.White : color.WithAlpha(.1f) );
+			DebugOverlay.Box( mins, maxs, isroute ? Color.White : color.WithAlpha(.1f) );
 
 			if ( cell.Node == null ) continue;
 
 			var center = new Vector3( cell.Rect.Center, 0 ) * CellScale;
 			DebugOverlay.Text( cell.Node.Name, center, 0, 6000 );
-			DebugOverlay.Box( mins + offsetv, maxs.WithZ( 256 ) + offsetv, color );
+			DebugOverlay.Box( mins, maxs.WithZ( 256 ), color );
 		}
+
+		foreach ( var route in Routes )
+		{
+			foreach ( var door in route.Doors )
+			{
+				var rect = door.CalculateRect();
+				var mins = new Vector3( rect.BottomLeft * CellScale, 1 );
+				var maxs = new Vector3( rect.TopRight * CellScale, 96 );
+				DebugOverlay.Circle( rect.Center * CellScale, Rotation.LookAt( Vector3.Up ), .15f * CellScale, Color.Cyan );
+			}
+
+			for( int i = 0; i < route.Doors.Count - 1; i++ )
+			{
+				var centera = route.Doors[i].CalculateRect().Center;
+				var centerb = route.Doors[i + 1].CalculateRect().Center;
+				DebugOverlay.Line( centera * CellScale, centerb * CellScale );
+			}
+		}
+
 	}
 
 }
