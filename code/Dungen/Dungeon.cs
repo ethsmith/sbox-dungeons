@@ -83,8 +83,7 @@ internal partial class Dungeon : Entity
 	[Event.Hotload]
 	private void Generate()
 	{
-		Rand.SetSeed( Rand.Int( 99999 ) );
-		//Rand.SetSeed( Seed );
+		Rand.SetSeed( 47374 );
 
 		Edges = new();
 		Cells = CreateGrid( DungeonWidth, DungeonHeight );
@@ -167,14 +166,21 @@ internal partial class Dungeon : Entity
 		return result;
 	}
 
-	private List<DungeonCell> NeighborsOf( DungeonCell cell )
+	private List<DungeonCell> NeighborsOf( DungeonCell cell, bool orthogonal = true )
 	{
 		var result = new List<DungeonCell>();
 
 		foreach ( var c in Cells )
 		{
-			if ( c.Rect.IsInside( cell.Rect ) )
-				result.Add( c );
+			if ( !c.Rect.IsInside( cell.Rect ) ) continue;
+			if ( orthogonal )
+			{
+				if ( c.Rect.BottomLeft == cell.Rect.TopRight ) continue;
+				if ( c.Rect.BottomRight == cell.Rect.TopLeft ) continue;
+				if ( c.Rect.TopLeft == cell.Rect.BottomRight ) continue;
+				if ( c.Rect.TopRight == cell.Rect.BottomLeft ) continue;
+			}
+			result.Add( c );
 		}
 
 		return result;
