@@ -1,13 +1,13 @@
 ﻿
 namespace Dungeons;
 
-internal class DungeonCellEdge
+internal class DungeonEdge
 {
 
 	public readonly DungeonCell A;
 	public readonly DungeonCell B;
 
-	public DungeonCellEdge( DungeonCell a, DungeonCell b )
+	public DungeonEdge( DungeonCell a, DungeonCell b )
 	{
 		A = a;
 		B = b;

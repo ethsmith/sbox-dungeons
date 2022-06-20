@@ -43,8 +43,10 @@ internal partial class Dungeon : Entity
 	[Net]
 	public Vector2 Size { get; set; } = new Vector2( 2000, 2000 );
 
-	private List<DungeonCell> Cells = new();
-	private List<DungeonCellEdge> Edges = new();
+	private List<DungeonCell> cells = new();
+	public IReadOnlyList<DungeonCell> Cells => cells;
+
+	private List<DungeonRoute> Routes = new();
 
 	public override void Spawn()
 	{
@@ -85,19 +87,19 @@ internal partial class Dungeon : Entity
 	{
 		Rand.SetSeed( 47374 );
 
-		Edges = new();
-		Cells = CreateGrid( DungeonWidth, DungeonHeight );
+		Routes = new();
+		cells = CreateGrid( DungeonWidth, DungeonHeight );
 
 		for ( int i = 0; i < MergeIterations; i++ )
 		{
-			var randomCell = Rand.FromList( Cells );
+			var randomCell = Rand.FromList( cells );
 
-			foreach ( var cell in Cells )
+			foreach ( var cell in cells )
 			{
 				if ( !CompatibleForMerge( randomCell, cell ) ) continue;
 
 				randomCell.Rect.Add( cell.Rect );
-				Cells.RemoveAll( x => x != randomCell && randomCell.Rect.IsInside( x.Rect.Center ) );
+				cells.RemoveAll( x => x != randomCell && randomCell.Rect.IsInside( x.Rect.Center ) );
 				break;
 			}
 		}
@@ -105,72 +107,24 @@ internal partial class Dungeon : Entity
 		// add a few random dummy nodes for testing
 		for( int i = 0; i < 4; i++ )
 		{
-			var idx1 = Rand.Int( Cells.Count - 1 );
-			var idx2 = Rand.Int( Cells.Count - 4 );
-			Cells[idx1].SetNode<DungeonNode>( "N" );
-			Cells[idx2].SetNode<DungeonNode>( "L" );
-			Edges.Add( new DungeonCellEdge( Cells[idx1], Cells[idx2] ) );
+			var idx1 = Rand.Int( cells.Count - 1 );
+			var idx2 = Rand.Int( cells.Count - 4 );
+			cells[idx1].SetNode<DungeonNode>( "N" );
+			cells[idx2].SetNode<DungeonNode>( "L" );
+			Routes.Add( new( this, new DungeonEdge( cells[idx1], cells[idx2] ) ) );
 		}
 
-		var cellsToKeep = new List<DungeonCell>();
-		foreach ( var edge in Edges )
+		foreach( var route in Routes )
 		{
-			cellsToKeep.AddRange( RouteEdge( edge ) );
+			route.Calculate();
 		}
-
-		Cells.RemoveAll( x => !cellsToKeep.Contains( x ) );
 	}
 
-	private List<DungeonCell> RouteEdge( DungeonCellEdge edge )
-	{
-		var result = new List<DungeonCell>();
-		var unexplored = new List<DungeonCell>( Cells );
-
-		foreach( var c in unexplored )
-		{
-			c.Distance = float.PositiveInfinity;
-			c.Parent = null;
-		}
-
-		edge.A.Distance = 0;
-
-		while ( unexplored.Count > 0 )
-		{
-			var current = unexplored.OrderBy( x => x.Distance ).First();
-			unexplored.Remove( current );
-
-			if ( current == edge.B )
-			{
-				while( current != null )
-				{
-					result.Add( current );
-					current = current.Parent;
-				}
-				break;
-			}
-
-			var neighbors = NeighborsOf( current );
-			foreach ( var n in neighbors )
-			{
-				var dist = current.Distance + n.Rect.Position.DistanceOrtho( current.Rect.Position );
-
-				if ( !unexplored.Contains( n ) ) continue;
-				if ( dist >= n.Distance ) continue;
-
-				n.Distance = dist;
-				n.Parent = current;
-			}
-		}
-
-		result.Reverse();
-		return result;
-	}
-
-	private List<DungeonCell> NeighborsOf( DungeonCell cell, bool orthogonal = true )
+	public List<DungeonCell> NeighborsOf( DungeonCell cell, bool orthogonal = true )
 	{
 		var result = new List<DungeonCell>();
 
-		foreach ( var c in Cells )
+		foreach ( var c in cells )
 		{
 			if ( !c.Rect.IsInside( cell.Rect ) ) continue;
 			if ( orthogonal )
@@ -233,16 +187,17 @@ internal partial class Dungeon : Entity
 	[Event.Frame]
 	public void OnFrame()
 	{
-		if ( Cells == null ) return;
+		if ( cells == null ) return;
 
-		foreach ( var cell in Cells )
+		foreach ( var cell in cells )
 		{
 			var color = cell.Node != null ? Color.Green : Color.Black;
+			var isroute = Routes.Any( x => x.Route.Contains( cell ) );
 			var mins = new Vector3( cell.Rect.BottomLeft * CellScale, 1 );
 			var maxs = new Vector3( cell.Rect.TopRight * CellScale, 1 );
 			var offsetv = new Vector3( cell.Rect.Position, 0 );
 
-			DebugOverlay.Box( mins + offsetv, maxs + offsetv, color );
+			DebugOverlay.Box( mins + offsetv, maxs + offsetv, isroute ? Color.White : color.WithAlpha(.1f) );
 
 			if ( cell.Node == null ) continue;
 
