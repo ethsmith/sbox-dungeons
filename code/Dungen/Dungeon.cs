@@ -28,6 +28,7 @@
 //	Instead of merging cells randomly.. spawn a bunch of randomly sized
 //	cells at the same position and use 2d physics to separate them
 
+using Architect;
 using Dungeons.Utility;
 using Sandbox;
 using System.Collections.Generic;
@@ -47,6 +48,7 @@ internal partial class Dungeon : Entity
 	public IReadOnlyList<DungeonCell> Cells => cells;
 
 	private List<DungeonRoute> Routes = new();
+	private WallGeometry WallGeometry;
 
 	public override void Spawn()
 	{
