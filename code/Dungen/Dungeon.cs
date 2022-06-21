@@ -74,13 +74,13 @@ internal partial class Dungeon : Entity
 	}
 
 	// Customizable parameters, =>'s for now to test
-	public int DungeonWidth => 32;
-	public int DungeonHeight => 16;
-	private int MaxCellWidth => 12;
-	private int MaxCellHeight => 6;
+	public int DungeonWidth => 8;
+	public int DungeonHeight => 8;
+	private int MaxCellWidth => 4;
+	private int MaxCellHeight => 4;
 	public int CellScale => 384;
-	private int MergeIterations => 512;
-	private bool MergeHuggers => true;
+	private int MergeIterations => 1024;
+	private bool MergeHuggers => false;
 
 	[Event.BuildInput]
 	private void OnBuildInput( InputBuilder b )
