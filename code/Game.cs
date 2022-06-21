@@ -31,5 +31,26 @@ public partial class DungeonsGame : Sandbox.Game
 		cl.Pawn = new Pawn();
 	}
 
+	public override void PostLevelLoaded()
+	{
+		base.PostLevelLoaded();
+
+		Map.Scene.ClearColor = new Color32( 100, 149, 237 ).ToColor();
+
+		new ModelEntity( "models/citizen/citizen.vmdl" );
+
+		_ = new PostProcessingEntity
+		{
+			PostProcessingFile = "postprocess/standard.vpost"
+		};
+
+		_ = new EnvironmentLightEntity
+		{
+			Rotation = Rotation.From( 45, 45, 0 ),
+			DynamicShadows = true,
+			Brightness = 1.0f,
+		};
+	}
+
 }
 

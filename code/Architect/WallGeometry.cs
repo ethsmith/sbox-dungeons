@@ -21,6 +21,8 @@ namespace Architect
 		PhysicsShape shape1;
 		PhysicsShape shape2;
 
+		public readonly Vector3 GridSize;
+
 		static Vector2 WallPlanar( Vector3 pos, Vector3 right, Vector3 up, float scale = 32.0f )
 		{
 			return new Vector2( Vector3.Dot( right, pos ) * (1.0f / 32.0f), Vector3.Dot( up, pos ) * (1.0f / 128.0f) );
@@ -31,22 +33,22 @@ namespace Architect
 			return new Vector2( Vector3.Dot( right, pos ), Vector3.Dot( up, pos ) ) * (1.0f / scale);
 		}
 
-		public WallGeometry()
+		public WallGeometry( Vector2 gridSize, Vector3 mapBounds )
 		{
 			//hemesh.CreateGrid( 32, 32 );
 
-			var mapSize = new Vector3( 32 * 32, 32 * 32, 128 );
+			GridSize = gridSize;
 
 			mesh = new Mesh( Material.Load( "materials/dev/dev_measuregeneric01b.vmat" ) );
-			mesh.SetBounds( Vector3.Zero, mapSize );
+			mesh.SetBounds( Vector3.Zero, mapBounds );
 			mesh.CreateVertexBuffer<SimpleVertex>( 200000, SimpleVertex.Layout );
 
 			mesh2 = new Mesh( Material.Load( "materials/dev/dev_measuregeneric01b.vmat" ) );
-			mesh2.SetBounds( Vector3.Zero, mapSize );
+			mesh2.SetBounds( Vector3.Zero, mapBounds );
 			mesh2.CreateVertexBuffer<SimpleVertex>( 200000, SimpleVertex.Layout );
 
 			floorMesh = new Mesh( Material.Load( "materials/dev/dev_measuregeneric01.vmat" ) );
-			floorMesh.SetBounds( Vector3.Zero, mapSize );
+			floorMesh.SetBounds( Vector3.Zero, mapBounds );
 			floorMesh.CreateVertexBuffer<SimpleVertex>( 200000, SimpleVertex.Layout );
 
 			body = new PhysicsBody( Map.Physics );
@@ -61,6 +63,11 @@ namespace Architect
 
 			so = new SceneObject( Map.Scene, model, new Transform( Vector3.Zero ) );
 			so.Flags.CastShadows = true;
+		}
+
+		~WallGeometry()
+		{
+			Destroy();
 		}
 
 		public void Destroy()
@@ -228,11 +235,11 @@ namespace Architect
 			floorMesh.SetVertexRange( 0, vertices.Count );
 		}
 
-		public static int GetVertexId( int x, int y )
+		public int GetVertexId( int x, int y )
 		{
-			if ( x < 0 || x >= 32 || y < 0 || y >= 32 ) return -1;
+			if ( x < 0 || x >= GridSize.x || y < 0 || y >= GridSize.y ) return -1;
 
-			return (x * 32) + y;
+			return (int)(x * GridSize.x) + y;
 		}
 
 		static bool LineIntersect( Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, out Vector2 intersectPoint )

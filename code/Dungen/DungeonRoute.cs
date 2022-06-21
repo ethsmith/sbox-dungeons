@@ -9,7 +9,7 @@ internal class DungeonRoute
 
 	public readonly Dungeon Dungeon;
 	public readonly DungeonEdge Edge;
-	public List<DungeonCell> Route = new();
+	public List<DungeonCell> Cells = new();
 	public List<DungeonDoor> Doors = new();
 
 	public DungeonRoute( Dungeon dungeon, DungeonEdge edge )
@@ -20,7 +20,7 @@ internal class DungeonRoute
 
 	public void Calculate()
 	{
-		Route = new();
+		Cells = new();
 		Doors = new();
 
 		var unexplored = new List<DungeonCell>( Dungeon.Cells );
@@ -42,7 +42,7 @@ internal class DungeonRoute
 			{
 				while ( current != null )
 				{
-					Route.Add( current );
+					Cells.Add( current );
 					current = current.Parent;
 				}
 				break;
@@ -61,11 +61,11 @@ internal class DungeonRoute
 			}
 		}
 
-		Route.Reverse();
+		Cells.Reverse();
 
-		for ( int i = 0; i < Route.Count - 1; i++ )
+		for ( int i = 0; i < Cells.Count - 1; i++ )
 		{
-			Doors.Add( new DungeonDoor( this, Route[i], Route[i + 1] ) );
+			Doors.Add( new DungeonDoor( this, Cells[i], Cells[i + 1] ) );
 		}
 	}
 
