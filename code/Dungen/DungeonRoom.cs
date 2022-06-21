@@ -21,8 +21,8 @@ internal class DungeonRoom
 	{
 		if ( !Host.IsClient ) return;
 
-		var my = (int)(wallgeometry.GridSize.x / 32);
-		var mx = (int)(wallgeometry.GridSize.y / 32);
+		var my = (int)(wallgeometry.GridSize.x / Dungeon.DungeonWidth);
+		var mx = (int)(wallgeometry.GridSize.y / Dungeon.DungeonHeight);
 
 		var left = (int)(Cell.Rect.left * mx);
 		var right = (int)(Cell.Rect.right * mx);
