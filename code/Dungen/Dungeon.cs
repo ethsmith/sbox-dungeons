@@ -39,17 +39,17 @@ namespace Dungeons;
 internal partial class Dungeon : Entity
 {
 
+	[ConVar.Client("debug_dungen")]
+	public static bool DebugDungen { get; set; }
+
 	[Net]
 	public int Seed { get; set; } = 1;
-	[Net]
-	public Vector2 Size { get; set; } = new Vector2( 2000, 2000 );
-	[Net]
-	public GridObject GridObject { get; set; }
 
 	public IReadOnlyList<DungeonCell> Cells => cells;
 	public IReadOnlyList<DungeonRoute> Routes => routes;
 	public IReadOnlyList<DungeonRoom> Rooms => rooms;
 
+	private GridObject GridObject; 
 	private List<DungeonCell> cells = new();
 	private List<DungeonRoute> routes = new();
 	private List<DungeonRoom> rooms = new();
@@ -60,8 +60,6 @@ internal partial class Dungeon : Entity
 		base.Spawn();
 
 		Transmit = TransmitType.Always;
-
-		//Generate();
 	}
 
 	public override void ClientSpawn()
@@ -80,44 +78,28 @@ internal partial class Dungeon : Entity
 	private int MergeIterations => 1024;
 	private bool MergeHuggers => false;
 
-	[Event.BuildInput]
-	private void OnBuildInput( InputBuilder b )
-	{
-		if ( b.Pressed( InputButton.SecondaryAttack ) )
-		{
-			Generate();
-		}
-	}
-
 	[Event.Hotload]
-	private async void Generate()
+	private void Generate()
 	{
-		//Rand.SetSeed( 47374 );
-		Rand.SetSeed( Rand.Int( 99999 ) );
+		Rand.SetSeed( Seed );
 
-		if ( IsClient )
-		{
-			var mult = CellScale / 32; 
-			var gridSize = new Vector2( DungeonWidth * mult, DungeonHeight * mult );
-			var mapBounds = new Vector3( DungeonWidth * CellScale, DungeonHeight * CellScale, 128f );
+		var mult = CellScale / 32; 
+		var gridSize = new Vector2( DungeonWidth * mult, DungeonHeight * mult );
+		var mapBounds = new Vector3( DungeonWidth * CellScale, DungeonHeight * CellScale, 128f );
 
-			WallGeometry?.Destroy();
-			WallGeometry = new( gridSize, mapBounds );
+		WallGeometry?.Destroy();
+		WallGeometry = new( gridSize, mapBounds );
 
-			WallGeometry.hemesh.CreateGrid( DungeonWidth * mult, DungeonHeight * mult );
-			WallGeometry.RebuildMesh();
-		}
-		else
-		{
-			var mult = CellScale / 32;
-			GridObject?.Destroy();
-			GridObject = new( Map.Scene, Map.Physics, ( DungeonWidth - 1 )* mult, ( DungeonHeight - 1 ) * mult );
-			GridObject.Position = GridObject.Position.WithZ( -1 );
-		}
+		WallGeometry.hemesh.CreateGrid( DungeonWidth * mult, DungeonHeight * mult );
+		WallGeometry.RebuildMesh();
+
+		GridObject?.Destroy();
+		GridObject = new( Map.Scene, Map.Physics, (DungeonWidth - 1) * mult, (DungeonHeight - 1) * mult );
+		GridObject.Position = GridObject.Position.WithZ( -1 );
 
 		rooms = new();
 		routes = new();
-		cells = CreateGrid( DungeonWidth - 1, DungeonHeight - 1);
+		cells = CreateCells( DungeonWidth - 1, DungeonHeight - 1);
 
 		for ( int i = 0; i < MergeIterations; i++ )
 		{
@@ -141,7 +123,6 @@ internal partial class Dungeon : Entity
 			cells[idx1].SetNode<DungeonNode>( "N" );
 			cells[idx2].SetNode<DungeonNode>( "L" );
 			routes.Add( new( this, new DungeonEdge( cells[idx1], cells[idx2] ) ) );
-			await Task.Delay( 25 );
 		}
 
 		foreach ( var route in routes )
@@ -160,7 +141,6 @@ internal partial class Dungeon : Entity
 		{
 			room.GenerateMesh( WallGeometry );
 			WallGeometry.RebuildMesh();
-			await Task.Delay( 100 );
 		}
 	}
 
@@ -211,7 +191,7 @@ internal partial class Dungeon : Entity
 		return true;
 	}
 
-	private List<DungeonCell> CreateGrid( int width, int height )
+	private List<DungeonCell> CreateCells( int width, int height )
 	{
 		var result = new List<DungeonCell>();
 
@@ -232,6 +212,7 @@ internal partial class Dungeon : Entity
 	public void OnFrame()
 	{
 		if ( cells == null ) return;
+		if ( !DebugDungen ) return;
 
 		//WallGeometry?.DebugDraw();
 
@@ -248,7 +229,7 @@ internal partial class Dungeon : Entity
 
 			var center = new Vector3( cell.Rect.Center, 0 ) * CellScale;
 			DebugOverlay.Text( cell.Node.Name, center, 0, 6000 );
-			DebugOverlay.Box( mins, maxs.WithZ( 256 ), color );
+			//DebugOverlay.Box( mins, maxs.WithZ( 256 ), color );
 		}
 
 		foreach ( var route in routes )
@@ -258,7 +239,7 @@ internal partial class Dungeon : Entity
 				var rect = door.CalculateRect();
 				var mins = new Vector3( rect.BottomLeft * CellScale, 1 );
 				var maxs = new Vector3( rect.TopRight * CellScale, 96 );
-				DebugOverlay.Circle( rect.Center * CellScale, Rotation.LookAt( Vector3.Up ), .15f * CellScale, Color.Cyan, 0, false );
+				//DebugOverlay.Circle( rect.Center * CellScale, Rotation.LookAt( Vector3.Up ), .15f * CellScale, Color.Cyan, 0, false );
 			}
 
 			for ( int i = 0; i < route.Doors.Count - 1; i++ )
