@@ -159,9 +159,9 @@ internal partial class Dungeon : Entity
 		foreach( var room in rooms )
 		{
 			room.GenerateMesh( WallGeometry );
-			await Task.Delay( 25 );
+			WallGeometry.RebuildMesh();
+			await Task.Delay( 100 );
 		}
-
 	}
 
 	public List<DungeonCell> NeighborsOf( DungeonCell cell, bool orthogonal = true )

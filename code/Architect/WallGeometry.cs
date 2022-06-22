@@ -303,8 +303,6 @@ namespace Architect
 				xcur += xdir;
 				ycur += ydir;
 			}
-
-			RebuildMesh();
 		}
 
 		public bool HasEdge( int x, int y )
