@@ -39,7 +39,7 @@ namespace Dungeons;
 internal partial class Dungeon : Entity
 {
 
-	[ConVar.Client("debug_dungen")]
+	[ConVar.Client( "debug_dungen" )]
 	public static bool DebugDungen { get; set; }
 
 	[Net]
@@ -49,7 +49,7 @@ internal partial class Dungeon : Entity
 	public IReadOnlyList<DungeonRoute> Routes => routes;
 	public IReadOnlyList<DungeonRoom> Rooms => rooms;
 
-	private GridObject GridObject; 
+	private GridObject GridObject;
 	private List<DungeonCell> cells = new();
 	private List<DungeonRoute> routes = new();
 	private List<DungeonRoom> rooms = new();
@@ -83,7 +83,7 @@ internal partial class Dungeon : Entity
 	{
 		Rand.SetSeed( Seed );
 
-		var mult = CellScale / 32; 
+		var mult = CellScale / 32;
 		var gridSize = new Vector2( DungeonWidth * mult, DungeonHeight * mult );
 		var mapBounds = new Vector3( DungeonWidth * CellScale, DungeonHeight * CellScale, 128f );
 
@@ -99,7 +99,7 @@ internal partial class Dungeon : Entity
 
 		rooms = new();
 		routes = new();
-		cells = CreateCells( DungeonWidth - 1, DungeonHeight - 1);
+		cells = CreateCells( DungeonWidth - 1, DungeonHeight - 1 );
 
 		for ( int i = 0; i < MergeIterations; i++ )
 		{
@@ -119,9 +119,11 @@ internal partial class Dungeon : Entity
 		for ( int i = 0; i < 4; i++ )
 		{
 			var idx1 = Rand.Int( cells.Count - 1 );
-			var idx2 = Rand.Int( cells.Count - 4 );
-			cells[idx1].SetNode<DungeonNode>( "N" );
-			cells[idx2].SetNode<DungeonNode>( "L" );
+			var idx2 = Rand.Int( cells.Count - 3 );
+			var name1 = i == 0 ? "start" : (i == 1 ? "loot" : string.Empty);
+			var name2 = i == 0 ? "end" : (i == 1 ? "boss" : string.Empty);
+			cells[idx1].SetNode<DungeonNode>( name1 );
+			cells[idx2].SetNode<DungeonNode>( name2 );
 			routes.Add( new( this, new DungeonEdge( cells[idx1], cells[idx2] ) ) );
 		}
 
@@ -130,14 +132,14 @@ internal partial class Dungeon : Entity
 			route.Calculate();
 			foreach ( var cell in route.Cells )
 			{
-				if ( rooms.Any( x => x.Cell == cell ) ) 
+				if ( rooms.Any( x => x.Cell == cell ) )
 					continue;
 
 				rooms.Add( new( this, cell ) );
 			}
 		}
 
-		foreach( var room in rooms )
+		foreach ( var room in rooms )
 		{
 			room.GenerateMesh( WallGeometry );
 			WallGeometry.RebuildMesh();
