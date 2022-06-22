@@ -10,12 +10,17 @@ internal class DungeonRoom
 {
 
 	public readonly DungeonCell Cell;
-	public readonly Dungeon Dungeon;
+	public readonly DungeonEntity Dungeon;
+	public readonly Rect WorldRect;
 
-	public DungeonRoom( Dungeon dungeon, DungeonCell cell )
+	public DungeonRoom( DungeonEntity dungeon, DungeonCell cell )
 	{
 		Dungeon = dungeon;
 		Cell = cell;
+
+		var position = cell.Rect.Position * dungeon.CellScale;
+		var size = cell.Rect.Size * dungeon.CellScale;
+		WorldRect = new( position, size );
 	}
 
 	public void GenerateMesh( WallGeometry wallgeometry )

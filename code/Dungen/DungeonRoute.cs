@@ -7,12 +7,12 @@ namespace Dungeons;
 internal class DungeonRoute
 {
 
-	public readonly Dungeon Dungeon;
+	public readonly DungeonEntity Dungeon;
 	public readonly DungeonEdge Edge;
 	public List<DungeonCell> Cells = new();
 	public List<DungeonDoor> Doors = new();
 
-	public DungeonRoute( Dungeon dungeon, DungeonEdge edge )
+	public DungeonRoute( DungeonEntity dungeon, DungeonEdge edge )
 	{
 		Dungeon = dungeon;
 		Edge = edge;

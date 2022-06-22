@@ -3,8 +3,15 @@ using Sandbox;
 
 namespace Dungeons;
 
-partial class Pawn : Entity
+partial class Pawn : AnimatedEntity
 {
+
+	public override void Spawn()
+	{
+		base.Spawn();
+
+		SetModel( "models/citizen/citizen.vmdl" );
+	}
 
 	public override void Simulate( Client cl )
 	{

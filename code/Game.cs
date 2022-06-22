@@ -3,14 +3,22 @@ using Sandbox;
 
 namespace Dungeons;
 
-public partial class DungeonsGame : Sandbox.Game
+partial class DungeonsGame : Sandbox.Game
 {
+
+	[Net]
+	DungeonEntity Dungeon { get; set; }
 
 	public override void ClientJoined( Client cl )
 	{
 		base.ClientJoined( cl );
 
 		cl.Pawn = new Pawn();
+
+		var startRoom = Dungeon.FindRoom( "start" );
+		if ( startRoom == null ) return;
+
+		cl.Pawn.Position = startRoom.WorldRect.Center;
 	}
 
 	public override void PostLevelLoaded()
@@ -19,10 +27,12 @@ public partial class DungeonsGame : Sandbox.Game
 
 		Map.Scene.ClearColor = new Color32( 100, 149, 237 ).ToColor();
 
-		_ = new Dungeon()
+		Dungeon = new DungeonEntity()
 		{
 			Seed = 32
 		};
+
+		Dungeon.Generate();
 
 		_ = new PostProcessingEntity
 		{

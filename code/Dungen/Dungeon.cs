@@ -36,7 +36,7 @@ using System.Linq;
 
 namespace Dungeons;
 
-internal partial class Dungeon : Entity
+internal partial class DungeonEntity : Entity
 {
 
 	[ConVar.Client( "debug_dungen" )]
@@ -79,7 +79,7 @@ internal partial class Dungeon : Entity
 	private bool MergeHuggers => false;
 
 	[Event.Hotload]
-	private void Generate()
+	public void Generate()
 	{
 		Rand.SetSeed( Seed );
 
@@ -210,6 +210,16 @@ internal partial class Dungeon : Entity
 		return result.OrderBy( x => Rand.Int( 999 ) ).ToList();
 	}
 
+	public DungeonRoom FindRoom( string name )
+	{
+		var cell = cells.FirstOrDefault( x => x.Node?.Name?.Equals( name, System.StringComparison.InvariantCultureIgnoreCase ) ?? false );
+
+		if ( cell == null ) 
+			return null;
+
+		return Rooms.FirstOrDefault( x => x.Cell == cell );
+	}
+
 	[Event.Frame]
 	public void OnFrame()
 	{
@@ -250,6 +260,11 @@ internal partial class Dungeon : Entity
 				var centerb = route.Doors[i + 1].CalculateRect().Center;
 				DebugOverlay.Line( centera * CellScale, centerb * CellScale, 0, false );
 			}
+		}
+
+		foreach( var room in rooms )
+		{
+			DebugOverlay.Sphere( room.WorldRect.Center, 20f, Color.Red );
 		}
 
 	}
