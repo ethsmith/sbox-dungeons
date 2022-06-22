@@ -1,7 +1,8 @@
 ﻿
-using HalfEdgeMesh;
 using Architect;
 using Sandbox;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Dungeons;
 
@@ -33,6 +34,22 @@ internal class DungeonRoom
 		wallgeometry.AddEdge( right, bottom, right, top, 1 );
 		wallgeometry.AddEdge( left, bottom, right, bottom, 1 );
 		wallgeometry.AddEdge( left, top, right, top, 1 );
+
+		var doors = new List<DungeonDoor>();
+		foreach( var r in Dungeon.Routes )
+		{
+			doors.AddRange( r.Doors.Where( x => x.A == Cell || x.B == Cell ) );
+		}
+
+		foreach( var door in doors )
+		{
+			var rect = door.CalculateRect();
+			var centerx = (int)(rect.Center.x * mx);
+			var centery = (int)(rect.Center.y * mx);
+
+			wallgeometry.AddEdge( centerx, centery - 2, centerx, centery + 2, 0 );
+			wallgeometry.AddEdge( centerx - 2, centery, centerx + 2, centery, 0 );
+		}
 	}
 
 }

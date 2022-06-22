@@ -47,15 +47,13 @@ internal partial class Dungeon : Entity
 	public GridObject GridObject { get; set; }
 
 	public IReadOnlyList<DungeonCell> Cells => cells;
+	public IReadOnlyList<DungeonRoute> Routes => routes;
+	public IReadOnlyList<DungeonRoom> Rooms => rooms;
 
-	[SkipHotload]
 	private List<DungeonCell> cells = new();
-	[SkipHotload]
-	private List<DungeonRoute> Routes = new();
-	[SkipHotload]
-	private List<DungeonRoom> Rooms = new();
-	//[SkipHotload]
-	private WallGeometry WallGeometry { get; set; }
+	private List<DungeonRoute> routes = new();
+	private List<DungeonRoom> rooms = new();
+	private WallGeometry WallGeometry;
 
 	public override void Spawn()
 	{
@@ -117,8 +115,8 @@ internal partial class Dungeon : Entity
 			GridObject.Position = GridObject.Position.WithZ( -1 );
 		}
 
-		Rooms = new();
-		Routes = new();
+		rooms = new();
+		routes = new();
 		cells = CreateGrid( DungeonWidth - 1, DungeonHeight - 1);
 
 		for ( int i = 0; i < MergeIterations; i++ )
@@ -142,25 +140,28 @@ internal partial class Dungeon : Entity
 			var idx2 = Rand.Int( cells.Count - 4 );
 			cells[idx1].SetNode<DungeonNode>( "N" );
 			cells[idx2].SetNode<DungeonNode>( "L" );
-			Routes.Add( new( this, new DungeonEdge( cells[idx1], cells[idx2] ) ) );
+			routes.Add( new( this, new DungeonEdge( cells[idx1], cells[idx2] ) ) );
 			await Task.Delay( 25 );
 		}
 
-		foreach ( var route in Routes )
+		foreach ( var route in routes )
 		{
 			route.Calculate();
 			foreach ( var cell in route.Cells )
 			{
-				if ( Rooms.Any( x => x.Cell == cell ) )
-				{
-					// make extra doorways
+				if ( rooms.Any( x => x.Cell == cell ) ) 
 					continue;
-				}
-				Rooms.Add( new( this, cell ) );
-				Rooms[^1].GenerateMesh( WallGeometry );
-				await Task.Delay( 25 );
+
+				rooms.Add( new( this, cell ) );
 			}
 		}
+
+		foreach( var room in rooms )
+		{
+			room.GenerateMesh( WallGeometry );
+			await Task.Delay( 25 );
+		}
+
 	}
 
 	public List<DungeonCell> NeighborsOf( DungeonCell cell, bool orthogonal = true )
@@ -237,7 +238,7 @@ internal partial class Dungeon : Entity
 		foreach ( var cell in cells )
 		{
 			var color = cell.Node != null ? Color.Green : Color.Black;
-			var isroute = Routes.Any( x => x.Cells.Contains( cell ) );
+			var isroute = routes.Any( x => x.Cells.Contains( cell ) );
 			var mins = new Vector3( cell.Rect.BottomLeft * CellScale, 1 );
 			var maxs = new Vector3( cell.Rect.TopRight * CellScale, 1 );
 
@@ -250,14 +251,14 @@ internal partial class Dungeon : Entity
 			DebugOverlay.Box( mins, maxs.WithZ( 256 ), color );
 		}
 
-		foreach ( var route in Routes )
+		foreach ( var route in routes )
 		{
 			foreach ( var door in route.Doors )
 			{
 				var rect = door.CalculateRect();
 				var mins = new Vector3( rect.BottomLeft * CellScale, 1 );
 				var maxs = new Vector3( rect.TopRight * CellScale, 96 );
-				DebugOverlay.Circle( rect.Center * CellScale, Rotation.LookAt( Vector3.Up ), .15f * CellScale, Color.Cyan );
+				DebugOverlay.Circle( rect.Center * CellScale, Rotation.LookAt( Vector3.Up ), .15f * CellScale, Color.Cyan, 0, false );
 			}
 
 			for ( int i = 0; i < route.Doors.Count - 1; i++ )

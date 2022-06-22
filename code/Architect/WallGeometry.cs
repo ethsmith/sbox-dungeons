@@ -65,11 +65,6 @@ namespace Architect
 			so.Flags.CastShadows = true;
 		}
 
-		~WallGeometry()
-		{
-			Destroy();
-		}
-
 		public void Destroy()
 		{
 			body?.Remove();
