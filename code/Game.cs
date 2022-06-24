@@ -9,6 +9,14 @@ partial class DungeonsGame : Sandbox.Game
 	[Net]
 	DungeonEntity Dungeon { get; set; }
 
+	public DungeonsGame()
+	{
+		if ( IsClient )
+		{
+			new Hud();
+		}
+	}
+
 	public override void ClientJoined( Client cl )
 	{
 		base.ClientJoined( cl );
