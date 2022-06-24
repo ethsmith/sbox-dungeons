@@ -18,12 +18,19 @@ internal partial class Player : AnimatedEntity
 		set => Components.Add( value );
 	}
 
+	public PlayerAnimator Animator
+	{
+		get => Components.Get<PlayerAnimator>();
+		set => Components.Add( value );
+	}
+
 	public override void Spawn()
 	{
 		base.Spawn();
 
 		Controller = new PlayerController();
 		Camera = new PlayerCamera();
+		Animator = new PlayerAnimator();
 
 		SetModel( "models/citizen/citizen.vmdl" );
 	}
@@ -33,6 +40,7 @@ internal partial class Player : AnimatedEntity
 		base.Simulate( cl );
 
 		Controller.Simulate();
+		Animator.Simulate();
 	}
 
 	public override void FrameSimulate( Client cl )
