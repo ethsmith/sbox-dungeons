@@ -21,7 +21,7 @@ partial class DungeonsGame : Sandbox.Game
 	{
 		base.ClientJoined( cl );
 
-		cl.Pawn = new Pawn();
+		cl.Pawn = new Player();
 
 		var startRoom = Dungeon.FindRoom( "start" );
 		if ( startRoom == null ) return;
