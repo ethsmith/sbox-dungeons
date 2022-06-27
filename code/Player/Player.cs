@@ -31,6 +31,8 @@ internal partial class Player : AnimatedEntity
 		Controller = new PlayerController();
 		Camera = new PlayerCamera();
 		Animator = new PlayerAnimator();
+		PhysicsEnabled = true;
+		EnableAllCollisions = true;
 
 		SetModel( "models/citizen/citizen.vmdl" );
 	}
@@ -48,13 +50,6 @@ internal partial class Player : AnimatedEntity
 		base.FrameSimulate( cl );
 
 		Controller.FrameSimulate();
-	}
-
-	public override void PostCameraSetup( ref CameraSetup camSetup )
-	{
-		base.PostCameraSetup( ref camSetup );
-
-		Camera.Build( ref camSetup );
 	}
 
 }

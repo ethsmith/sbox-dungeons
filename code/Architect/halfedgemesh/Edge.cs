@@ -1,3 +1,4 @@
+using System.IO;
 
 namespace HalfEdgeMesh
 {
@@ -7,6 +8,14 @@ namespace HalfEdgeMesh
 		public Vertex Vertex2;
 		public HalfEdge HalfEdge1;
 		public HalfEdge HalfEdge2;
+
+		public int WallType;
+		public int WallHeight;
+
+		public int FoundationType;
+		public int FoundationHeight;
+
+		public int PlatformType;
 
 		public void Initialize()
 		{
@@ -22,6 +31,32 @@ namespace HalfEdgeMesh
 
 			HalfEdge1.Initialize( this, Vertex1, Vertex2 );
 			HalfEdge2.Initialize( this, Vertex2, Vertex1 );
+		}
+
+		public bool Write( BinaryWriter bw )
+		{
+			bw.Write( WallType );
+			bw.Write( WallHeight );
+
+			bw.Write( FoundationType );
+			bw.Write( FoundationHeight );
+
+			bw.Write( PlatformType );
+
+			return true;
+		}
+
+		public bool Read( BinaryReader br )
+		{
+			WallType = br.ReadInt32();
+			WallHeight = br.ReadInt32();
+
+			FoundationType = br.ReadInt32();
+			FoundationHeight = br.ReadInt32();
+
+			PlatformType = br.ReadInt32();
+
+			return true;
 		}
 	}
 }

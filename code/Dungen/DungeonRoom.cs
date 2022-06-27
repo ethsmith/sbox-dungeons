@@ -23,7 +23,7 @@ internal class DungeonRoom
 		WorldRect = new( position, size );
 	}
 
-	public void GenerateMesh( WallGeometry wallgeometry )
+	public void GenerateMesh( WallObject wallgeometry )
 	{
 		if ( !Host.IsClient ) return;
 

@@ -8,6 +8,8 @@ namespace HalfEdgeMesh
 		public int Y;
 		public readonly List<HalfEdge> Connections = new();
 
+		public Vector2 Position => new( X, Y );
+
 		public void Connect( HalfEdge halfEdge )
 		{
 			Connections.Add( halfEdge );

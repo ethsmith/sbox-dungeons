@@ -53,13 +53,15 @@ internal partial class DungeonEntity : Entity
 	private List<DungeonCell> cells = new();
 	private List<DungeonRoute> routes = new();
 	private List<DungeonRoom> rooms = new();
-	private WallGeometry WallGeometry;
+	private WallObject WallGeometry;
 
 	public override void Spawn()
 	{
 		base.Spawn();
 
 		Transmit = TransmitType.Always;
+
+		Generate();
 	}
 
 	public override void ClientSpawn()
@@ -88,9 +90,9 @@ internal partial class DungeonEntity : Entity
 		var mapBounds = new Vector3( DungeonWidth * CellScale, DungeonHeight * CellScale, 128f );
 
 		WallGeometry?.Destroy();
-		WallGeometry = new( gridSize, mapBounds );
+		WallGeometry = new( Map.Scene, Map.Physics, gridSize, mapBounds );
 
-		WallGeometry.hemesh.CreateGrid( DungeonWidth * mult, DungeonHeight * mult );
+		WallGeometry.HEMesh.CreateGrid( DungeonWidth * mult, DungeonHeight * mult );
 		WallGeometry.RebuildMesh();
 
 		GridObject?.Destroy();

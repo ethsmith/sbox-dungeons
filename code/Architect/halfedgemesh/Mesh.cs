@@ -11,6 +11,11 @@ namespace HalfEdgeMesh
 		public IReadOnlyList<HalfEdge> HalfEdges => halfEdges;
 		public IReadOnlyList<Face> Faces => faces;
 
+		public int VertexCount => vertices.Count;
+		public int EdgeCount => edges.Count;
+		public int HalfEdgeCount => halfEdges.Count;
+		public int FaceCount => faces.Count;
+
 		private List<Vertex> vertices = new();
 		private List<Edge> edges = new();
 		private List<HalfEdge> halfEdges = new();
@@ -18,9 +23,7 @@ namespace HalfEdgeMesh
 
 		public void CreateGrid( int width, int height )
 		{
-			vertices.Clear();
-			halfEdges.Clear();
-			edges.Clear();
+			Clear();
 
 			for ( int x = 0; x < width; ++x )
 			{
@@ -31,25 +34,51 @@ namespace HalfEdgeMesh
 			}
 		}
 
+		public void Clear()
+		{
+			vertices.Clear();
+			halfEdges.Clear();
+			edges.Clear();
+			faces.Clear();
+		}
+
 		public bool HasEdge( int fromVertexId, int toVertexId )
 		{
+			return GetEdge( fromVertexId, toVertexId ) != null;
+		}
+
+		public Edge GetEdge( int fromVertexId, int toVertexId )
+		{
 			if ( fromVertexId < 0 || toVertexId < 0 )
-				return false;
+				return null;
 
 			if ( fromVertexId == toVertexId )
-				return false;
+				return null;
 
 			int numVertices = vertices.Count;
 			if ( fromVertexId >= numVertices || toVertexId >= numVertices )
-				return false;
+				return null;
 
 			var fromVertex = vertices[fromVertexId];
 			var toVertex = vertices[toVertexId];
 
-			return fromVertex.GetConnectionEdge( toVertex ) != null;
+			return fromVertex.GetConnectionEdge( toVertex );
 		}
 
-		public void AddEdge( int fromVertexId, int toVertexId, byte type = 1 )
+		public void AddEdge( int edgeIndex, int type )
+		{
+			if ( edgeIndex < 0 || edgeIndex >= EdgeCount )
+				return;
+
+			AddEdge( Edges[edgeIndex], type );
+		}
+
+		public void AddEdge( Edge edge, int type )
+		{
+			AddEdge( GetVertexIndex( edge.Vertex1 ), GetVertexIndex( edge.Vertex2 ), type );
+		}
+
+		public void AddEdge( int fromVertexId, int toVertexId, int type = 1 )
 		{
 			if ( fromVertexId < 0 || toVertexId < 0 )
 				return;
@@ -67,59 +96,8 @@ namespace HalfEdgeMesh
 			var edge = fromVertex.GetConnectionEdge( toVertex );
 			if ( edge != null )
 			{
-				if ( type == 0 )
-				{
-					var halfEdgeSet = new HashSet<HalfEdge>
-					{
-						edge.HalfEdge1.Prev,
-						edge.HalfEdge1.Next,
-						edge.HalfEdge2.Prev,
-						edge.HalfEdge2.Next
-					};
+				edge.WallType = type;
 
-					var face1 = edge.HalfEdge1.Face;
-					var face2 = edge.HalfEdge2.Face;
-
-					if ( face1 != null )
-					{
-						foreach ( var halfEdge in edge.HalfEdge1.HalfEdges )
-						{
-							halfEdge.Face = null;
-						}
-
-						faces.Remove( face1 );
-					}
-
-					if ( face2 != null )
-					{
-						foreach ( var halfEdge in edge.HalfEdge2.HalfEdges )
-						{
-							halfEdge.Face = null;
-						}
-
-						faces.Remove( face2 );
-					}
-
-					edge.Vertex1.Disconnect( edge.HalfEdge1 );
-					edge.Vertex2.Disconnect( edge.HalfEdge2 );
-
-					foreach ( var halfEdge in halfEdgeSet )
-					{
-						if ( halfEdge != edge.HalfEdge1 && halfEdge != edge.HalfEdge2 && halfEdge.Face == null )
-						{
-							FindFace( halfEdge );
-						}
-					}
-
-					halfEdges.Remove( edge.HalfEdge1 );
-					halfEdges.Remove( edge.HalfEdge2 );
-					edges.Remove( edge );
-				}
-
-				return;
-			}
-			else if ( type == 0 )
-			{
 				return;
 			}
 
@@ -128,6 +106,7 @@ namespace HalfEdgeMesh
 			edge.Vertex2 = toVertex;
 			edge.HalfEdge1 = AddHalfEdge();
 			edge.HalfEdge2 = AddHalfEdge();
+			edge.WallType = type;
 			edge.Initialize();
 
 			if ( fromVertex.Connections.Count == 1 && toVertex.Connections.Count == 1 )
@@ -153,6 +132,11 @@ namespace HalfEdgeMesh
 
 					if ( halfEdge.Face != null )
 					{
+						if ( halfEdge.Face.IsOuterFace )
+						{
+							halfEdge.Face.InitializeProperties();
+						}
+
 						halfEdge.Face.Initialize( halfEdge );
 
 						break;
@@ -166,7 +150,7 @@ namespace HalfEdgeMesh
 
 				if ( face1 != face2 )
 				{
-					foreach ( var halfEdge in face2.HalfEdge.HalfEdges )
+					foreach ( var halfEdge in face2.HalfEdges )
 					{
 						halfEdge.Face = null;
 					}
@@ -176,6 +160,11 @@ namespace HalfEdgeMesh
 
 				if ( face1 != null )
 				{
+					if ( face1.IsOuterFace )
+					{
+						face1.InitializeProperties();
+					}
+
 					face1.Initialize( edge.HalfEdge1.Next );
 				}
 
@@ -183,14 +172,98 @@ namespace HalfEdgeMesh
 				{
 					face2 = AddFace();
 					face2.Initialize( edge.HalfEdge1 );
+
+					if ( face1 != null && face1.IsInnerFace && face2.IsInnerFace )
+					{
+						face2.CopyProperties( face1 );
+					}
 				}
 
 				if ( edge.HalfEdge2.Face == null )
 				{
 					face2 = AddFace();
 					face2.Initialize( edge.HalfEdge2 );
+
+					if ( face1 != null && face1.IsInnerFace && face2.IsInnerFace )
+					{
+						face2.CopyProperties( face1 );
+					}
 				}
 			}
+		}
+
+		public void RemoveEdge( int edgeIndex )
+		{
+			if ( edgeIndex < 0 || edgeIndex >= EdgeCount )
+				return;
+
+			RemoveEdge( Edges[edgeIndex] );
+		}
+
+		public void RemoveEdge( Edge edge )
+		{
+			if ( edge == null )
+				return;
+
+			var halfEdgeSet = new HashSet<HalfEdge>
+			{
+				edge.HalfEdge1.Prev,
+				edge.HalfEdge1.Next,
+				edge.HalfEdge2.Prev,
+				edge.HalfEdge2.Next
+			};
+
+			var face1 = edge.HalfEdge1.Face;
+			var face2 = edge.HalfEdge2.Face;
+
+			if ( face1 != null )
+			{
+				foreach ( var halfEdge in edge.HalfEdge1.HalfEdges )
+				{
+					halfEdge.Face = null;
+				}
+
+				faces.Remove( face1 );
+			}
+
+			if ( face2 != null )
+			{
+				foreach ( var halfEdge in edge.HalfEdge2.HalfEdges )
+				{
+					halfEdge.Face = null;
+				}
+
+				faces.Remove( face2 );
+			}
+
+			edge.Vertex1.Disconnect( edge.HalfEdge1 );
+			edge.Vertex2.Disconnect( edge.HalfEdge2 );
+
+			foreach ( var halfEdge in halfEdgeSet )
+			{
+				if ( halfEdge != edge.HalfEdge1 && halfEdge != edge.HalfEdge2 && halfEdge.Face == null )
+				{
+					var face = FindFace( halfEdge );
+
+					if ( face1 != null && face1.IsInnerFace )
+					{
+						face.CopyProperties( face1 );
+					}
+					else if ( face2 != null && face2.IsInnerFace )
+					{
+						face.CopyProperties( face2 );
+					}
+				}
+			}
+
+			halfEdges.Remove( edge.HalfEdge1 );
+			halfEdges.Remove( edge.HalfEdge2 );
+			edges.Remove( edge );
+		}
+
+		public void RemoveEdge( int fromVertexId, int toVertexId )
+		{
+			RemoveEdge( GetEdge( fromVertexId, toVertexId ) );
 		}
 
 		Face FindFace( HalfEdge halfEdge )
@@ -224,7 +297,7 @@ namespace HalfEdgeMesh
 
 		private HalfEdge AddHalfEdge()
 		{
-			var halfedge = new HalfEdge { Thickness = 2 };
+			var halfedge = new HalfEdge();
 			halfEdges.Add( halfedge );
 
 			return halfedge;
@@ -233,33 +306,34 @@ namespace HalfEdgeMesh
 		private Face AddFace()
 		{
 			var face = new Face();
+			face.InitializeProperties();
 			faces.Add( face );
 
 			return face;
 		}
 
-		private int VertexIndex( Vertex vertex )
+		private int GetVertexIndex( Vertex vertex )
 		{
 			if ( vertex == null ) throw new Exception( "null vertex" );
 
 			return vertices.IndexOf( vertex );
 		}
 
-		private int EdgeIndex( Edge edge )
+		private int GetEdgeIndex( Edge edge )
 		{
 			if ( edge == null ) throw new Exception( "null edge" );
 
 			return edges.IndexOf( edge );
 		}
 
-		private int HalfEdgeIndex( HalfEdge halfEdge )
+		private int GetHalfEdgeIndex( HalfEdge halfEdge )
 		{
 			if ( halfEdge == null ) throw new Exception( "null half edge" );
 
 			return halfEdges.IndexOf( halfEdge );
 		}
 
-		private int FaceIndex( Face face )
+		private int GetFaceIndex( Face face )
 		{
 			if ( face == null ) throw new Exception( "null face" );
 
@@ -276,13 +350,17 @@ namespace HalfEdgeMesh
 
 			foreach ( var edge in Edges )
 			{
-				bw.Write( VertexIndex( edge.Vertex1 ) );
-				bw.Write( VertexIndex( edge.Vertex2 ) );
+				bw.Write( GetVertexIndex( edge.Vertex1 ) );
+				bw.Write( GetVertexIndex( edge.Vertex2 ) );
+				edge.Write( bw );
+				edge.HalfEdge1.Write( bw );
+				edge.HalfEdge2.Write( bw );
 			}
 
 			foreach ( var face in Faces )
 			{
-				bw.Write( HalfEdgeIndex( face.HalfEdge ) );
+				bw.Write( GetHalfEdgeIndex( face.HalfEdge ) );
+				face.Write( bw );
 			}
 
 			return true;
@@ -295,15 +373,16 @@ namespace HalfEdgeMesh
 			var edgeCount = br.ReadInt32();
 			var faceCount = br.ReadInt32();
 
-			Log.Info( $"edgeCount: {edgeCount}, faceCount: {faceCount}" );
-
 			for ( int i = 0; i < edgeCount; i++ )
 			{
 				var edge = AddEdge();
 				edge.Vertex1 = vertices[br.ReadInt32()];
 				edge.Vertex2 = vertices[br.ReadInt32()];
+				edge.Read( br );
 				edge.HalfEdge1 = AddHalfEdge();
 				edge.HalfEdge2 = AddHalfEdge();
+				edge.HalfEdge1.Read( br );
+				edge.HalfEdge2.Read( br );
 				edge.Initialize();
 			}
 
@@ -311,6 +390,7 @@ namespace HalfEdgeMesh
 			{
 				var face = AddFace();
 				face.Initialize( halfEdges[br.ReadInt32()] );
+				face.Read( br );
 			}
 
 			return true;

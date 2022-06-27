@@ -1,5 +1,5 @@
-
 using System.Collections.Generic;
+using System.IO;
 
 namespace HalfEdgeMesh
 {
@@ -10,11 +10,17 @@ namespace HalfEdgeMesh
 		public float SignedArea;
 		public Vector2 Centroid;
 
+		public int FloorType;
+		public int FloorHeight;
+
+		public bool IsInnerFace => !IsOuterFace;
+		public bool IsFloor => !IsOuterFace && FloorType != 0;
+
 		public void Initialize( HalfEdge halfEdge )
 		{
 			HalfEdge = halfEdge;
 
-			foreach ( var faceHalfEdge in HalfEdge.HalfEdges )
+			foreach ( var faceHalfEdge in HalfEdges )
 			{
 				faceHalfEdge.Face = this;
 			}
@@ -23,13 +29,56 @@ namespace HalfEdgeMesh
 			ComputeOuterFace();
 		}
 
+		public void InitializeProperties()
+		{
+			FloorType = 1;
+			FloorHeight = 0;
+		}
+
+		public void CopyProperties( Face face )
+		{
+			FloorType = face.FloorType;
+			FloorHeight = face.FloorHeight;
+		}
+
+		public IEnumerable<HalfEdge> HalfEdges => HalfEdge.HalfEdges;
+
+		public IEnumerable<HalfEdge> NonParallelHalfEdges
+		{
+			get
+			{
+				HalfEdge prevHalfEdge = null;
+
+				foreach ( var halfEdge in HalfEdges )
+				{
+					if ( halfEdge.IsParallel( prevHalfEdge ) )
+						continue;
+
+					yield return halfEdge;
+
+					prevHalfEdge = halfEdge;
+				}
+			}
+		}
+
+		public IEnumerable<Vertex> Vertices
+		{
+			get
+			{
+				foreach ( var halfEdge in HalfEdges )
+				{
+					yield return halfEdge.Vertex1;
+				}
+			}
+		}
+
 		public IEnumerable<Vertex> NonParallelVertices
 		{
 			get
 			{
 				HalfEdge prevHalfEdge = null;
 
-				foreach ( var halfEdge in HalfEdge.HalfEdges )
+				foreach ( var halfEdge in HalfEdges )
 				{
 					if ( halfEdge.IsParallel( prevHalfEdge ) )
 						continue;
@@ -41,23 +90,12 @@ namespace HalfEdgeMesh
 			}
 		}
 
-		public IEnumerable<Vertex> Vertices
-		{
-			get
-			{
-				foreach ( var halfEdge in HalfEdge.HalfEdges )
-				{
-					yield return halfEdge.Vertex1;
-				}
-			}
-		}
-
 		private void ComputeCentroid()
 		{
 			Centroid = Vector2.Zero;
 			SignedArea = 0.0f;
 
-			foreach ( var halfEdge in HalfEdge.HalfEdges )
+			foreach ( var halfEdge in HalfEdges )
 			{
 				var p1 = new Vector2( halfEdge.Vertex1.X, halfEdge.Vertex1.Y );
 				var p2 = new Vector2( halfEdge.Vertex2.X, halfEdge.Vertex2.Y );
@@ -114,6 +152,22 @@ namespace HalfEdgeMesh
 			}
 
 			IsOuterFace = -SignedArea >= 0.0f;
+		}
+
+		public bool Write( BinaryWriter bw )
+		{
+			bw.Write( FloorType );
+			bw.Write( FloorHeight );
+
+			return true;
+		}
+
+		public bool Read( BinaryReader br )
+		{
+			FloorType = br.ReadInt32();
+			FloorHeight = br.ReadInt32();
+
+			return true;
 		}
 	}
 }

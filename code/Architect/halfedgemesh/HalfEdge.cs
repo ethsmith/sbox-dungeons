@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace HalfEdgeMesh
 {
@@ -12,7 +13,10 @@ namespace HalfEdgeMesh
 		public Vertex Vertex2;
 		public Edge ParentEdge;
 		public Face Face;
-		public int Thickness;
+
+		public int PatternType;
+
+		public int WallThickness => 2;
 
 		public void Initialize( Edge parentEdge, Vertex vertex1, Vertex vertex2 )
 		{
@@ -57,6 +61,20 @@ namespace HalfEdgeMesh
 			var d = a1 * b2 - a2 * b1;
 
 			return d == 0;
+		}
+
+		public bool Write( BinaryWriter bw )
+		{
+			bw.Write( PatternType );
+
+			return true;
+		}
+
+		public bool Read( BinaryReader br )
+		{
+			PatternType = br.ReadInt32();
+
+			return true;
 		}
 	}
 }
