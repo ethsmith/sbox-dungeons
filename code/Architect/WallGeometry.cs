@@ -29,19 +29,19 @@ namespace Architect
 
 			this.physicsWorld = physicsWorld;
 
-			mesh = new Mesh( Material.Load( "materials/walls/plaster/basic_01a/plaster_wall_01a.vmat" ) );
+			mesh = new Mesh( Material.Load( "materials/generic/wall_limestone_brick_large.vmat" ) );
 			mesh.SetBounds( Vector3.Zero, mapBounds );
 			mesh.CreateVertexBuffer<SimpleVertex>( SimpleVertex.Layout );
 
-			mesh2 = new Mesh( Material.Load( "materials/dev/reflectivity_50b.vmat" ) );
+			mesh2 = new Mesh( Material.Load( "materials/effects/black.vmat" ) );
 			mesh2.SetBounds( Vector3.Zero, mapBounds );
 			mesh2.CreateVertexBuffer<SimpleVertex>( SimpleVertex.Layout );
 
-			floorMesh = new Mesh( Material.Load( "materials/dev/dev_measuregeneric01b.vmat" ) );
+			floorMesh = new Mesh( Material.Load( "materials/effects/black.vmat" ) );
 			floorMesh.SetBounds( Vector3.Zero, mapBounds );
 			floorMesh.CreateVertexBuffer<SimpleVertex>( SimpleVertex.Layout );
 
-			floorGridMesh = new Mesh( Material.Load( "materials/dev/grid/archi_grid.vmat" ) );
+			floorGridMesh = new Mesh( Material.Load( "textures/metal_panels_a/oilrig_floor1.vmat" ) );
 			floorGridMesh.SetBounds( Vector3.Zero, mapBounds );
 			floorGridMesh.CreateVertexBuffer<SimpleVertex>( SimpleVertex.Layout );
 
