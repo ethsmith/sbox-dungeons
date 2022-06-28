@@ -49,7 +49,6 @@ internal partial class DungeonEntity : Entity
 	public IReadOnlyList<DungeonRoute> Routes => routes;
 	public IReadOnlyList<DungeonRoom> Rooms => rooms;
 
-	private GridObject GridObject;
 	private List<Entity> entities;
 	private List<DungeonCell> cells = new();
 	private List<DungeonRoute> routes = new();
@@ -99,10 +98,6 @@ internal partial class DungeonEntity : Entity
 
 		WallGeometry.HEMesh.CreateGrid( DungeonWidth * mult, DungeonHeight * mult );
 		WallGeometry.RebuildMesh();
-
-		//GridObject?.Destroy();
-		//GridObject = new( Map.Scene, Map.Physics, (DungeonWidth - 1) * mult, (DungeonHeight - 1) * mult );
-		//GridObject.Position = GridObject.Position.WithZ( -1 );
 
 		rooms = new();
 		routes = new();
