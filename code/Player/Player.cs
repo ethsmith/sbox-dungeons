@@ -61,6 +61,22 @@ internal partial class Player : AnimatedEntity
 			LightRadius.Range = 250f;
 			LightRadius.Color = Color.White.Darken( .9f );
 			LightRadius.UseFogNoShadows();
+
+			if ( Input.Pressed( InputButton.PrimaryAttack ) )
+			{
+				var start = Input.Cursor.Origin;
+				var end = Input.Cursor.Origin + Input.Cursor.Direction * 5000f;
+				var tr = Trace.Ray( start, end )
+					.WorldOnly()
+					.Run();
+
+				if ( tr.Hit )
+				{
+					DebugOverlay.TraceResult( tr, 10f );
+
+					new Monster().Position = tr.EndPosition;
+				}
+			}
 		}
 	}
 
