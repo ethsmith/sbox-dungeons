@@ -8,6 +8,8 @@ partial class DungeonsGame : Sandbox.Game
 
 	[Net]
 	DungeonEntity Dungeon { get; set; }
+	[Net]
+	EnvironmentLightEntity Light { get; set; }
 
 	public DungeonsGame()
 	{
@@ -15,6 +17,14 @@ partial class DungeonsGame : Sandbox.Game
 		{
 			new Hud();
 		}
+	}
+
+	public override void Simulate( Client cl )
+	{
+		base.Simulate( cl );
+
+		Light.Color = Color.White.Darken( .85f );
+		Light.SkyColor = Color.White.Darken( .95f );
 	}
 
 	public override void ClientJoined( Client cl )
@@ -33,7 +43,7 @@ partial class DungeonsGame : Sandbox.Game
 	{
 		base.PostLevelLoaded();
 
-		Map.Scene.ClearColor = new Color32( 100, 149, 237 ).ToColor();
+		Map.Scene.ClearColor = Color.Black;
 
 		Dungeon = new DungeonEntity()
 		{
@@ -47,11 +57,13 @@ partial class DungeonsGame : Sandbox.Game
 			PostProcessingFile = "postprocess/standard.vpost"
 		};
 
-		_ = new EnvironmentLightEntity
+		Light = new EnvironmentLightEntity
 		{
-			Rotation = Rotation.From( 45, 45, 0 ),
+			Rotation = Rotation.From( 125, 45, 0 ),
 			DynamicShadows = true,
-			Brightness = 1.0f,
+			Brightness = .5f,
+			SkyColor = Color.Black,
+			Color = Color.White
 		};
 	}
 

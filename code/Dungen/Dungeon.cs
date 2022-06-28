@@ -50,6 +50,7 @@ internal partial class DungeonEntity : Entity
 	public IReadOnlyList<DungeonRoom> Rooms => rooms;
 
 	private GridObject GridObject;
+	private List<Entity> entities;
 	private List<DungeonCell> cells = new();
 	private List<DungeonRoute> routes = new();
 	private List<DungeonRoom> rooms = new();
@@ -85,6 +86,10 @@ internal partial class DungeonEntity : Entity
 	{
 		Rand.SetSeed( Seed );
 
+		entities?.ForEach( x => x.Delete() );
+		entities = new();
+
+
 		var mult = CellScale / 32;
 		var gridSize = new Vector2( DungeonWidth * mult, DungeonHeight * mult );
 		var mapBounds = new Vector3( DungeonWidth * CellScale, DungeonHeight * CellScale, 128f );
@@ -95,9 +100,9 @@ internal partial class DungeonEntity : Entity
 		WallGeometry.HEMesh.CreateGrid( DungeonWidth * mult, DungeonHeight * mult );
 		WallGeometry.RebuildMesh();
 
-		GridObject?.Destroy();
-		GridObject = new( Map.Scene, Map.Physics, (DungeonWidth - 1) * mult, (DungeonHeight - 1) * mult );
-		GridObject.Position = GridObject.Position.WithZ( -1 );
+		//GridObject?.Destroy();
+		//GridObject = new( Map.Scene, Map.Physics, (DungeonWidth - 1) * mult, (DungeonHeight - 1) * mult );
+		//GridObject.Position = GridObject.Position.WithZ( -1 );
 
 		rooms = new();
 		routes = new();
@@ -145,6 +150,26 @@ internal partial class DungeonEntity : Entity
 		{
 			room.GenerateMesh( WallGeometry );
 			WallGeometry.RebuildMesh();
+		}
+
+		if ( Host.IsServer )
+		{
+			SpawnEntities();
+		}
+	}
+
+	private void SpawnEntities()
+	{
+		foreach ( var room in Rooms )
+		{
+			var center = room.WorldRect.Center;
+			var light = new PointLightEntity()
+			{
+				Color = Color.Orange * .18f,
+				Range = 800,
+				Position = new Vector3( center, 160 )
+			};
+			entities.Add( light );
 		}
 	}
 
@@ -216,7 +241,7 @@ internal partial class DungeonEntity : Entity
 	{
 		var cell = cells.FirstOrDefault( x => x.Node?.Name?.Equals( name, System.StringComparison.InvariantCultureIgnoreCase ) ?? false );
 
-		if ( cell == null ) 
+		if ( cell == null )
 			return null;
 
 		return Rooms.FirstOrDefault( x => x.Cell == cell );
@@ -264,7 +289,7 @@ internal partial class DungeonEntity : Entity
 			}
 		}
 
-		foreach( var room in rooms )
+		foreach ( var room in rooms )
 		{
 			DebugOverlay.Sphere( room.WorldRect.Center, 20f, Color.Red );
 		}

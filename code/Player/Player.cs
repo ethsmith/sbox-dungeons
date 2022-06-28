@@ -44,13 +44,6 @@ internal partial class Player : AnimatedEntity
 
 		Controller.Simulate();
 		Animator.Simulate();
-
-		var eyepos = Position + Vector3.Up * 64f;
-		var tr = Trace.Ray( eyepos, eyepos + Rotation.Forward * 300f )
-			.Ignore( this )
-			.Run();
-
-		DebugOverlay.TraceResult( tr );
 	}
 
 	public override void FrameSimulate( Client cl )
