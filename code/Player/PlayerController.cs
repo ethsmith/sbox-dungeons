@@ -11,13 +11,15 @@ internal class PlayerController : EntityComponent, ISingletonComponent
 	private Vector3 Velocity;
 	private Vector3 Position;
 
+	private Vector3 Mins => new( -16, -16, 0 );
+	private Vector3 Maxs => new( 16, 16, 64 );
+
 	public void Simulate()
 	{
 		FromEntity();
 
 		var movement = new Vector3( Input.Forward, Input.Left, 0 ).Normal;
 		Velocity = EyeRotation * movement * 100f;
-		Position += Velocity * Time.Delta;
 
 		var origin = Input.Cursor.Origin;
 		var endpos = origin + Input.Cursor.Direction * 3000f;
@@ -32,9 +34,11 @@ internal class PlayerController : EntityComponent, ISingletonComponent
 		}
 
 		MoveHelper helper = new( Position, Velocity );
-		helper.Trace = helper.Trace.Size( 16 );
+		helper.Trace = helper.Trace.Size( Mins.WithZ( 1 ), Maxs ).Ignore( Entity );
+
 		if ( helper.TryMove( Time.Delta ) > 0 )
 		{
+			Velocity = helper.Velocity;
 			Position = helper.Position;
 		}
 

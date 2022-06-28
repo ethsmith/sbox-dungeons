@@ -35,6 +35,7 @@ internal partial class Player : AnimatedEntity
 		EnableAllCollisions = true;
 
 		SetModel( "models/citizen/citizen.vmdl" );
+		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );
 	}
 
 	public override void Simulate( Client cl )
@@ -46,6 +47,7 @@ internal partial class Player : AnimatedEntity
 
 		var eyepos = Position + Vector3.Up * 64f;
 		var tr = Trace.Ray( eyepos, eyepos + Rotation.Forward * 300f )
+			.Ignore( this )
 			.Run();
 
 		DebugOverlay.TraceResult( tr );
