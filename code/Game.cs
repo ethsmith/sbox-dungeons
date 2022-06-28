@@ -22,9 +22,6 @@ partial class DungeonsGame : Sandbox.Game
 	public override void Simulate( Client cl )
 	{
 		base.Simulate( cl );
-
-		Light.Color = Color.White.Darken( .85f );
-		Light.SkyColor = Color.White.Darken( .95f );
 	}
 
 	public override void ClientJoined( Client cl )
@@ -59,12 +56,22 @@ partial class DungeonsGame : Sandbox.Game
 
 		Light = new EnvironmentLightEntity
 		{
-			Rotation = Rotation.From( 125, 45, 0 ),
+			Rotation = Rotation.FromPitch( 90 ),
 			DynamicShadows = true,
 			Brightness = .5f,
-			SkyColor = Color.Black,
-			Color = Color.White
+			SkyColor = Color.White.Darken( .98f ),
+			Color = Color.White.Darken( .85f )
 		};
+
+		Map.Scene.GradientFog.Enabled = true;
+		Map.Scene.GradientFog.Color = Color.Black;
+		Map.Scene.GradientFog.MaximumOpacity = .8f;
+		Map.Scene.GradientFog.StartHeight = 0;
+		Map.Scene.GradientFog.EndHeight = 800;
+		Map.Scene.GradientFog.DistanceFalloffExponent = 1;
+		Map.Scene.GradientFog.VerticalFalloffExponent = 2;
+		Map.Scene.GradientFog.StartDistance = 175;
+		Map.Scene.GradientFog.EndDistance = 300;
 	}
 
 }

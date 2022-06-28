@@ -60,8 +60,6 @@ internal partial class DungeonEntity : Entity
 		base.Spawn();
 
 		Transmit = TransmitType.Always;
-
-		Generate();
 	}
 
 	public override void ClientSpawn()
@@ -161,8 +159,9 @@ internal partial class DungeonEntity : Entity
 			var light = new PointLightEntity()
 			{
 				Color = Color.Orange * .18f,
-				Range = 800,
-				Position = new Vector3( center, 160 )
+				Range = 300,
+				Position = new Vector3( center, 150 ),
+				DynamicShadows = true,
 			};
 			entities.Add( light );
 		}
