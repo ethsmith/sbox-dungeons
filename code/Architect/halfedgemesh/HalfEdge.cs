@@ -16,7 +16,7 @@ namespace HalfEdgeMesh
 
 		public int PatternType;
 
-		public int WallThickness => 2;
+		public int WallThickness => 16;
 
 		public void Initialize( Edge parentEdge, Vertex vertex1, Vertex vertex2 )
 		{
