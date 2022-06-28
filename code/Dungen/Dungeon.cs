@@ -31,6 +31,7 @@
 using Architect;
 using Dungeons.Utility;
 using Sandbox;
+using SandboxEditor;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,6 +39,8 @@ namespace Dungeons;
 
 internal partial class DungeonEntity : Entity
 {
+
+	public static DungeonEntity Current;
 
 	[ConVar.Client( "debug_dungen" )]
 	public static bool DebugDungen { get; set; }
@@ -60,6 +63,7 @@ internal partial class DungeonEntity : Entity
 		base.Spawn();
 
 		Transmit = TransmitType.Always;
+		Current = this;
 	}
 
 	public override void ClientSpawn()
@@ -67,6 +71,7 @@ internal partial class DungeonEntity : Entity
 		base.ClientSpawn();
 
 		Generate();
+		Current = this;
 	}
 
 	// Customizable parameters, =>'s for now to test
@@ -120,8 +125,8 @@ internal partial class DungeonEntity : Entity
 		{
 			var idx1 = Rand.Int( cells.Count - 1 );
 			var idx2 = Rand.Int( cells.Count - 3 );
-			var name1 = i == 0 ? "start" : (i == 1 ? "loot" : string.Empty);
-			var name2 = i == 0 ? "end" : (i == 1 ? "boss" : string.Empty);
+			var name1 = i == 0 ? "start" : (i == 1 ? "loot" : "empty");
+			var name2 = i == 0 ? "end" : (i == 1 ? "boss" : "empty");
 			cells[idx1].SetNode<DungeonNode>( name1 );
 			cells[idx2].SetNode<DungeonNode>( name2 );
 			routes.Add( new( this, new DungeonEdge( cells[idx1], cells[idx2] ) ) );
@@ -288,6 +293,31 @@ internal partial class DungeonEntity : Entity
 			DebugOverlay.Sphere( room.WorldRect.Center, 20f, Color.Red );
 		}
 
+	}
+
+	[DebugOverlay( "dungeon", "Dungeon", "map" )]
+	public static void DungeonDebugOverlay()
+	{
+		if ( !Host.IsClient ) return;
+		if ( !Current.IsValid() ) return;
+
+		var nodes = Current.Rooms.Where( x => x.Cell.Node != null ).Select( x => x.Cell.Node.Name );
+		var nodeStr = string.Join( ',', nodes );
+		var txt = $@"Seed: {Current.Seed}
+Rooms: {Current.Rooms.Count}
+Nodes: {nodeStr}
+";
+
+		var rect = new Rect( 16, 9999 );
+		{
+			Render.Draw2D.SetFont( "Consolas", 15 );
+
+			Render.Draw2D.Color = Color.Black;
+			Render.Draw2D.DrawText( rect.Expand( -1 ), txt, TextFlag.LeftTop );
+
+			Render.Draw2D.Color = Color.White.Darken( .25f );
+			Render.Draw2D.DrawText( rect, txt, TextFlag.LeftTop );
+		}
 	}
 
 }
