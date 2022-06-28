@@ -45,10 +45,6 @@ internal class PlayerController : EntityComponent, ISingletonComponent
 		ToEntity();
 	}
 
-	public void FrameSimulate()
-	{
-	}
-
 	private void FromEntity()
 	{
 		Rotation = Entity.Rotation;

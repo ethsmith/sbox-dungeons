@@ -1,5 +1,6 @@
 ﻿
 using Sandbox;
+using System.Linq;
 
 namespace Dungeons;
 
@@ -40,7 +41,10 @@ internal partial class Player : AnimatedEntity
 		LightRadius = new();
 		LightRadius.SetParent( this );
 		LightRadius.LocalPosition = Vector3.Up * 100f;
-		LightRadius.LocalRotation = Rotation.LookAt( Vector3.Down );
+		LightRadius.Rotation = Rotation.FromPitch( 85 );
+		LightRadius.DynamicShadows = true;
+		LightRadius.Range = 250f;
+		LightRadius.Color = Color.White.Darken( .9f );
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );
@@ -53,38 +57,45 @@ internal partial class Player : AnimatedEntity
 		Controller.Simulate();
 		Animator.Simulate();
 
+		UpdateTarget();
+
 		if ( IsServer )
 		{
-			LightRadius.LocalPosition = Vector3.Up * 150;
-			LightRadius.Rotation = Rotation.FromPitch( 85 );
-			LightRadius.DynamicShadows = true;
-			LightRadius.Range = 250f;
-			LightRadius.Color = Color.White.Darken( .9f );
-			LightRadius.UseFogNoShadows();
-
 			if ( Input.Pressed( InputButton.PrimaryAttack ) )
 			{
 				var start = Input.Cursor.Origin;
 				var end = Input.Cursor.Origin + Input.Cursor.Direction * 5000f;
-				var tr = Trace.Ray( start, end )
+				var testtr = Trace.Ray( start, end )
 					.WorldOnly()
 					.Run();
 
-				if ( tr.Hit )
+				if ( testtr.Hit )
 				{
-					DebugOverlay.TraceResult( tr, 10f );
+					DebugOverlay.TraceResult( testtr, 10f );
 
-					new Monster().Position = tr.EndPosition;
+					new Monster().Position = testtr.EndPosition;
 				}
 			}
 		}
 	}
 
-	public override void FrameSimulate( Client cl )
+	private Entity Target;
+	private void UpdateTarget()
 	{
-		base.FrameSimulate( cl );
+		var start = Input.Cursor.Origin;
+		var end = Input.Cursor.Origin + Input.Cursor.Direction * 5000f;
+		var tr = Trace.Ray( start, end )
+			.EntitiesOnly()
+			.RunAll();
 
-		Controller.FrameSimulate();
+		var newTarget = tr?.FirstOrDefault( x => x.Entity != null && x.Entity != this ).Entity;
+
+		if( newTarget != Target )
+		{
+			Target?.SetGlow( false );
+			Target = newTarget;
+			Target?.SetGlow( true, Color.Red );
+		}
 	}
 
 }
