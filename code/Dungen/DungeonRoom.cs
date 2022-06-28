@@ -25,8 +25,6 @@ internal class DungeonRoom
 
 	public void GenerateMesh( WallObject wallgeometry )
 	{
-		if ( !Host.IsClient ) return;
-
 		var my = (int)(wallgeometry.GridSize.x / Dungeon.DungeonWidth);
 		var mx = (int)(wallgeometry.GridSize.y / Dungeon.DungeonHeight);
 
