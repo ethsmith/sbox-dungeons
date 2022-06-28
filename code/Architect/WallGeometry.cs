@@ -495,8 +495,6 @@ namespace Architect
 				xcur += xdir;
 				ycur += ydir;
 			}
-
-			RebuildMesh();
 		}
 
 		public void RemoveEdge( int x, int y, int x1, int y1 )
