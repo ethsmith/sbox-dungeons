@@ -1,5 +1,6 @@
 ﻿
 using Sandbox;
+using System.Linq;
 
 namespace Dungeons;
 
@@ -24,7 +25,13 @@ internal class IdleBehaviour : StateBehaviour<Monster>
 	{
 		base.OnSimulate();
 
-		Owner.Rotation = Owner.Rotation.RotateAroundAxis( Vector3.Up, 400f * Time.Delta );
+		if ( Owner.Target.IsValid() )
+		{
+			SetState( MonsterStates.Chase );
+			return;
+		}
+
+		Owner.Target = Entity.All.FirstOrDefault( x => x is Player pl && pl.Position.Distance( Owner.Position ) < 300 ) as Player;
 	}
 
 }

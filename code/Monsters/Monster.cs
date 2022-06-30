@@ -6,6 +6,9 @@ namespace Dungeons;
 internal partial class Monster : ModelEntity
 {
 
+	[Net]
+	public Player Target { get; set; }
+
 	private StateComponent State => Components.GetOrCreate<StateComponent>();
 
 	public override void Spawn()
@@ -13,6 +16,8 @@ internal partial class Monster : ModelEntity
 		base.Spawn();
 
 		State.SetBehaviour( MonsterStates.Idle, new IdleBehaviour() );
+		State.SetBehaviour( MonsterStates.Chase, new ChaseBehaviour() );
+		State.SetBehaviour( MonsterStates.Attack, new AttackBehaviour() );
 		State.SetState( MonsterStates.Idle );
 
 		SetModel( "models/citizen/citizen.vmdl" );
