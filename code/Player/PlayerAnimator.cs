@@ -14,6 +14,7 @@ internal class PlayerAnimator : EntityComponent, ISingletonComponent
 		var sideward = Entity.Rotation.Right.Dot( dir );
 		var angle = MathF.Atan2( sideward, forward ).RadianToDegree().NormalizeDegrees();
 
+		SetAnimParameter( "holdtype", 5 );
 		SetAnimParameter( "b_grounded", true );
 		SetAnimParameter( "move_direction", angle );
 		SetAnimParameter( "move_speed", Entity.Velocity.Length );
@@ -23,6 +24,7 @@ internal class PlayerAnimator : EntityComponent, ISingletonComponent
 		SetAnimParameter( "move_z", Entity.Velocity.z );
 	}
 
+	private void SetAnimParameter( string name, int value ) => (Entity as AnimatedEntity)?.SetAnimParameter( name, value );
 	private void SetAnimParameter( string name, float value ) => (Entity as AnimatedEntity)?.SetAnimParameter( name, value );
 	private void SetAnimParameter( string name, bool value ) => (Entity as AnimatedEntity)?.SetAnimParameter( name, value );
 

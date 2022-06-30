@@ -15,7 +15,6 @@ internal class MonsterAnimator : EntityComponent<Monster>
 		var angle = MathF.Atan2( sideward, forward ).RadianToDegree().NormalizeDegrees();
 
 		SetAnimParameter( "holdtype", 4 );
-		SetAnimParameter( "aim_body_weight", 1.0f );
 		SetAnimParameter( "b_grounded", true );
 		SetAnimParameter( "move_direction", angle );
 		SetAnimParameter( "move_speed", Entity.Velocity.Length );
