@@ -22,7 +22,7 @@ internal class AttackBehaviour : StateBehaviour<Monster>
 		}
 
 		var dist = target.Position.Distance( Owner.Position );
-		if( dist > 60 )
+		if( dist > 40 )
 		{
 			SetState( MonsterStates.Chase );
 			return;
@@ -33,9 +33,11 @@ internal class AttackBehaviour : StateBehaviour<Monster>
 		TimeUntilAttack = 1f;
 	}
 
-	private async void DoAttack()
+	private void DoAttack()
 	{
 		Log.Info( "Hurt you" );
+
+		Owner.Animator.Attack();
 	}
 
 }

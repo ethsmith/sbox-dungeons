@@ -3,17 +3,25 @@ using Sandbox;
 
 namespace Dungeons;
 
-internal partial class Monster : ModelEntity
+internal partial class Monster : AnimatedEntity
 {
 
 	[Net]
 	public Player Target { get; set; }
+
+	public MonsterAnimator Animator
+	{
+		get => Components.Get<MonsterAnimator>();
+		set => Components.Add( value );
+	}
 
 	private StateComponent State => Components.GetOrCreate<StateComponent>();
 
 	public override void Spawn()
 	{
 		base.Spawn();
+
+		Animator = new();
 
 		State.SetBehaviour( MonsterStates.Idle, new IdleBehaviour() );
 		State.SetBehaviour( MonsterStates.Chase, new ChaseBehaviour() );
@@ -28,6 +36,7 @@ internal partial class Monster : ModelEntity
 	private void OnTick()
 	{
 		State?.Simulate();
+		Animator?.Simulate();
 	}
 
 }

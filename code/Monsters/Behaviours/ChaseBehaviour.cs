@@ -6,6 +6,13 @@ namespace Dungeons;
 internal class ChaseBehaviour : StateBehaviour<Monster>
 {
 
+	public override void OnExit()
+	{
+		base.OnExit();
+
+		Owner.Velocity = 0;
+	}
+
 	public override void OnSimulate()
 	{
 		base.OnSimulate();
@@ -23,7 +30,7 @@ internal class ChaseBehaviour : StateBehaviour<Monster>
 			return;
 		}
 
-		if( dist < 60f )
+		if( dist < 40f )
 		{
 			SetState( MonsterStates.Attack );
 			return;
@@ -32,7 +39,8 @@ internal class ChaseBehaviour : StateBehaviour<Monster>
 		var lookdir = (Owner.Target.Position - Owner.Position).WithZ( 0 ).Normal;
 		var lookrot = Rotation.LookAt( lookdir );
 		Owner.Rotation = Rotation.Slerp( Owner.Rotation, lookrot, 8f * Time.Delta );
-		Owner.Position += lookdir * 80f * Time.Delta;
+		Owner.Velocity = lookdir * 80f;
+		Owner.Position += Owner.Velocity * Time.Delta;
 	}
 
 }
