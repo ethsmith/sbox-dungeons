@@ -30,6 +30,9 @@ internal partial class Monster : AnimatedEntity
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromCapsule( PhysicsMotionType.Keyframed, new Capsule( Vector3.Up * 16f, Vector3.Up * 64, 16f ) );
+
+		LocalScale = .92f;
+		RenderColor = RenderColor.WithGreen( .8f );
 	}
 
 	[Event.Tick]
