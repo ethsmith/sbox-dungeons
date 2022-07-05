@@ -48,7 +48,7 @@ Nodes: {nodeStr}
 			var mins = new Vector3( cell.Rect.BottomLeft * CellScale, 1 );
 			var maxs = new Vector3( cell.Rect.TopRight * CellScale, 1 );
 
-			DebugOverlay.Box( mins, maxs, isroute ? Color.White : color.WithAlpha( .1f ) );
+			DebugOverlay.Box( mins, maxs, isroute ? Color.White : color.WithAlpha( .1f ), 0, false );
 
 			if ( cell.Node == null ) continue;
 
@@ -73,11 +73,6 @@ Nodes: {nodeStr}
 				var centerb = route.Doors[i + 1].CalculateRect().Center;
 				DebugOverlay.Line( centera * CellScale, centerb * CellScale, 0, false );
 			}
-		}
-
-		foreach ( var room in rooms )
-		{
-			DebugOverlay.Sphere( room.WorldRect.Center, 20f, Color.Red );
 		}
 
 	}

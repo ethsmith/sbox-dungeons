@@ -10,6 +10,8 @@ internal class DungeonDoor
 	public readonly DungeonCell A;
 	public readonly DungeonCell B;
 
+	public Rect WorldRect => CalculateRect() * Route.Dungeon.CellScale;
+
 	public DungeonDoor( DungeonRoute route, DungeonCell a, DungeonCell b )
 	{
 		Route = route;

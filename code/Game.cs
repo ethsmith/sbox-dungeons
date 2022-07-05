@@ -42,13 +42,7 @@ partial class DungeonsGame : Sandbox.Game
 
 		Map.Scene.ClearColor = Color.Black;
 
-		Dungeon = new DungeonEntity()
-		{
-			Seed = 32
-		};
-
-		Dungeon.Generate();
-
+		_ = new NavigationEntity();
 		_ = new PostProcessingEntity
 		{
 			PostProcessingFile = "postprocess/standard.vpost"
@@ -62,6 +56,13 @@ partial class DungeonsGame : Sandbox.Game
 			SkyColor = Color.White.Darken( .98f ),
 			Color = Color.White.Darken( .85f )
 		};
+
+		Dungeon = new DungeonEntity()
+		{
+			Seed = 32
+		};
+
+		Dungeon.Generate();
 
 		Map.Scene.GradientFog.Enabled = true;
 		Map.Scene.GradientFog.Color = Color.Black;

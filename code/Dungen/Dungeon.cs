@@ -31,7 +31,6 @@
 using Architect;
 using Dungeons.Utility;
 using Sandbox;
-using SandboxEditor;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -67,8 +66,9 @@ internal partial class DungeonEntity : Entity
 	{
 		base.ClientSpawn();
 
-		Generate();
 		Current = this;
+
+		Generate();
 	}
 
 	// Customizable parameters, =>'s for now to test
@@ -79,6 +79,7 @@ internal partial class DungeonEntity : Entity
 	public int CellScale => 384;
 	private int MergeIterations => 1024;
 	private bool MergeHuggers => false;
+	public Rect WorldRect => new Rect( 0, 0, DungeonWidth, DungeonHeight ) * CellScale;
 
 	[Event.Hotload]
 	public void Generate()
@@ -151,6 +152,8 @@ internal partial class DungeonEntity : Entity
 		{
 			SpawnEntities();
 		}
+
+		Event.Run( "dungeon.postgen", this );
 	}
 
 	private void SpawnEntities()
@@ -241,6 +244,20 @@ internal partial class DungeonEntity : Entity
 			return null;
 
 		return Rooms.FirstOrDefault( x => x.Cell == cell );
+	}
+
+	public bool IsPointWalkable( Vector2 worldpos )
+	{
+		foreach ( var r in Routes )
+		{
+			if ( r.Doors.Any( x => x.WorldRect.IsInside( worldpos ) ) )
+				return true;
+		}
+
+		if ( Rooms.Any( x => x.WorldRect.Contract( 16.1f ).IsInside( worldpos ) ) )
+			return true;
+
+		return false;
 	}
 
 }
