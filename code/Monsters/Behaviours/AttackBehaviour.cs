@@ -35,8 +35,6 @@ internal class AttackBehaviour : StateBehaviour<Monster>
 
 	private void DoAttack()
 	{
-		Log.Info( "Hurt you" );
-
 		Owner.Animator.Attack();
 	}
 

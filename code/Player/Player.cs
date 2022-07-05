@@ -58,25 +58,6 @@ internal partial class Player : AnimatedEntity
 		Animator.Simulate();
 
 		UpdateTarget();
-
-		if ( IsServer )
-		{
-			if ( Input.Pressed( InputButton.PrimaryAttack ) )
-			{
-				var start = Input.Cursor.Origin;
-				var end = Input.Cursor.Origin + Input.Cursor.Direction * 5000f;
-				var testtr = Trace.Ray( start, end )
-					.WorldOnly()
-					.Run();
-
-				if ( testtr.Hit )
-				{
-					DebugOverlay.TraceResult( testtr, 10f );
-
-					new Monster().Position = testtr.EndPosition;
-				}
-			}
-		}
 	}
 
 	private Entity Target;
