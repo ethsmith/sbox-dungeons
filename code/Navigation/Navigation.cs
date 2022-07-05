@@ -79,6 +79,10 @@ internal partial class NavigationEntity : Entity
 			GetIndex(point + Vector2.Right),
 			GetIndex(point + Vector2.Up),
 			GetIndex(point + Vector2.Down),
+			GetIndex(point + Vector2.Down + Vector2.Left),
+			GetIndex(point + Vector2.Down + Vector2.Right),
+			GetIndex(point + Vector2.Up + Vector2.Left),
+			GetIndex(point + Vector2.Up + Vector2.Right),
 		};
 	}
 
