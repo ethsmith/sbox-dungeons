@@ -57,6 +57,18 @@ internal partial class Player : AnimatedEntity
 		Controller.Simulate();
 		Animator.Simulate();
 
+		var start = Input.Cursor.Origin;
+		var end = Input.Cursor.Origin + Input.Cursor.Direction * 5000f;
+		var tr = Trace.Ray( start, end )
+			.WorldOnly()
+			.Run();
+
+		var path = NavigationEntity.Current.CalculatePath( Position, tr.HitPosition );
+		foreach ( var point in path )
+		{
+			DebugOverlay.Sphere( point, 10f, Color.Green );
+		}
+
 		UpdateTarget();
 	}
 
