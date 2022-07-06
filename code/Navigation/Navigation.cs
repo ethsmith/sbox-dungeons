@@ -1,12 +1,14 @@
 ﻿
-using Dungeons.Utility;
 using Sandbox;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Dungeons;
+
+// todo: lots of work to be done here in reducing memory and cpu and improving readability
+// todo: we don't have to guarantee a full path, we just have to get you moving in the right direction.
+//		 we can limit the search quite drastically and have no performance concerns despite using
+//		 a giant square grid
 
 internal partial class NavigationEntity : Entity
 {
@@ -17,6 +19,12 @@ internal partial class NavigationEntity : Entity
 
 	private Vector2 GridSize;
 	private int[] Grid;
+	private int[] Neighbors = new int[8];
+	private HashSet<int> OpenSet = new();
+	private HashSet<int> ClosedSet = new();
+	private Dictionary<int, int> CameFrom;
+	private Dictionary<int, float> GScore;
+	private Dictionary<int, float> FScore;
 
 	public NavigationEntity()
 	{
@@ -43,8 +51,9 @@ internal partial class NavigationEntity : Entity
 		for ( int x = 0; x < gridx; x++ )
 			for ( int y = 0; y < gridy; y++ )
 			{
-				var walkable = dungeon.IsPointWalkable( new Vector2( x, y ) * CellSize );
-				Grid[GetIndex( x, y )] = walkable ? 1 : 0;
+				var idx = GetIndex( x, y );
+				var walkable = dungeon.IsPointWalkable( ToWorld( idx ) );
+				Grid[idx] = walkable ? 1 : 0;
 			}
 	}
 
@@ -69,21 +78,18 @@ internal partial class NavigationEntity : Entity
 	}
 	private bool IsOnMap( int x, int y ) => x >= 0 && y >= 0 && x < GridSize.x && y < GridSize.y;
 
-	private List<int> GetNeighbors( int index )
+	private void FillNeighborsArray( int index )
 	{
 		var point = GetPosition( index );
 
-		return new List<int>()
-		{
-			GetIndex(point + Vector2.Left),
-			GetIndex(point + Vector2.Right),
-			GetIndex(point + Vector2.Up),
-			GetIndex(point + Vector2.Down),
-			GetIndex(point + Vector2.Down + Vector2.Left),
-			GetIndex(point + Vector2.Down + Vector2.Right),
-			GetIndex(point + Vector2.Up + Vector2.Left),
-			GetIndex(point + Vector2.Up + Vector2.Right),
-		};
+		Neighbors[0] = GetIndex( point + Vector2.Left );
+		Neighbors[1] = GetIndex( point + Vector2.Right );
+		Neighbors[2] = GetIndex( point + Vector2.Up );
+		Neighbors[3] = GetIndex( point + Vector2.Down );
+		Neighbors[4] = GetIndex( point + Vector2.Down + Vector2.Left );
+		Neighbors[5] = GetIndex( point + Vector2.Down + Vector2.Right );
+		Neighbors[6] = GetIndex( point + Vector2.Up + Vector2.Left );
+		Neighbors[7] = GetIndex( point + Vector2.Up + Vector2.Right );
 	}
 
 	public List<Vector3> CalculatePath( Vector3 start, Vector3 end )
@@ -109,62 +115,73 @@ internal partial class NavigationEntity : Entity
 		return pos;
 	}
 
+	private void ResetCollections()
+	{
+		OpenSet.Clear();
+		ClosedSet.Clear();
+
+		CameFrom ??= new Dictionary<int, int>( Grid.Length );
+		GScore ??= new Dictionary<int, float>( Grid.Length );
+		FScore ??= new Dictionary<int, float>( Grid.Length );
+
+		for ( int i = 0; i < Grid.Length; i++ )
+		{
+			GScore[i] = float.MaxValue;
+			FScore[i] = float.MaxValue;
+		}
+	}
+
 	private List<int> CalculatePath( int start, int end )
 	{
-		// todo: lots of optimization to be done here
-
 		var result = new List<int>();
 
 		if ( !IsWalkable( start ) || !IsWalkable( end ) )
 			return result;
 
-		var open = new HashSet<int>() { start };
-		var closed = new HashSet<int>();
-		var cameFrom = new Dictionary<int, int>();
-		var gscore = new Dictionary<int, float>();
-		for ( int i = 0; i < Grid.Length; i++ )
-			gscore[i] = float.MaxValue;
-		gscore[start] = 0;
+		ResetCollections();
 
-		var fscore = new Dictionary<int, float>();
-		for ( int i = 0; i < Grid.Length; i++ )
-			fscore[i] = float.MaxValue;
-		fscore[start] = Heuristic( start, end );
+		GScore[start] = 0;
+		FScore[start] = Heuristic( start, end );
+		OpenSet.Add( start );
 
-		var current = 0;
+		int current = 0;
 
-		while ( open.Count > 0 )
+		while ( OpenSet.Count > 0 )
 		{
-			current = LowestF( open, fscore );
+			current = LowestF();
 
 			if ( current == end )
 			{
 				break;
 			}
 
-			open.Remove( current );
-			closed.Add( current );
+			OpenSet.Remove( current );
+			ClosedSet.Add( current );
 
-			var neighbors = GetNeighbors( current );
+			var currentpos = GetPosition( current );
 
-			foreach ( var neighbor in neighbors )
+			FillNeighborsArray( current );
+			foreach ( var neighbor in Neighbors )
 			{
 				if ( !IsWalkable( neighbor ) ) continue;
-				if ( closed.Contains( neighbor ) ) continue;
+				if ( ClosedSet.Contains( neighbor ) ) continue;
 
-				var newscore = gscore[current] + Distance( current, neighbor );
-				var opened = open.Contains( neighbor );
-				var bettercost = newscore < gscore[neighbor];
+				var neighborpos = GetPosition( neighbor );
+				var dir = neighborpos - currentpos;
+				var straight = dir.x == 0 || dir.y == 0;
+				var newscore = GScore[current] + (straight ? 1f : 1.4142f);
+				var opened = OpenSet.Contains( neighbor );
+				var bettercost = newscore < GScore[neighbor];
 
 				if ( !opened || bettercost )
 				{
-					cameFrom[neighbor] = current;
-					gscore[neighbor] = newscore;
+					CameFrom[neighbor] = current;
+					GScore[neighbor] = newscore;
 
 					if ( !opened )
 					{
-						open.Add( neighbor );
-						fscore[neighbor] = Heuristic( start, neighbor );
+						OpenSet.Add( neighbor );
+						FScore[neighbor] = Heuristic( start, neighbor );
 					}
 				}
 			}
@@ -173,7 +190,7 @@ internal partial class NavigationEntity : Entity
 		while ( current != start )
 		{
 			result.Add( current );
-			current = cameFrom[current];
+			current = CameFrom[current];
 		}
 		result.Reverse();
 
@@ -182,33 +199,31 @@ internal partial class NavigationEntity : Entity
 
 	private bool IsWalkable( int index )
 	{
-		if ( index < 0 || index >= Grid.Length ) 
+		if ( index < 0 || index >= Grid.Length )
 			return false;
 
-		if ( Grid[index] == 0 ) 
+		if ( Grid[index] == 0 )
 			return false;
 
 		return true;
 	}
 
-	private float Distance( int from, int to )
+	private float Heuristic( int from, int to )
 	{
 		var fromv = GetPosition( from );
 		var tov = GetPosition( to );
-		return fromv.Distance( tov );
+		return MathF.Sqrt( MathF.Pow( fromv.x - tov.x, 2 ) + MathF.Pow( fromv.y - tov.y, 2 ) );
 	}
 
-	private float Heuristic( int from, int to ) => Distance( from, to );
-
-	private int LowestF( IEnumerable<int> openset, IDictionary<int, float> scores )
+	private int LowestF()
 	{
 		var lowscore = float.MaxValue;
 		var lowidx = -1;
 
-		foreach ( var idx in openset )
+		foreach ( var idx in OpenSet )
 		{
-			if ( scores[idx] >= lowscore ) continue;
-			lowscore = scores[idx];
+			if ( FScore[idx] >= lowscore ) continue;
+			lowscore = FScore[idx];
 			lowidx = idx;
 		}
 
