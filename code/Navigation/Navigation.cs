@@ -148,7 +148,7 @@ internal partial class NavigationEntity : Entity
 
 	private bool CalculatePath( int start, int end )
 	{
-		if ( !IsWalkable( start ) || !IsWalkable( end ) )
+		if ( !IsWalkable( end ) )
 			return false;
 
 		ResetCollections();
@@ -209,7 +209,7 @@ internal partial class NavigationEntity : Entity
 			CalculatedPath.Add( current );
 			current = CameFrom[current];
 		}
-		
+
 		CalculatedPath.Reverse();
 		SimplifyCalculatedPath();
 
