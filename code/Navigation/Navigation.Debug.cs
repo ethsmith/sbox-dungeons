@@ -20,6 +20,23 @@ internal partial class NavigationEntity
 			var color = Current.Grid[x] == 1 ? Color.Green : Color.White;
 			DebugOverlay.Sphere( worldpos, 1f, color );
 		}
+
+		if( Local.Pawn is Player pl )
+		{
+			var agent = pl.Agent;
+
+			if ( agent.TotalWaypoints <= 1 ) 
+				return;
+
+			for( int i = 0; i < agent.TotalWaypoints - 1; i++ )
+			{
+				var p1 = agent.Waypoints[i];
+				var p2 = agent.Waypoints[i + 1];
+				DebugOverlay.Sphere( p1.WithZ( 1 ), 2f, Color.Red );
+				DebugOverlay.Sphere( p2.WithZ( 1 ), 2f, Color.Red );
+				DebugOverlay.Line( p1.WithZ( 1 ), p2.WithZ( 1 ), Color.White );
+			}
+		}
 	}
 
 }
