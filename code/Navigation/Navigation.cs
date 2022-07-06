@@ -172,9 +172,24 @@ internal partial class NavigationEntity : Entity
 		}
 	}
 
+	private bool FindNearestWalkable( int from, int to, out int result )
+	{
+		result = -1;
+		var line = GetStraightLine( to, from, LineCache );
+		for ( int i = 0; i < line; i++ )
+		{
+			if ( IsWalkable( LineCache[i] ) )
+			{
+				result = LineCache[i];
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private bool CalculatePath( int start, int end )
 	{
-		if ( !IsWalkable( end ) )
+		if ( !IsWalkable( end ) && !FindNearestWalkable( start, end, out end ) )
 			return false;
 
 		ResetCollections();
@@ -361,6 +376,10 @@ internal partial class NavigationEntity : Entity
 				p.y += sign_y;
 				iy++;
 			}
+
+			if ( result + 1 >= LineCache.Length )
+				break;
+
 			result++;
 			cache[result] = GetIndex( p );
 		}
