@@ -153,6 +153,13 @@ internal partial class NavigationEntity : Entity
 
 		ResetCollections();
 
+		if ( LineOfSight( start, end ) )
+		{
+			CalculatedPath.Add( start );
+			CalculatedPath.Add( end );
+			return true;
+		}
+
 		GScore[start] = 0;
 		FScore[start] = Heuristic( start, end );
 		OpenSet.Add( start );
