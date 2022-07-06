@@ -25,10 +25,14 @@ internal partial class Player : AnimatedEntity
 		set => Components.Add( value );
 	}
 
+	public NavigationAgent Agent
+	{
+		get => Components.Get<NavigationAgent>();
+		set => Components.Add( value );
+	}
+
 	[Net]
 	public SpotLightEntity LightRadius { get; set; }
-
-	Vector3[] PathArray = new Vector3[999];
 
 	public override void Spawn()
 	{
@@ -37,6 +41,7 @@ internal partial class Player : AnimatedEntity
 		Controller = new PlayerController();
 		Camera = new PlayerCamera();
 		Animator = new PlayerAnimator();
+		Agent = new NavigationAgent();
 		PhysicsEnabled = true;
 		EnableAllCollisions = true;
 
@@ -65,15 +70,12 @@ internal partial class Player : AnimatedEntity
 			.WorldOnly()
 			.Run();
 
-		var pathlength = NavigationEntity.Current.CalculatePath( Position, tr.HitPosition, PathArray );
-		if ( pathlength > 0 )
+		if ( Input.Pressed( InputButton.PrimaryAttack ) )
 		{
-			for ( int i = 0; i < pathlength; i++ )
-			{
-				DebugOverlay.Sphere( PathArray[i], 10f, Color.Green );
-			}
+			Agent.SetDestination( tr.HitPosition );
 		}
 
+		Agent.Simulate();
 		UpdateTarget();
 	}
 
