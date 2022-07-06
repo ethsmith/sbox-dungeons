@@ -168,7 +168,14 @@ internal partial class DungeonEntity : Entity
 				Position = new Vector3( center, 150 ),
 				DynamicShadows = true,
 			};
+
+			var monster = new Monster()
+			{
+				Position = new Vector3( center, 1 )
+			};
+
 			entities.Add( light );
+			entities.Add( monster );
 		}
 	}
 
