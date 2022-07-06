@@ -2,6 +2,7 @@
 using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Dungeons;
 
@@ -26,6 +27,7 @@ internal partial class NavigationEntity : Entity
 	private Dictionary<int, int> CameFrom;
 	private Dictionary<int, float> GScore;
 	private Dictionary<int, float> FScore;
+	private List<int> CalculatedPath = new();
 
 	public NavigationEntity()
 	{
@@ -56,6 +58,37 @@ internal partial class NavigationEntity : Entity
 				var walkable = dungeon.IsPointWalkable( ToWorld( idx ) );
 				Grid[idx] = walkable ? 1 : 0;
 			}
+	}
+
+	public int CalculatePath( Vector3 start, Vector3 end, Vector3[] points )
+	{
+		if ( !CalculatePath( FromWorld( start ), FromWorld( end ) ) )
+		{
+			return 0;
+		}
+
+		var length = CalculatedPath.Count;
+		if ( length > points.Length )
+		{
+			throw new Exception( "Supplied path array is too short, required length: " + length );
+		}
+
+		for ( int i = 0; i < CalculatedPath.Count; i++ )
+		{
+			points[i] = ToWorld( CalculatedPath[i] );
+		}
+
+		return length;
+	}
+
+	public List<Vector3> CalculatePath( Vector3 start, Vector3 end )
+	{
+		if ( CalculatePath( FromWorld( start ), FromWorld( end ) ) )
+		{
+			return CalculatedPath.Select( x => ToWorld( x ) ).ToList();
+		}
+
+		return new();
 	}
 
 	private int GetIndex( Vector2 point ) => GetIndex( (int)point.x, (int)point.y );
@@ -96,21 +129,9 @@ internal partial class NavigationEntity : Entity
 	private Vector3 ToWorld( int idx ) => GetPosition( idx ) * CellSize;
 	private int FromWorld( Vector3 world ) => GetIndex( (int)world.x / CellSize, (int)world.y / CellSize );
 
-	public List<Vector3> CalculatePath( Vector3 start, Vector3 end )
-	{
-		var result = new List<Vector3>();
-		var path = CalculatePath( FromWorld( start ), FromWorld( end ) );
-
-		foreach ( var idx in path )
-		{
-			result.Add( ToWorld( idx ) );
-		}
-
-		return result;
-	}
-
 	private void ResetCollections()
 	{
+		CalculatedPath.Clear();
 		OpenSet.Clear();
 		ClosedSet.Clear();
 
@@ -125,12 +146,10 @@ internal partial class NavigationEntity : Entity
 		}
 	}
 
-	private List<int> CalculatePath( int start, int end )
+	private bool CalculatePath( int start, int end )
 	{
-		var result = new List<int>();
-
 		if ( !IsWalkable( start ) || !IsWalkable( end ) )
-			return result;
+			return false;
 
 		ResetCollections();
 
@@ -138,6 +157,7 @@ internal partial class NavigationEntity : Entity
 		FScore[start] = Heuristic( start, end );
 		OpenSet.Add( start );
 
+		bool discovered = false;
 		int current = 0;
 
 		while ( OpenSet.Count > 0 )
@@ -146,6 +166,7 @@ internal partial class NavigationEntity : Entity
 
 			if ( current == end )
 			{
+				discovered = true;
 				break;
 			}
 
@@ -181,14 +202,16 @@ internal partial class NavigationEntity : Entity
 			}
 		}
 
+		if ( !discovered ) return false;
+
 		while ( current != start )
 		{
-			result.Add( current );
+			CalculatedPath.Add( current );
 			current = CameFrom[current];
 		}
-		result.Reverse();
+		CalculatedPath.Reverse();
 
-		return result;
+		return true;
 	}
 
 	private bool IsWalkable( int index )

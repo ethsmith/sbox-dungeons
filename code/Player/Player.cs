@@ -28,6 +28,8 @@ internal partial class Player : AnimatedEntity
 	[Net]
 	public SpotLightEntity LightRadius { get; set; }
 
+	Vector3[] PathArray = new Vector3[999];
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -63,10 +65,13 @@ internal partial class Player : AnimatedEntity
 			.WorldOnly()
 			.Run();
 
-		var path = NavigationEntity.Current.CalculatePath( Position, tr.HitPosition );
-		foreach ( var point in path )
+		var pathlength = NavigationEntity.Current.CalculatePath( Position, tr.HitPosition, PathArray );
+		if ( pathlength > 0 )
 		{
-			DebugOverlay.Sphere( point, 10f, Color.Green );
+			for ( int i = 0; i < pathlength; i++ )
+			{
+				DebugOverlay.Sphere( PathArray[i], 10f, Color.Green );
+			}
 		}
 
 		UpdateTarget();
@@ -83,7 +88,7 @@ internal partial class Player : AnimatedEntity
 
 		var newTarget = tr?.FirstOrDefault( x => x.Entity != null && x.Entity != this ).Entity;
 
-		if( newTarget != Target )
+		if ( newTarget != Target )
 		{
 			Target?.SetGlow( false );
 			Target = newTarget;
