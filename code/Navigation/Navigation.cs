@@ -209,7 +209,9 @@ internal partial class NavigationEntity : Entity
 			CalculatedPath.Add( current );
 			current = CameFrom[current];
 		}
+		
 		CalculatedPath.Reverse();
+		SimplifyCalculatedPath();
 
 		return true;
 	}
@@ -245,6 +247,88 @@ internal partial class NavigationEntity : Entity
 		}
 
 		return lowidx;
+	}
+
+	private void SimplifyCalculatedPath()
+	{
+		var start = 0;
+		var next = 1;
+
+		while ( start < next && next < CalculatedPath.Count - 1 )
+		{
+			var point1 = CalculatedPath[start];
+			var point2 = CalculatedPath[next + 1];
+
+			if ( LineOfSight( point1, point2 ) )
+			{
+				CalculatedPath[next] = -1;
+			}
+			else
+			{
+				start = next;
+			}
+			next++;
+		}
+
+		CalculatedPath.RemoveAll( x => x == -1 );
+	}
+
+	int[] LineCache = new int[128];
+	private bool LineOfSight( int from, int to )
+	{
+		var lineCount = GetStraightLine( from, to, LineCache );
+		for ( int i = 0; i < lineCount; i++ )
+		{
+			if ( !IsWalkable( LineCache[i] ) )
+				return false;
+		}
+		return true;
+	}
+
+	private int GetStraightLine( int idx0, int idx1, int[] cache )
+	{
+		var p0 = GetPosition( idx0 );
+		var p1 = GetPosition( idx1 );
+
+		var dx = p1.x - p0.x;
+		var dy = p1.y - p0.y;
+		var nx = Math.Abs( dx );
+		var ny = Math.Abs( dy );
+		var sign_x = dx > 0 ? 1 : -1;
+		var sign_y = dy > 0 ? 1 : -1;
+
+		var result = 0;
+		var p = new Vector2( p0.x, p0.y );
+		cache[result] = GetIndex( p );
+
+		var ix = 0;
+		var iy = 0;
+		while ( ix < nx || iy < ny )
+		{
+			if ( (1 + 2 * ix) * ny == (1 + 2 * iy) * nx )
+			{
+				// next step is diagonal
+				p.x += sign_x;
+				p.y += sign_y;
+				ix++;
+				iy++;
+			}
+			else if ( (0.5 + ix) / nx < (0.5 + iy) / ny )
+			{
+				// next step is horizontal
+				p.x += sign_x;
+				ix++;
+			}
+			else
+			{
+				// next step is vertical
+				p.y += sign_y;
+				iy++;
+			}
+			result++;
+			cache[result] = GetIndex( p );
+		}
+		return result;
 	}
 
 }
