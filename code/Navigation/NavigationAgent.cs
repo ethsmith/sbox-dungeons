@@ -21,7 +21,13 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 
 	public void Simulate()
 	{
-		NavigationEntity.Current.UpdateAgent( Entity.NetworkIdent, Entity.Position );
+		if ( !Entity.IsValid() ) 
+			return;
+
+		if ( Entity.IsClient && !Entity.Predictable )
+			return;
+
+		NavigationEntity.Current.UpdateAgent( AgentId, Entity.Position );
 
 		if ( CurrentWaypoint >= TotalWaypoints )
 		{

@@ -36,11 +36,7 @@ internal class ChaseBehaviour : StateBehaviour<Monster>
 			return;
 		}
 
-		var lookdir = (Owner.Target.Position - Owner.Position).WithZ( 0 ).Normal;
-		var lookrot = Rotation.LookAt( lookdir );
-		Owner.Rotation = Rotation.Slerp( Owner.Rotation, lookrot, 8f * Time.Delta );
-		Owner.Velocity = lookdir * 80f;
-		Owner.Position += Owner.Velocity * Time.Delta;
+		Owner.Agent.SetDestination( Owner.Target.Position );
 	}
 
 }

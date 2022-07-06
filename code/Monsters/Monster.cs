@@ -15,6 +15,12 @@ internal partial class Monster : AnimatedEntity
 		set => Components.Add( value );
 	}
 
+	public NavigationAgent Agent
+	{
+		get => Components.Get<NavigationAgent>();
+		set => Components.Add( value );
+	}
+
 	private StateComponent State => Components.GetOrCreate<StateComponent>();
 
 	public override void Spawn()
@@ -22,6 +28,7 @@ internal partial class Monster : AnimatedEntity
 		base.Spawn();
 
 		Animator = new();
+		Agent = new();
 
 		State.SetBehaviour( MonsterStates.Idle, new IdleBehaviour() );
 		State.SetBehaviour( MonsterStates.Chase, new ChaseBehaviour() );
@@ -33,6 +40,7 @@ internal partial class Monster : AnimatedEntity
 
 		LocalScale = .92f;
 		RenderColor = RenderColor.WithGreen( .8f );
+		Predictable = false;
 	}
 
 	[Event.Tick]
@@ -40,6 +48,7 @@ internal partial class Monster : AnimatedEntity
 	{
 		State?.Simulate();
 		Animator?.Simulate();
+		Agent?.Simulate();
 	}
 
 }
