@@ -21,7 +21,10 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 	public void Simulate()
 	{
 		if ( CurrentWaypoint >= TotalWaypoints )
+		{
+			Entity.Velocity = 0;
 			return;
+		}
 
 		var movedir = (PathArray[CurrentWaypoint] - Entity.Position).WithZ( 0 ).Normal;
 		var movevec = movedir * MoveSpeed;
@@ -32,7 +35,9 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 			return;
 		}
 
+		Entity.Velocity = movevec;
 		Entity.Position += movevec * Time.Delta;
+		Entity.Rotation = Rotation.Slerp( Entity.Rotation, Rotation.LookAt( movedir ), 8f * Time.Delta );
 	}
 
 }

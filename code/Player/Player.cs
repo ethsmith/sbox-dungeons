@@ -61,7 +61,7 @@ internal partial class Player : AnimatedEntity
 	{
 		base.Simulate( cl );
 
-		Controller.Simulate();
+		//Controller.Simulate();
 		Animator.Simulate();
 
 		var start = Input.Cursor.Origin;
@@ -70,7 +70,7 @@ internal partial class Player : AnimatedEntity
 			.WorldOnly()
 			.Run();
 
-		if ( Input.Pressed( InputButton.PrimaryAttack ) )
+		if ( Input.Down( InputButton.PrimaryAttack ) )
 		{
 			Agent.SetDestination( tr.HitPosition );
 		}
