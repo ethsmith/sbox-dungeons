@@ -9,6 +9,7 @@ namespace Dungeons;
 // todo: we don't have to guarantee a full path, we just have to get you moving in the right direction.
 //		 we can limit the search quite drastically and have no performance concerns despite using
 //		 a giant square grid
+// todo: anywhere a monster or player is standing should be marked as unwalkable
 
 internal partial class NavigationEntity : Entity
 {
@@ -74,9 +75,9 @@ internal partial class NavigationEntity : Entity
 	private bool IsOnMap( int index )
 	{
 		var pos = GetPosition( index );
-		return IsOnMap( (int)pos.x, (int)pos.y );
+
+		return pos.x >= 0 && pos.x < GridSize.x && pos.y >= 0 && pos.y < GridSize.y;
 	}
-	private bool IsOnMap( int x, int y ) => x >= 0 && y >= 0 && x < GridSize.x && y < GridSize.y;
 
 	private void FillNeighborsArray( int index )
 	{
@@ -92,27 +93,20 @@ internal partial class NavigationEntity : Entity
 		Neighbors[7] = GetIndex( point + Vector2.Up + Vector2.Right );
 	}
 
+	private Vector3 ToWorld( int idx ) => GetPosition( idx ) * CellSize;
+	private int FromWorld( Vector3 world ) => GetIndex( (int)world.x / CellSize, (int)world.y / CellSize );
+
 	public List<Vector3> CalculatePath( Vector3 start, Vector3 end )
 	{
 		var result = new List<Vector3>();
+		var path = CalculatePath( FromWorld( start ), FromWorld( end ) );
 
-		var startidx = GetIndex( (int)start.x / CellSize, (int)start.y / CellSize );
-		var endidx = GetIndex( (int)end.x / CellSize, (int)end.y / CellSize );
-
-		var idxpath = CalculatePath( startidx, endidx );
-		foreach ( var idx in idxpath )
+		foreach ( var idx in path )
 		{
 			result.Add( ToWorld( idx ) );
 		}
 
 		return result;
-	}
-
-	private Vector3 ToWorld( int idx )
-	{
-		var pos = GetPosition( idx );
-		pos *= CellSize;
-		return pos;
 	}
 
 	private void ResetCollections()
