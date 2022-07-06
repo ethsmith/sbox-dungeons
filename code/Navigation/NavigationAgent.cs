@@ -28,7 +28,7 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 		var movedir = (Waypoints[CurrentWaypoint] - Entity.Position).WithZ( 0 ).Normal;
 		var movevec = movedir * MoveSpeed;
 		var distance = Vector3.DistanceBetween( Entity.Position, Waypoints[CurrentWaypoint] );
-		if( distance <= NavigationEntity.Current.CellSize / 2 )
+		if( distance <= 2 )
 		{
 			CurrentWaypoint++;
 			return;

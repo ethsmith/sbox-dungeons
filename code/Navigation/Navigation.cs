@@ -127,7 +127,7 @@ internal partial class NavigationEntity : Entity
 	}
 
 	private Vector3 ToWorld( int idx ) => GetPosition( idx ) * CellSize;
-	private int FromWorld( Vector3 world ) => GetIndex( (int)world.x / CellSize, (int)world.y / CellSize );
+	private int FromWorld( Vector3 world ) => GetIndex( (int)MathF.Round( world.x / CellSize ), (int)MathF.Round( world.y / CellSize ) );
 
 	private void ResetCollections()
 	{
