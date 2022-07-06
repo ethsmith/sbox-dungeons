@@ -21,14 +21,20 @@ internal partial class NavigationEntity
 			DebugOverlay.Sphere( worldpos, 1f, color );
 		}
 
-		if( Local.Pawn is Player pl )
+		foreach ( var pos in Current.GetAgentPositions() )
+		{
+			DebugOverlay.Text( pos.Item1.ToString(), pos.Item2 );
+			DebugOverlay.Sphere( pos.Item2, 3f, Color.White, 0, false );
+		}
+
+		if ( Local.Pawn is Player pl )
 		{
 			var agent = pl.Agent;
 
-			if ( agent.TotalWaypoints <= 1 ) 
+			if ( agent.TotalWaypoints <= 1 )
 				return;
 
-			for( int i = 0; i < agent.TotalWaypoints - 1; i++ )
+			for ( int i = 0; i < agent.TotalWaypoints - 1; i++ )
 			{
 				var p1 = agent.Waypoints[i];
 				var p2 = agent.Waypoints[i + 1];

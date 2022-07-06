@@ -28,6 +28,9 @@ internal partial class NavigationEntity : Entity
 	private Dictionary<int, float> GScore;
 	private Dictionary<int, float> FScore;
 	private List<int> CalculatedPath = new();
+	private Dictionary<int, int> AgentToIndex = new();
+	private Dictionary<int, int> IndexToAgent = new();
+	private Dictionary<int, Vector3> AgentPositions = new();
 
 	public NavigationEntity()
 	{
@@ -89,6 +92,29 @@ internal partial class NavigationEntity : Entity
 		}
 
 		return new();
+	}
+
+	public IEnumerable<(int, Vector3)> GetAgentPositions()
+	{
+		foreach ( var kvp in AgentToIndex )
+		{
+			if ( kvp.Value == -1 ) continue;
+			yield return (kvp.Key, ToWorld( kvp.Value ));
+		}
+	}
+
+	public void RemoveAgent( int agentId ) => UpdateAgent( agentId, -1 );
+	public void UpdateAgent( int agentId, Vector3 position ) => UpdateAgent( agentId, FromWorld( position ) );
+	private void UpdateAgent( int agentId, int idx )
+	{
+		if ( AgentToIndex.ContainsKey( agentId ) )
+		{
+			var currentidx = AgentToIndex[agentId];
+			IndexToAgent[currentidx] = -1;
+		}
+
+		AgentToIndex[agentId] = idx;
+		IndexToAgent[idx] = agentId;
 	}
 
 	private int GetIndex( Vector2 point ) => GetIndex( (int)point.x, (int)point.y );
@@ -229,6 +255,9 @@ internal partial class NavigationEntity : Entity
 			return false;
 
 		if ( Grid[index] == 0 )
+			return false;
+
+		if ( IndexToAgent.ContainsKey( index ) && IndexToAgent[index] != -1 )
 			return false;
 
 		return true;

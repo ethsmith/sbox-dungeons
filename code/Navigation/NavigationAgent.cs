@@ -11,6 +11,8 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 	public int TotalWaypoints { get; private set; }
 	public int CurrentWaypoint { get; private set; }
 
+	private int AgentId;
+
 	public void SetDestination( Vector3 position )
 	{
 		CurrentWaypoint = 1;
@@ -19,6 +21,8 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 
 	public void Simulate()
 	{
+		NavigationEntity.Current.UpdateAgent( Entity.NetworkIdent, Entity.Position );
+
 		if ( CurrentWaypoint >= TotalWaypoints )
 		{
 			Entity.Velocity = 0;
@@ -37,6 +41,20 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 		Entity.Velocity = movevec;
 		Entity.Position += movevec * Time.Delta;
 		Entity.Rotation = Rotation.Slerp( Entity.Rotation, Rotation.LookAt( movedir ), 8f * Time.Delta );
+	}
+
+	protected override void OnActivate()
+	{
+		base.OnActivate();
+
+		AgentId = Entity.NetworkIdent;
+	}
+
+	protected override void OnDeactivate()
+	{
+		base.OnDeactivate();
+
+		NavigationEntity.Current.RemoveAgent( AgentId );
 	}
 
 }
