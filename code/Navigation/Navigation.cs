@@ -146,10 +146,10 @@ internal partial class NavigationEntity : Entity
 		Neighbors[1] = GetIndex( point + Vector2.Right );
 		Neighbors[2] = GetIndex( point + Vector2.Up );
 		Neighbors[3] = GetIndex( point + Vector2.Down );
-		Neighbors[4] = GetIndex( point + Vector2.Down + Vector2.Left );
-		Neighbors[5] = GetIndex( point + Vector2.Down + Vector2.Right );
-		Neighbors[6] = GetIndex( point + Vector2.Up + Vector2.Left );
-		Neighbors[7] = GetIndex( point + Vector2.Up + Vector2.Right );
+		//Neighbors[4] = GetIndex( point + Vector2.Down + Vector2.Left );
+		//Neighbors[5] = GetIndex( point + Vector2.Down + Vector2.Right );
+		//Neighbors[6] = GetIndex( point + Vector2.Up + Vector2.Left );
+		//Neighbors[7] = GetIndex( point + Vector2.Up + Vector2.Right );
 	}
 
 	private Vector3 ToWorld( int idx ) => GetPosition( idx ) * CellSize;
