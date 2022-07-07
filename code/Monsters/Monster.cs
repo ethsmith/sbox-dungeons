@@ -29,6 +29,7 @@ internal partial class Monster : AnimatedEntity
 
 		Animator = new();
 		Agent = new();
+		Agent.MoveSpeed = 85;
 
 		State.SetBehaviour( MonsterStates.Idle, new IdleBehaviour() );
 		State.SetBehaviour( MonsterStates.Chase, new ChaseBehaviour() );

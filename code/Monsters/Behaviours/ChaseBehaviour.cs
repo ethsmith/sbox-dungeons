@@ -33,6 +33,7 @@ internal class ChaseBehaviour : StateBehaviour<Monster>
 		if( dist < 40f )
 		{
 			SetState( MonsterStates.Attack );
+			Owner.Agent.Stop();
 			return;
 		}
 

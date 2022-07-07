@@ -13,6 +13,12 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 
 	private int AgentId;
 
+	public void Stop()
+	{
+		CurrentWaypoint = 0;
+		TotalWaypoints = 0;
+	}
+
 	public void SetDestination( Vector3 position )
 	{
 		CurrentWaypoint = 1;
