@@ -31,7 +31,6 @@ internal partial class NavigationEntity : Entity
 	private List<int> CalculatedPath = new();
 	private Dictionary<int, int> AgentToIndex = new();
 	private Dictionary<int, int> IndexToAgent = new();
-	private Dictionary<int, Vector3> AgentPositions = new();
 
 	public NavigationEntity()
 	{
@@ -190,83 +189,99 @@ internal partial class NavigationEntity : Entity
 
 	private bool CalculatePath( int start, int end, int agent = -1 )
 	{
-		if ( !IsWalkable( end, agent ) && !FindNearestWalkable( start, end, out end ) )
-			return false;
+		var agentPosition = -1;
 
-		ResetCollections();
-
-		if ( LineOfSight( start, end, agent ) )
+		try
 		{
-			CalculatedPath.Add( start );
-			CalculatedPath.Add( end );
-			return true;
-		}
-
-		GScore[start] = 0;
-		FScore[start] = Heuristic( start, end );
-		OpenSet.Add( start );
-
-		bool discovered = false;
-		int current = 0;
-
-		while ( OpenSet.Count > 0 )
-		{
-			current = LowestF();
-
-			if ( current == end )
+			if ( agent != -1 )
 			{
-				discovered = true;
-				break;
+				RemoveAgent( agent );
+				agentPosition = AgentToIndex[agent];
 			}
 
-			OpenSet.Remove( current );
-			ClosedSet.Add( current );
+			if ( !IsWalkable( end ) && !FindNearestWalkable( start, end, out end ) )
+				return false;
 
-			var currentpos = GetPosition( current );
+			ResetCollections();
 
-			FillNeighborsArray( current );
-			foreach ( var neighbor in Neighbors )
+			if ( LineOfSight( start, end ) )
 			{
-				if ( !IsWalkable( neighbor, agent ) ) continue;
-				if ( ClosedSet.Contains( neighbor ) ) continue;
+				CalculatedPath.Add( start );
+				CalculatedPath.Add( end );
+				return true;
+			}
 
-				var neighborpos = GetPosition( neighbor );
-				var dir = neighborpos - currentpos;
-				var straight = dir.x == 0 || dir.y == 0;
-				var newscore = GScore[current] + (straight ? 1f : 1.4142f);
-				var opened = OpenSet.Contains( neighbor );
-				var bettercost = newscore < GScore[neighbor];
+			GScore[start] = 0;
+			FScore[start] = Heuristic( start, end );
+			OpenSet.Add( start );
 
-				if ( !opened || bettercost )
+			bool discovered = false;
+			int current = 0;
+
+			while ( OpenSet.Count > 0 )
+			{
+				current = LowestF();
+
+				if ( current == end )
 				{
-					CameFrom[neighbor] = current;
-					GScore[neighbor] = newscore;
+					discovered = true;
+					break;
+				}
 
-					if ( !opened )
+				OpenSet.Remove( current );
+				ClosedSet.Add( current );
+
+				var currentpos = GetPosition( current );
+
+				FillNeighborsArray( current );
+				foreach ( var neighbor in Neighbors )
+				{
+					if ( !IsWalkable( neighbor ) ) continue;
+					if ( ClosedSet.Contains( neighbor ) ) continue;
+
+					var neighborpos = GetPosition( neighbor );
+					var dir = neighborpos - currentpos;
+					var straight = dir.x == 0 || dir.y == 0;
+					var newscore = GScore[current] + (straight ? 1f : 1.4142f);
+					var opened = OpenSet.Contains( neighbor );
+					var bettercost = newscore < GScore[neighbor];
+
+					if ( !opened || bettercost )
 					{
-						OpenSet.Add( neighbor );
-						FScore[neighbor] = Heuristic( start, neighbor );
+						CameFrom[neighbor] = current;
+						GScore[neighbor] = newscore;
+
+						if ( !opened )
+						{
+							OpenSet.Add( neighbor );
+							FScore[neighbor] = Heuristic( start, neighbor );
+						}
 					}
 				}
 			}
+
+			if ( !discovered ) return false;
+
+			while ( current != start )
+			{
+				CalculatedPath.Add( current );
+				current = CameFrom[current];
+			}
+
+			CalculatedPath.Add( start );
+			CalculatedPath.Reverse();
+			SimplifyCalculatedPath();
+
+			return true;
 		}
-
-		if ( !discovered ) return false;
-
-		while ( current != start )
+		finally
 		{
-			CalculatedPath.Add( current );
-			current = CameFrom[current];
+			if ( agent != -1 )
+				UpdateAgent( agent, agentPosition );
 		}
-
-		CalculatedPath.Add( start );
-		CalculatedPath.Reverse();
-		SimplifyCalculatedPath( agent );
-
-		return true;
 	}
 
-	private bool IsWalkable( int index, int agentSkip = -1 )
+	private bool IsWalkable( int index )
 	{
 		if ( index < 0 || index >= Grid.Length )
 			return false;
@@ -274,21 +289,18 @@ internal partial class NavigationEntity : Entity
 		if ( Grid[index] == 0 )
 			return false;
 
-		if ( IsOccupied( index, agentSkip ) )
+		if ( IsOccupied( index ) )
 			return false;
 
 		return true;
 	}
 
-	private bool IsOccupied( int index, int agentSkip )
+	private bool IsOccupied( int index )
 	{
 		if ( !IndexToAgent.ContainsKey( index ) )
 			return false;
 
 		if ( IndexToAgent[index] == -1 )
-			return false;
-
-		if ( IndexToAgent[index] == agentSkip )
 			return false;
 
 		return true;
@@ -316,7 +328,7 @@ internal partial class NavigationEntity : Entity
 		return lowidx;
 	}
 
-	private void SimplifyCalculatedPath( int agentSkip = -1 )
+	private void SimplifyCalculatedPath()
 	{
 		if ( CalculatedPath.Count <= 2 )
 			return;
@@ -329,7 +341,7 @@ internal partial class NavigationEntity : Entity
 			var point1 = CalculatedPath[start];
 			var point2 = CalculatedPath[next + 1];
 
-			if ( LineOfSight( point1, point2, agentSkip ) )
+			if ( LineOfSight( point1, point2 ) )
 			{
 				CalculatedPath[next] = -1;
 			}
@@ -344,12 +356,12 @@ internal partial class NavigationEntity : Entity
 	}
 
 	int[] LineCache = new int[128];
-	private bool LineOfSight( int from, int to, int agentSkip )
+	private bool LineOfSight( int from, int to )
 	{
 		var lineCount = GetStraightLine( from, to, LineCache );
 		for ( int i = 0; i < lineCount; i++ )
 		{
-			if ( !IsWalkable( LineCache[i], agentSkip ) )
+			if ( !IsWalkable( LineCache[i] ) )
 				return false;
 		}
 		return true;
