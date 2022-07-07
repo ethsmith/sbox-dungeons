@@ -10,6 +10,8 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 	public Vector3[] Waypoints { get; } = new Vector3[24];
 	public int TotalWaypoints { get; private set; }
 	public int CurrentWaypoint { get; private set; }
+	public Vector3 Destination { get; private set; }
+	public bool Persistent => true;
 
 	private int AgentId;
 
@@ -23,6 +25,7 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 	{
 		CurrentWaypoint = 1;
 		TotalWaypoints = NavigationEntity.Current.CalculatePath( Entity.Position, position, Waypoints, AgentId );
+		Destination = position;
 	}
 
 	public void Simulate()
@@ -39,6 +42,11 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 		{
 			Entity.Velocity = 0;
 			return;
+		}
+
+		if ( Persistent )
+		{
+			SetDestination( Destination );
 		}
 
 		var movedir = (Waypoints[CurrentWaypoint] - Entity.Position).WithZ( 0 ).Normal;
