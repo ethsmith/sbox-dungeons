@@ -175,7 +175,7 @@ internal partial class NavigationEntity : Entity
 	private bool FindNearestWalkable( int from, int to, out int result )
 	{
 		result = -1;
-		var line = GetStraightLine( to, from, LineCache );
+		var line = GetStraightLine( to, from, 3, LineCache );
 		for ( int i = 0; i < line; i++ )
 		{
 			if ( IsWalkable( LineCache[i] ) )
@@ -358,7 +358,7 @@ internal partial class NavigationEntity : Entity
 	int[] LineCache = new int[128];
 	private bool LineOfSight( int from, int to )
 	{
-		var lineCount = GetStraightLine( from, to, LineCache );
+		var lineCount = GetStraightLine( from, to, 3, LineCache );
 		for ( int i = 0; i < lineCount; i++ )
 		{
 			if ( !IsWalkable( LineCache[i] ) )
@@ -367,52 +367,47 @@ internal partial class NavigationEntity : Entity
 		return true;
 	}
 
-	private int GetStraightLine( int idx0, int idx1, int[] cache )
+	private int GetStraightLine( int idx0, int idx1, int width, int[] cache )
 	{
 		var p0 = GetPosition( idx0 );
 		var p1 = GetPosition( idx1 );
+		var x0 = (int)p0.x;
+		var x1 = (int)p1.x;
+		var y0 = (int)p0.y;
+		var y1 = (int)p1.y;
 
-		var dx = p1.x - p0.x;
-		var dy = p1.y - p0.y;
-		var nx = Math.Abs( dx );
-		var ny = Math.Abs( dy );
-		var sign_x = dx > 0 ? 1 : -1;
-		var sign_y = dy > 0 ? 1 : -1;
+		int dx = (int)Math.Abs( x1 - x0 ), sx = x0 < x1 ? 1 : -1;
+		int dy = (int)Math.Abs( y1 - y0 ), sy = y0 < y1 ? 1 : -1;
+		int err = dx - dy, e2, x2, y2;                          /* error value e_xy */
+		float ed = dx + dy == 0 ? 1 : (float)Math.Sqrt( (float)dx * dx + (float)dy * dy );
 
 		var result = 0;
-		var p = new Vector2( p0.x, p0.y );
-		cache[result] = GetIndex( p );
 
-		var ix = 0;
-		var iy = 0;
-		while ( ix < nx || iy < ny )
+		for ( width = (width + 1) / 2; ; )
 		{
-			if ( (1 + 2 * ix) * ny == (1 + 2 * iy) * nx )
-			{
-				// next step is diagonal
-				p.x += sign_x;
-				p.y += sign_y;
-				ix++;
-				iy++;
-			}
-			else if ( (0.5 + ix) / nx < (0.5 + iy) / ny )
-			{
-				// next step is horizontal
-				p.x += sign_x;
-				ix++;
-			}
-			else
-			{
-				// next step is vertical
-				p.y += sign_y;
-				iy++;
-			}
-
-			if ( result + 1 >= LineCache.Length )
-				break;
-
+			cache[result] = GetIndex( x0, y0 );
 			result++;
-			cache[result] = GetIndex( p );
+			e2 = err; x2 = x0;
+			if ( 2 * e2 >= -dx )
+			{
+				for ( e2 += dy, y2 = y0; e2 < ed * width && (y1 != y2 || dx > dy); e2 += dx )
+				{
+					cache[result] = GetIndex( x0, y2 += sy );
+					result++;
+				}
+				if ( x0 == x1 ) break;
+				e2 = err; err -= dy; x0 += sx;
+			}
+			if ( 2 * e2 <= dy )
+			{
+				for ( e2 = dx - e2; e2 < ed * width && (x1 != x2 || dx < dy); e2 += dy )
+				{
+					cache[result] = GetIndex( x2 += sx, y0 );
+					result++;
+				}
+				if ( y0 == y1 ) break;
+				err += dx; y0 += sy;
+			}
 		}
 		return result;
 	}
