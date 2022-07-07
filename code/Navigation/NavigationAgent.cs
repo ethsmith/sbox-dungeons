@@ -16,7 +16,7 @@ internal class NavigationAgent : EntityComponent, ISingletonComponent
 	public void SetDestination( Vector3 position )
 	{
 		CurrentWaypoint = 1;
-		TotalWaypoints = NavigationEntity.Current.CalculatePath( Entity.Position, position, Waypoints );
+		TotalWaypoints = NavigationEntity.Current.CalculatePath( Entity.Position, position, Waypoints, AgentId );
 	}
 
 	public void Simulate()

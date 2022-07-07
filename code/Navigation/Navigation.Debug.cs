@@ -27,9 +27,10 @@ internal partial class NavigationEntity
 			DebugOverlay.Sphere( pos.Item2, 3f, Color.White, 0, false );
 		}
 
-		if ( Local.Pawn is Player pl )
+		foreach ( var ent in Entity.All )
 		{
-			var agent = pl.Agent;
+			if ( !ent.Components.TryGet<NavigationAgent>( out var agent ) )
+				continue;
 
 			if ( agent.TotalWaypoints <= 1 )
 				return;
@@ -43,6 +44,7 @@ internal partial class NavigationEntity
 				DebugOverlay.Line( p1.WithZ( 1 ), p2.WithZ( 1 ), Color.White );
 			}
 		}
+
 	}
 
 }

@@ -1,4 +1,5 @@
 ﻿
+using Dungeons.Utility;
 using Sandbox;
 using System;
 using System.Collections.Generic;
@@ -63,9 +64,9 @@ internal partial class NavigationEntity : Entity
 			}
 	}
 
-	public int CalculatePath( Vector3 start, Vector3 end, Vector3[] points )
+	public int CalculatePath( Vector3 start, Vector3 end, Vector3[] points, int agent = -1 )
 	{
-		if ( !CalculatePath( FromWorld( start ), FromWorld( end ) ) )
+		if ( !CalculatePath( FromWorld( start ), FromWorld( end ), agent ) )
 		{
 			return 0;
 		}
@@ -84,9 +85,9 @@ internal partial class NavigationEntity : Entity
 		return length;
 	}
 
-	public List<Vector3> CalculatePath( Vector3 start, Vector3 end )
+	public List<Vector3> CalculatePath( Vector3 start, Vector3 end, int agent = -1 )
 	{
-		if ( CalculatePath( FromWorld( start ), FromWorld( end ) ) )
+		if ( CalculatePath( FromWorld( start ), FromWorld( end ), agent ) )
 		{
 			return CalculatedPath.Select( x => ToWorld( x ) ).ToList();
 		}
@@ -187,14 +188,14 @@ internal partial class NavigationEntity : Entity
 		return false;
 	}
 
-	private bool CalculatePath( int start, int end )
+	private bool CalculatePath( int start, int end, int agent = -1 )
 	{
-		if ( !IsWalkable( end ) && !FindNearestWalkable( start, end, out end ) )
+		if ( !IsWalkable( end, agent ) && !FindNearestWalkable( start, end, out end ) )
 			return false;
 
 		ResetCollections();
 
-		if ( LineOfSight( start, end ) )
+		if ( LineOfSight( start, end, agent ) )
 		{
 			CalculatedPath.Add( start );
 			CalculatedPath.Add( end );
@@ -226,7 +227,7 @@ internal partial class NavigationEntity : Entity
 			FillNeighborsArray( current );
 			foreach ( var neighbor in Neighbors )
 			{
-				if ( !IsWalkable( neighbor ) ) continue;
+				if ( !IsWalkable( neighbor, agent ) ) continue;
 				if ( ClosedSet.Contains( neighbor ) ) continue;
 
 				var neighborpos = GetPosition( neighbor );
@@ -258,13 +259,14 @@ internal partial class NavigationEntity : Entity
 			current = CameFrom[current];
 		}
 
+		CalculatedPath.Add( start );
 		CalculatedPath.Reverse();
-		SimplifyCalculatedPath();
+		SimplifyCalculatedPath( agent );
 
 		return true;
 	}
 
-	private bool IsWalkable( int index )
+	private bool IsWalkable( int index, int agentSkip = -1 )
 	{
 		if ( index < 0 || index >= Grid.Length )
 			return false;
@@ -272,7 +274,21 @@ internal partial class NavigationEntity : Entity
 		if ( Grid[index] == 0 )
 			return false;
 
-		if ( IndexToAgent.ContainsKey( index ) && IndexToAgent[index] != -1 )
+		if ( IsOccupied( index, agentSkip ) )
+			return false;
+
+		return true;
+	}
+
+	private bool IsOccupied( int index, int agentSkip )
+	{
+		if ( !IndexToAgent.ContainsKey( index ) )
+			return false;
+
+		if ( IndexToAgent[index] == -1 )
+			return false;
+
+		if ( IndexToAgent[index] == agentSkip )
 			return false;
 
 		return true;
@@ -300,8 +316,11 @@ internal partial class NavigationEntity : Entity
 		return lowidx;
 	}
 
-	private void SimplifyCalculatedPath()
+	private void SimplifyCalculatedPath( int agentSkip = -1 )
 	{
+		if ( CalculatedPath.Count <= 2 )
+			return;
+
 		var start = 0;
 		var next = 1;
 
@@ -310,7 +329,7 @@ internal partial class NavigationEntity : Entity
 			var point1 = CalculatedPath[start];
 			var point2 = CalculatedPath[next + 1];
 
-			if ( LineOfSight( point1, point2 ) )
+			if ( LineOfSight( point1, point2, agentSkip ) )
 			{
 				CalculatedPath[next] = -1;
 			}
@@ -325,12 +344,12 @@ internal partial class NavigationEntity : Entity
 	}
 
 	int[] LineCache = new int[128];
-	private bool LineOfSight( int from, int to )
+	private bool LineOfSight( int from, int to, int agentSkip )
 	{
 		var lineCount = GetStraightLine( from, to, LineCache );
 		for ( int i = 0; i < lineCount; i++ )
 		{
-			if ( !IsWalkable( LineCache[i] ) )
+			if ( !IsWalkable( LineCache[i], agentSkip ) )
 				return false;
 		}
 		return true;
