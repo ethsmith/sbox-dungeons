@@ -11,8 +11,14 @@ StashPanel {
         height: 100%;
 
         .slot {
-            background-color: orange;
+            background-color: rgba(black .25);
             padding: 4px;
+            border-radius: 2px;
+            transition: background-color .04s ease;
+
+            &:hover {
+                background-color: black;
+            }
         }
     }
 

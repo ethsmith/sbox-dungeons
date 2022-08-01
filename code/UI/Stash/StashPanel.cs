@@ -23,8 +23,11 @@ internal class StashPanel : DungeonsPanel
 	private Panel DragPanel;
 	private Vector2 DragPanelOffset;
 
-	public StashPanel( StashEntity stash )
+	public StashPanel( int cellSize, int columns, bool draggingEnabled, StashEntity stash )
 	{
+		CellSize = cellSize;
+		Columns = columns;
+		DraggingEnabled = draggingEnabled;
 		Stash = stash;
 
 		Build();
@@ -54,6 +57,7 @@ internal class StashPanel : DungeonsPanel
 		Build();
 	}
 
+	[Event.Hotload]
 	private void Build()
 	{
 		DeleteChildren( true );
@@ -66,7 +70,7 @@ internal class StashPanel : DungeonsPanel
 		{
 			var slot = Canvas.Add.Panel( "slot" );
 			var item = Stash.Items.FirstOrDefault( x => x.Detail.StashSlot == i );
-			if ( item == null ) return;
+			if ( item == null ) continue;
 			slot.AddChild( new StashableIcon( item ) );
 		}
 

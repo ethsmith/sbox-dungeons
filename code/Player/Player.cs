@@ -1,4 +1,5 @@
 ﻿
+using Dungeons.Stash;
 using Sandbox;
 using System.Linq;
 
@@ -32,6 +33,9 @@ internal partial class Player : AnimatedEntity
 	}
 
 	[Net]
+	public StashEntity Stash { get; set; }
+
+	[Net]
 	public SpotLightEntity LightRadius { get; set; }
 
 	public override void Spawn()
@@ -52,6 +56,9 @@ internal partial class Player : AnimatedEntity
 		LightRadius.DynamicShadows = true;
 		LightRadius.Range = 250f;
 		LightRadius.Color = Color.White.Darken( .9f );
+
+		Stash = new();
+		Stash.SlotCount = 48;
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );

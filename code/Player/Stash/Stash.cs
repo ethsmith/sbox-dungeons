@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,6 +31,16 @@ internal partial class StashEntity : Entity
 		// todo: set in first open slot
 
 		return true;
+	}
+
+	public override int GetHashCode()
+	{
+		var result = SlotCount;
+		foreach ( var item in Items )
+		{
+			result = HashCode.Combine( result, item.NetworkIdent );
+		}
+		return result;
 	}
 
 	public bool Remove( Stashable item )

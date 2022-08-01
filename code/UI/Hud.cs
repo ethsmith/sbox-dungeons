@@ -1,9 +1,14 @@
 ﻿
 using Sandbox.UI;
 
-namespace Dungeons;
+namespace Dungeons.UI;
 
 [UseTemplate]
 internal class Hud : RootPanel
 {
+
+	public Hud()
+	{
+	}
+
 }
