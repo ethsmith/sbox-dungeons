@@ -13,13 +13,26 @@
   "Metadata": {
     "MaxPlayers": 10,
     "MinPlayers": 1,
-    "GameNetworkType": 0,
-    "MapSelect": 4,
+    "GameNetworkType": "Multiplayer",
+    "MapSelect": "Empty",
     "MapList": [
       "facepunch.construct"
     ],
-    "RankType": 0,
+    "RankType": "None",
     "PerMapRanking": false,
-    "LeaderboardType": 0
+    "LeaderboardType": "None",
+    "GameCategory": "None",
+    "Physics": {
+      "SubSteps": 1,
+      "TimeScale": 1,
+      "Gravity": "0,0,-800",
+      "AirDensity": 1.2,
+      "SleepingEnabled": true,
+      "SimulationMode": "Continuous",
+      "PositionIterations": 2,
+      "VelocityIterations": 8,
+      "SoftBodyIterations": 1,
+      "SoftBodySubsteps": 1
+    }
   }
 }
