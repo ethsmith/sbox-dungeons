@@ -1,15 +1,31 @@
 ﻿
 using Sandbox;
 using Sandbox.UI;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Dungeons.UI;
 
 internal class DungeonsPanel : Panel
 {
 
+	private static List<DungeonsPanel> All = new();
+	public static bool InputBlocked()
+	{
+		return All.Any( x => x.BlockingInput() );
+	}
+
+	protected virtual CursorModes CursorMode { get; }
+	protected virtual DisplayModes DisplayMode { get; }
+	protected virtual InputButton ToggleButton { get; }
 	protected virtual void OnDrag( MousePanelEvent e ) { }
 	protected virtual void OnDragBegin( MousePanelEvent e ) { }
 	protected virtual void OnDragEnd( MousePanelEvent e ) { }
+
+	public DungeonsPanel()
+	{
+		AddClass( "dungeons-panel" );
+	}
 
 	private bool wantsdrag;
 	private bool dragging;
@@ -52,6 +68,32 @@ internal class DungeonsPanel : Panel
 
 		dragging = false;
 		wantsdrag = false;
+	}
+
+	private bool BlockingInput()
+	{
+		if( CursorMode == CursorModes.Always )
+			return true;
+
+		if ( CursorMode == CursorModes.Hover && HasHovered )
+			return true;
+
+		return false;
+	}
+
+	[Event.Frame]
+	public void OnFrame()
+	{
+		SetClass( "display-toggle", DisplayMode == DisplayModes.Toggle );
+		SetClass( "display-always", DisplayMode == DisplayModes.Always );
+
+		if ( DisplayMode != DisplayModes.Toggle )
+			return;
+
+		if( !Input.Pressed( ToggleButton ) )
+			return;
+
+		SetClass( "open", !HasClass( "open" ) );
 	}
 
 }
