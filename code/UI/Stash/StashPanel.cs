@@ -12,6 +12,7 @@ internal class StashPanel : DungeonsPanel
 {
 
 	public int CellSize = 50;
+	public int Spacing = 4;
 	public int Columns = 8;
 	public bool DraggingEnabled = true;
 
@@ -56,6 +57,9 @@ internal class StashPanel : DungeonsPanel
 			case "columns":
 				int.TryParse( value, out Columns );
 				return;
+			case "spacing":
+				int.TryParse( value, out Spacing );
+				return;
 		}
 
 		base.SetProperty( name, value );
@@ -91,7 +95,7 @@ internal class StashPanel : DungeonsPanel
 		if ( hash == layouthash ) return;
 
 		layouthash = hash;
-		layout = new( layoutRect, Columns, 0, 4, ScaleFromScreen );
+		layout = new( layoutRect, Columns, 0, Spacing, ScaleFromScreen );
 
 		foreach( var child in Canvas.Children )
 		{
@@ -104,8 +108,8 @@ internal class StashPanel : DungeonsPanel
 		var width = CellSize * Columns;
 		var height = rows * CellSize;
 
-		Style.Width = width + 4;
-		Style.Height = height + 4;
+		Style.Width = width + Spacing;
+		Style.Height = height + Spacing;
 	}
 
 	protected override void OnDragBegin( MousePanelEvent e )
