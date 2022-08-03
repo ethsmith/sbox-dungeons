@@ -1,5 +1,6 @@
 ﻿
 using Dungeons.Stash;
+using Dungeons.UI;
 using Sandbox;
 using System.Linq;
 
@@ -77,9 +78,12 @@ internal partial class Player : AnimatedEntity
 			.WorldOnly()
 			.Run();
 
-		if ( Input.Down( InputButton.PrimaryAttack ) )
+		if ( !InputBlocked )
 		{
-			Agent.SetDestination( tr.HitPosition );
+			if ( Input.Down( InputButton.PrimaryAttack ) )
+			{
+				Agent.SetDestination( tr.HitPosition );
+			}
 		}
 
 		Agent.Simulate();
@@ -102,6 +106,18 @@ internal partial class Player : AnimatedEntity
 			Target?.SetGlow( false );
 			Target = newTarget;
 			Target?.SetGlow( true, Color.Red );
+		}
+	}
+
+	public bool InputBlocked => Input.Down( InputButton.Zoom );
+
+	public override void BuildInput( InputBuilder inputBuilder )
+	{
+		base.BuildInput( inputBuilder );
+
+		if ( DungeonsPanel.InputBlocked() )
+		{
+			inputBuilder.SetButton( InputButton.Zoom );
 		}
 	}
 

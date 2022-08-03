@@ -24,7 +24,16 @@ internal class DungeonsPanel : Panel
 
 	public DungeonsPanel()
 	{
+		All.Add( this );
+
 		AddClass( "dungeons-panel" );
+	}
+
+	public override void Delete( bool immediate = false )
+	{
+		base.Delete( immediate );
+
+		All.Remove( this );
 	}
 
 	private bool wantsdrag;
