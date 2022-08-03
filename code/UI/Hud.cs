@@ -1,4 +1,5 @@
 ﻿
+using Sandbox;
 using Sandbox.UI;
 
 namespace Dungeons.UI;
@@ -9,6 +10,7 @@ internal class Hud : RootPanel
 
 	public Hud()
 	{
+		Local.Hud = this;
 	}
 
 }

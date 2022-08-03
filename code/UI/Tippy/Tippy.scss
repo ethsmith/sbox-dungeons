@@ -1,11 +1,10 @@
 ﻿
-@import "../Styles/_global.scss";
-
 Tippy {
     position: absolute;
     z-index: 9999;
     padding: 5px 20px;
-    background-color: $bg;
+    background-color: black;
     color: white;
     border-radius: 2px;
+    pointer-events: none;
 }

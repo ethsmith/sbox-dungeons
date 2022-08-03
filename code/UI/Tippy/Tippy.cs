@@ -5,7 +5,8 @@ using Sandbox.UI.Construct;
 
 namespace Dungeons.UI;
 
-internal class Tippy : DungeonsPanel
+[UseTemplate]
+internal class Tippy : Panel
 {
 
 	private Panel target;
@@ -41,7 +42,7 @@ internal class Tippy : DungeonsPanel
 
 		var scale = Local.Hud.ScaleFromScreen;
 		var hudsize = Local.Hud.Box.Rect.Size;
-		var r = target.Box.ClipRect;
+		var r = target.Box.Rect;
 		switch ( pivot )
 		{
 			case Pivot.TopRight:
