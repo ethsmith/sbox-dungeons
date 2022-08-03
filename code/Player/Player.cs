@@ -60,6 +60,13 @@ internal partial class Player : AnimatedEntity
 
 		Stash = new();
 		Stash.SlotCount = 60;
+		Stash.Add( new Stashable( new Data.StashableDetailData()
+		{
+			Durability = 24,
+			Identity = 0,
+			Quantity = 1,
+			StashSlot = 1
+		} ) );
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );
