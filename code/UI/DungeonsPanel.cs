@@ -7,17 +7,6 @@ namespace Dungeons.UI;
 internal class DungeonsPanel : Panel
 {
 
-	private bool built;
-
-	[Event.Frame]
-	public void OnFrame()
-	{
-		if ( built ) return;
-		built = TryBuild();
-	}
-
-	public virtual bool TryBuild() => true;
-
 	protected virtual void OnDrag( MousePanelEvent e ) { }
 	protected virtual void OnDragBegin( MousePanelEvent e ) { }
 	protected virtual void OnDragEnd( MousePanelEvent e ) { }

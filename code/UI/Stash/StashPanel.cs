@@ -11,29 +11,19 @@ namespace Dungeons.UI;
 internal class StashPanel : DungeonsPanel
 {
 
-	public int CellSize;
-	public int Columns;
-	public bool DraggingEnabled;
+	public int CellSize = 50;
+	public int Columns = 8;
+	public bool DraggingEnabled = true;
 
-	private StashEntity Stash;
 	private Panel Canvas;
 	private Panel DragCanvas;
-
 	private int DragBeginSlot;
 	private Panel DragPanel;
 	private Vector2 DragPanelOffset;
 
-	public StashPanel( int cellSize, int columns, bool draggingEnabled, StashEntity stash )
-	{
-		CellSize = cellSize;
-		Columns = columns;
-		DraggingEnabled = draggingEnabled;
-		Stash = stash;
+	public StashEntity Stash { get; set; }
 
-		Build();
-	}
-
-	private int activehash;
+	private int activehash = -1233;
 	public override void Tick()
 	{
 		base.Tick();
@@ -41,7 +31,6 @@ internal class StashPanel : DungeonsPanel
 		if ( !Stash.IsValid() )
 		{
 			//Error();
-			Stash = null;
 			return;
 		}
 
@@ -55,6 +44,21 @@ internal class StashPanel : DungeonsPanel
 		activehash = hash;
 
 		Build();
+	}
+
+	public override void SetProperty( string name, string value )
+	{
+		switch ( name.ToLower() ) 
+		{
+			case "cellsize":
+				int.TryParse( value, out CellSize );
+				return;
+			case "columns":
+				int.TryParse( value, out Columns );
+				return;
+		}
+
+		base.SetProperty( name, value );
 	}
 
 	[Event.Hotload]

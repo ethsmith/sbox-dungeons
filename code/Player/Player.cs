@@ -58,7 +58,7 @@ internal partial class Player : AnimatedEntity
 		LightRadius.Color = Color.White.Darken( .9f );
 
 		Stash = new();
-		Stash.SlotCount = 48;
+		Stash.SlotCount = 60;
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );
