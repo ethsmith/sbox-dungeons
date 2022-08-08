@@ -14,8 +14,8 @@ StashPanel {
             border-radius: 2px;
             transition: background-color .04s ease;
 
-            &:hover {
-                background-color: black;
+            &.drop-target {
+                background-color: rgba(black .5);
             }
         }
     }
@@ -26,9 +26,5 @@ StashPanel {
         cursor: pointer;
         border-radius: 2px;
         flex-grow: 1;
-
-        &:hover {
-            background-color: rgba( black .45 );
-        }
     }
 }
