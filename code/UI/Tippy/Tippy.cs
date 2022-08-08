@@ -9,7 +9,8 @@ namespace Dungeons.UI;
 internal class Tippy : Panel
 {
 
-	private Panel target;
+	private Panel Target;
+	private Pivots Pivot;
 
 	public Panel Canvas { get; set; }
 
@@ -17,9 +18,9 @@ internal class Tippy : Panel
 	{
 		base.Tick();
 
-		if( target == null
-			|| target.Parent == null
-			|| !target.HasHovered )
+		if( Target == null
+			|| Target.Parent == null
+			|| !Target.HasHovered )
 		{
 			Delete();
 		}
@@ -32,41 +33,69 @@ internal class Tippy : Panel
 		return this;
 	}
 
-	public static Tippy Create( Panel target, Pivot pivot )
+	public override void OnLayout( ref Rect layoutRect )
+	{
+		base.OnLayout( ref layoutRect );
+
+		RemoveClass( "unset" );
+
+		var hud = Local.Hud.Box.Rect;
+		if ( !hud.IsInside( layoutRect, true ) )
+		{
+			SetPosition( Pivots.TopLeft );
+		}
+	}
+
+	private void SetPosition( Pivots pivot )
+	{
+		var scale = Local.Hud.ScaleFromScreen;
+		var hudsize = Local.Hud.Box.Rect.Size;
+		var r = Target.Box.RectOuter;
+
+		switch ( pivot )
+		{
+			case Pivots.TopRight:
+				Style.Right = null;
+				Style.Bottom = null;
+				Style.Left = r.right * scale;
+				Style.Top = r.top * scale;
+				break;
+			case Pivots.TopLeft:
+				Style.Left = null;
+				Style.Bottom = null;
+				Style.Right = (hudsize.x - r.left) * scale;
+				Style.Top = r.top * scale;
+				break;
+			case Pivots.BottomRight:
+				Style.Right = null;
+				Style.Top = null;
+				Style.Left = r.right * scale;
+				Style.Bottom = (hudsize.y - r.bottom) * scale;
+				break;
+			case Pivots.BottomLeft:
+				Style.Left = null;
+				Style.Top = null;
+				Style.Right = (hudsize.x - r.left) * scale;
+				Style.Bottom = (hudsize.y - r.bottom) * scale;
+				break;
+		}
+	}
+
+	public static Tippy Create( Panel target, Pivots pivot )
 	{
 		if ( Local.Hud == null ) throw new System.Exception( "Hud null" );
 
 		var result = new Tippy();
 		result.Parent = Local.Hud;
-		result.target = target;
-
-		var scale = Local.Hud.ScaleFromScreen;
-		var hudsize = Local.Hud.Box.Rect.Size;
-		var r = target.Box.Rect;
-		switch ( pivot )
-		{
-			case Pivot.TopRight:
-				result.Style.Left = r.right * scale;
-				result.Style.Top = r.top * scale;
-				break;
-			case Pivot.TopLeft:
-				result.Style.Right = (hudsize.x - r.left) * scale;
-				result.Style.Top = r.top * scale;
-				break;
-			case Pivot.BottomRight:
-				result.Style.Left = r.right * scale;
-				result.Style.Bottom = (hudsize.y - r.bottom) * scale;
-				break;
-			case Pivot.BottomLeft:
-				result.Style.Right = (hudsize.x - r.left) * scale;
-				result.Style.Bottom = (hudsize.y - r.bottom) * scale;
-				break;
-		}
+		result.Pivot = pivot;
+		result.Target = target;
+		result.AddClass( "unset" );
+		result.SetPosition( pivot );
 
 		return result;
 	}
 
-	public enum Pivot
+	public enum Pivots
 	{
 		TopLeft,
 		TopRight,

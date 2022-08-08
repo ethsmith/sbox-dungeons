@@ -41,7 +41,7 @@ internal class StashableIcon : Panel
 
 		if ( HasClass( "dragging" ) ) return;
 
-		Tippy.Create( this, Tippy.Pivot.TopRight )
+		Tippy.Create( this, Tippy.Pivots.TopRight )
 			.WithMessage( @$"Item #{Stashable.NetworkIdent}
 Durability: {Stashable.Detail.Durability}
 Quantity: {Stashable.Detail.Quantity}" );
