@@ -199,6 +199,12 @@ internal partial class NavigationEntity : Entity
 				agentPosition = AgentToIndex[agent];
 			}
 
+			if ( IsOccupied( start ) )
+			{
+				Log.Warning( "FIXME: two agents should never occupy the same space" );
+				return false;
+			}
+
 			if ( !IsWalkable( end ) && !FindNearestWalkable( start, end, out end ) )
 				return false;
 
