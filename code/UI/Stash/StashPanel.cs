@@ -97,9 +97,9 @@ internal class StashPanel : DungeonsPanel
 	{
 		DeleteChildren( true );
 
-		Canvas = Add.Panel( "slots" );
-		DragCanvas = Add.Panel();
+		DragCanvas = Add.Panel( "drag-canvas" );
 		DragCanvas.Style.Position = PositionMode.Absolute;
+		Canvas = Add.Panel( "slots" );
 
 		for ( int i = 0; i < Stash.SlotCount; i++ )
 		{
