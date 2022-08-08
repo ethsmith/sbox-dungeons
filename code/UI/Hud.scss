@@ -5,10 +5,16 @@ Hud {
     font-size: 15px;
 }
 
-.dungeons-panel.display-toggle {
-    opacity: 0;
+.dungeons-panel {
+    &:hover {
+        pointer-events: all;
+    }
 
-    &.open {
-        opacity: 1;
+    &.display-toggle {
+        opacity: 0;
+
+        &.open {
+            opacity: 1;
+        }
     }
 }
