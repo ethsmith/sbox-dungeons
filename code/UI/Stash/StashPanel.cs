@@ -61,6 +61,8 @@ internal class StashPanel : DungeonsPanel
 	[Event.Frame]
 	private void UpdateDropTarget()
 	{
+		if ( Canvas == null ) return;
+
 		DropTarget?.RemoveClass( "drop-target" );
 
 		var cellidx = layout.SlotIndex( MousePosition );
