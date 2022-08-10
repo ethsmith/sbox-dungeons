@@ -116,6 +116,7 @@ internal class StashPanel : DungeonsPanel
 		foreach( var slot in Canvas.Children )
 		{
 			slot.DeleteChildren( true );
+			slot.SetClass( "occupied", false );
 		}
 
 		foreach( var item in Stash.Items )
@@ -128,6 +129,7 @@ internal class StashPanel : DungeonsPanel
 				continue;
 			}
 			slot.AddChild( new StashableIcon( item ) );
+			slot.SetClass( "occupied", true );
 		}
 	}
 

@@ -18,7 +18,7 @@ Inventory {
             transition: transform .15s ease-in;
             padding: 1px;
 
-            &.drop-target {
+            &.drop-target:not(.occupied) {
                 background-color: rgba(black .85);
                 transform: scale(.98);
             }
