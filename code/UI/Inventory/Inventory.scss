@@ -1,6 +1,5 @@
 ﻿
 Inventory {
-
     position: absolute;
     background-color: #2b2b2b;
     right: 0;
@@ -12,5 +11,22 @@ Inventory {
     padding: 20px;
 
     StashPanel {
+        background-color: darkslategray;
+
+        .slot {
+            background-color: rgba(black .5);
+            transition: transform .15s ease-in;
+            padding: 1px;
+
+            &.drop-target {
+                background-color: rgba(black .85);
+                transform: scale(.98);
+            }
+        }
+
+        StashableIcon {
+            width: 100%;
+            background-color: black;
+        }
     }
 }
