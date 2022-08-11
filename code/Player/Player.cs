@@ -65,7 +65,7 @@ internal partial class Player : AnimatedEntity
 			Durability = 24,
 			Identity = 0,
 			Quantity = 1,
-			StashSlot = 1
+			StashSlot = 3
 		} ) );
 
 		SetModel( "models/citizen/citizen.vmdl" );

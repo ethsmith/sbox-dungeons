@@ -14,6 +14,11 @@ internal class Inventory : DungeonsPanel
 	protected override DisplayModes DisplayMode => DisplayModes.Toggle;
 	protected override InputButton ToggleButton => InputButton.Score;
 
+	public Inventory()
+	{
+		StashManager.Current?.Register( Stash );
+	}
+
 	public override void Tick()
 	{
 		base.Tick();

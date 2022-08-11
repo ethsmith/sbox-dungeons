@@ -14,7 +14,7 @@ Inventory {
 StashPanel {
     background-color: darkslategray;
 
-    .cell {
+    StashCell {
         background-color: rgba(black .5);
 
         &:hover {

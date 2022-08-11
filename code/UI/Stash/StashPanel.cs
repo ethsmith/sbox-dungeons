@@ -1,7 +1,6 @@
 ﻿
 using Sandbox;
 using Sandbox.UI;
-using Sandbox.UI.Construct;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +24,7 @@ internal class StashPanel : Panel
 	{
 		base.Tick();
 
-		if( Cells != null )
+		if ( Cells != null )
 		{
 			PlaceItems();
 		}
@@ -101,6 +100,22 @@ internal class StashPanel : Panel
 		Items.Remove( item );
 	}
 
+	public bool TryGetItem( int cellIndex, out int itemId )
+	{
+		itemId = -1;
+
+		foreach( var item in Items )
+		{
+			if( item.Item2() == cellIndex )
+			{
+				itemId = item.Item1;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	private void BuildCells()
 	{
 		Cells?.Delete( true );
@@ -111,7 +126,7 @@ internal class StashPanel : Panel
 
 		for ( int i = 0; i < CellCount; i++ )
 		{
-			Cells.Add.Panel( "cell" );
+			Cells.AddChild<StashCell>();
 		}
 
 		CellsNeedLayout = true;
@@ -135,7 +150,7 @@ internal class StashPanel : Panel
 
 	private void PlaceItems()
 	{
-		foreach( var item in Items )
+		foreach ( var item in Items )
 		{
 			var cell = Cells.GetChild( item.Item2() );
 			if ( cell == null ) continue;

@@ -1,5 +1,5 @@
-﻿using Dungeons.Stash;
-using Sandbox;
+﻿
+using Dungeons.Stash;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
 
@@ -15,13 +15,6 @@ internal class StashableIcon : Panel
 		Stashable = stashable;
 
 		Add.Label( $"#{stashable.NetworkIdent}, #{stashable.Detail.StashSlot}" );
-	}
-
-	protected override void OnMouseDown( MousePanelEvent e )
-	{
-		base.OnMouseDown( e );
-
-
 	}
 
 	protected override void OnMouseOver( MousePanelEvent e )
