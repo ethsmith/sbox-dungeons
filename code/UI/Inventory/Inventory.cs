@@ -18,13 +18,13 @@ internal class Inventory : DungeonsPanel
 	{
 		base.Tick();
 
-		if ( Local.Pawn is not Player pl || !pl.Stash.IsValid() ) 
-			return;
+		//if ( Local.Pawn is not Player pl || !pl.Stash.IsValid() ) 
+		//	return;
 
-		if ( Stash?.Stash == pl.Stash ) 
-			return;
+		//if ( Stash?.Stash == pl.Stash ) 
+		//	return;
 
-		Stash.Stash = pl.Stash;
+		//Stash.Stash = pl.Stash;
 	}
 
 }

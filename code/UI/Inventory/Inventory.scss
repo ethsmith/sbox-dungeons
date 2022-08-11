@@ -30,3 +30,15 @@ Inventory {
         }
     }
 }
+
+StashPanel2 {
+    background-color: darkslategray;
+
+    .cell {
+        background-color: rgba(black .5);
+
+        &:hover {
+            background-color: rgba(black .85);
+        }
+    }
+}
