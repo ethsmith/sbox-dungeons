@@ -16,6 +16,7 @@ internal class StashPanel2 : Panel
 	private Panel Cells;
 	private int CellsHash;
 	private bool CellsNeedLayout;
+	private Rect CurrentRect;
 
 	public override void Tick()
 	{
@@ -32,8 +33,11 @@ internal class StashPanel2 : Panel
 	{
 		base.FinalLayout();
 
-		if ( !CellsNeedLayout ) return;
+		if ( !CellsNeedLayout && CurrentRect == Cells.Box.Rect ) 
+			return;
+
 		CellsNeedLayout = false;
+		CurrentRect = Cells.Box.Rect;
 
 		LayoutCells();
 	}
