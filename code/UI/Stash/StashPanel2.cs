@@ -9,18 +9,25 @@ namespace Dungeons.UI;
 internal class StashPanel2 : Panel
 {
 
-	public int CellCount { get; set; } = 84;
-	public int Columns { get; set; } = 12;
-	public int Margin { get; set; } = 1;
+	public int CellCount = 84;
+	public int Columns = 12;
+	public int Margin = 1;
 
 	private Panel Cells;
 	private int CellsHash;
 	private bool CellsNeedLayout;
-	private Rect CurrentRect;
+	private int CurrentLayout;
 
 	public override void Tick()
 	{
 		base.Tick();
+
+		var layout = HashCode.Combine( Margin, CellCount, Columns, Cells?.Box?.Rect );
+		if( layout != CurrentLayout )
+		{
+			CurrentLayout = layout;
+			CellsNeedLayout = true;
+		}
 
 		var cellhash = HashCode.Combine( Columns, Margin );
 		if ( cellhash == CellsHash ) return;
@@ -33,13 +40,28 @@ internal class StashPanel2 : Panel
 	{
 		base.FinalLayout();
 
-		if ( !CellsNeedLayout && CurrentRect == Cells.Box.Rect ) 
-			return;
-
+		if ( !CellsNeedLayout ) return;
 		CellsNeedLayout = false;
-		CurrentRect = Cells.Box.Rect;
 
 		LayoutCells();
+	}
+
+	public override void SetProperty( string name, string value )
+	{
+		switch ( name.ToLower() )
+		{
+			case "cellcount":
+				int.TryParse( value, out CellCount );
+				return;
+			case "columns":
+				int.TryParse( value, out Columns );
+				return;
+			case "margin":
+				int.TryParse( value, out Margin );
+				return;
+		}
+
+		base.SetProperty( name, value );
 	}
 
 	private void BuildCells()
