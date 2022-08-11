@@ -8,7 +8,7 @@ namespace Dungeons.UI;
 internal class Inventory : DungeonsPanel
 {
 
-	public StashPanel Stash { get; set; }
+	public StashPanel2 Stash { get; set; }
 
 	protected override CursorModes CursorMode => CursorModes.Hover;
 	protected override DisplayModes DisplayMode => DisplayModes.Toggle;
@@ -18,13 +18,17 @@ internal class Inventory : DungeonsPanel
 	{
 		base.Tick();
 
-		//if ( Local.Pawn is not Player pl || !pl.Stash.IsValid() ) 
-		//	return;
+		if ( Local.Pawn is not Player pl || !pl.Stash.IsValid() )
+			return;
 
-		//if ( Stash?.Stash == pl.Stash ) 
-		//	return;
+		foreach ( var item in pl.Stash.Items )
+		{
+			if ( Stash.Contains( item.NetworkIdent ) ) 
+				continue;
 
-		//Stash.Stash = pl.Stash;
+			var icon = new StashableIcon( item );
+			Stash.InsertItem( item.NetworkIdent, () => item.Detail.StashSlot, icon );
+		}
 	}
 
 }

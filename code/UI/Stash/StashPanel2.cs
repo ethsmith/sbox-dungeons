@@ -3,6 +3,8 @@ using Sandbox;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Dungeons.UI;
 
@@ -17,13 +19,19 @@ internal class StashPanel2 : Panel
 	private int CellsHash;
 	private bool CellsNeedLayout;
 	private int CurrentLayout;
+	private List<(int, Func<int>, Panel)> Items = new();
 
 	public override void Tick()
 	{
 		base.Tick();
 
+		if( Cells != null )
+		{
+			PlaceItems();
+		}
+
 		var layout = HashCode.Combine( Margin, CellCount, Columns, Cells?.Box?.Rect );
-		if( layout != CurrentLayout )
+		if ( layout != CurrentLayout )
 		{
 			CurrentLayout = layout;
 			CellsNeedLayout = true;
@@ -64,6 +72,35 @@ internal class StashPanel2 : Panel
 		base.SetProperty( name, value );
 	}
 
+	public bool Contains( int itemId )
+	{
+		return Items.Any( x => x.Item1 == itemId );
+	}
+
+	public void InsertItem( int itemId, Func<int> itemSlot, Panel panel )
+	{
+		if ( Contains( itemId ) )
+		{
+			Log.Error( "Inserting an already inserted item" );
+			return;
+		}
+
+		Items.Add( (itemId, itemSlot, panel) );
+	}
+
+	public void RemoveItem( int itemId )
+	{
+		if ( !Contains( itemId ) )
+		{
+			Log.Error( "Removing an item that hasn't been inserted" );
+			return;
+		}
+
+		var item = Items.First( x => x.Item1 == itemId );
+		item.Item3.Delete( true );
+		Items.Remove( item );
+	}
+
 	private void BuildCells()
 	{
 		Cells?.Delete( true );
@@ -93,6 +130,16 @@ internal class StashPanel2 : Panel
 			child.Style.Width = cellsize;
 			child.Style.Height = cellsize;
 			child.Style.Margin = Margin;
+		}
+	}
+
+	private void PlaceItems()
+	{
+		foreach( var item in Items )
+		{
+			var cell = Cells.GetChild( item.Item2() );
+			if ( cell == null ) continue;
+			item.Item3.Parent = cell;
 		}
 	}
 
