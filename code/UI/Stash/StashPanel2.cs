@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Dungeons.UI;
 
-internal class StashPanel2 : Panel
+internal class StashPanel : Panel
 {
 
 	public int CellCount = 84;
@@ -111,7 +111,7 @@ internal class StashPanel2 : Panel
 
 		for ( int i = 0; i < CellCount; i++ )
 		{
-			Cells.Add.Panel( "cell" ).Add.Label( (i + 1).ToString() );
+			Cells.Add.Panel( "cell" );
 		}
 
 		CellsNeedLayout = true;

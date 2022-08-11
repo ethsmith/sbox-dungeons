@@ -9,29 +9,9 @@ Inventory {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-
-    StashPanel {
-        background-color: darkslategray;
-
-        .slot {
-            background-color: rgba(black .5);
-            transition: transform .15s ease-in;
-            padding: 1px;
-
-            &.drop-target:not(.occupied) {
-                background-color: rgba(black .85);
-                transform: scale(.98);
-            }
-        }
-
-        StashableIcon {
-            width: 100%;
-            background-color: black;
-        }
-    }
 }
 
-StashPanel2 {
+StashPanel {
     background-color: darkslategray;
 
     .cell {
@@ -41,4 +21,9 @@ StashPanel2 {
             background-color: rgba(black .85);
         }
     }
+}
+
+StashableIcon {
+    width: 100%;
+    background-color: black;
 }

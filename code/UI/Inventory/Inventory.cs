@@ -8,7 +8,7 @@ namespace Dungeons.UI;
 internal class Inventory : DungeonsPanel
 {
 
-	public StashPanel2 Stash { get; set; }
+	public StashPanel Stash { get; set; }
 
 	protected override CursorModes CursorMode => CursorModes.Hover;
 	protected override DisplayModes DisplayMode => DisplayModes.Toggle;
