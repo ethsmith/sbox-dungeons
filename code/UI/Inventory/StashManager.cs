@@ -106,4 +106,30 @@ internal class StashManager : Panel
 		}
 	}
 
+	private bool ClearPrimaryAttack;
+	[Event.BuildInput]
+	private void OnBuildInput( InputBuilder b )
+	{
+		if ( b.Released( InputButton.PrimaryAttack ) )
+		{
+			ClearPrimaryAttack = false;
+		}
+
+		if ( ClearPrimaryAttack )
+		{
+			b.ClearButton( InputButton.PrimaryAttack );
+		}
+
+		if ( !PickedItem.IsValid() )
+			return;
+
+		if ( !b.Down( InputButton.PrimaryAttack ) )
+			return;
+
+		PickedItem.Drop();
+		PickedItem = null;
+		ClearPrimaryAttack = true;
+		b.ClearButton( InputButton.PrimaryAttack );
+	}
+
 }
