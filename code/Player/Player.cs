@@ -68,15 +68,10 @@ internal partial class Player : AnimatedEntity
 		Stash = new();
 		Stash.Parent = this;
 		Stash.LocalPosition = 0;
-		Stash.SlotCount = 60;
+		Stash.SlotCount = 40;
 		Stash.Add( new Stashable( ItemGenerator.Random() ) );
 		Stash.Add( new Stashable( ItemGenerator.Random() ) );
 		Stash.Add( new Stashable( ItemGenerator.Random() ) );
-
-		Stash2 = new();
-		Stash2.Parent = this;
-		Stash2.LocalPosition = 0;
-		Stash2.SlotCount = 6;
 
 		StashEquipment = new();
 		StashEquipment.Parent = this;
