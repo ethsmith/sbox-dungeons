@@ -40,6 +40,9 @@ internal partial class Player : AnimatedEntity
 	public StashEntity Stash2 { get; set; }
 
 	[Net]
+	public StashEntity StashEquipment { get; set; }
+
+	[Net]
 	public SpotLightEntity LightRadius { get; set; }
 
 	public override void Spawn()
@@ -73,6 +76,9 @@ internal partial class Player : AnimatedEntity
 
 		Stash2 = new();
 		Stash2.SlotCount = 6;
+
+		StashEquipment = new();
+		StashEquipment.SlotCount = 8;
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );

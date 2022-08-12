@@ -11,6 +11,75 @@ Inventory {
     padding: 20px;
 }
 
+.equipment {
+    flex-grow: 5;
+    background-color: transparent;
+
+    StashCell {
+        position: absolute;
+    }
+
+    StashableIcon {
+        background-color: dodgerblue;
+        margin: 7px;
+    }
+
+    .cell-0 {
+        min-width: 100px;
+        min-height: 100px;
+        left: 50%;
+        top: 20px;
+        transform: translateX(-50%);
+    }
+
+    .cell-1 {
+        min-width: 150px;
+        min-height: 200px;
+        top: 130px;
+    }
+
+    .cell-2 {
+        min-width: 100px;
+        min-height: 100px;
+        top: 300px;
+        left: 150px;
+    }
+
+    .cell-3 {
+        min-width: 100px;
+        min-height: 100px;
+        top: 300px;
+        right: 150px;
+    }
+
+    .cell-4 {
+        min-width: 150px;
+        min-height: 50px;
+        top: 350px;
+    }
+
+    .cell-5 {
+        min-width: 50px;
+        min-height: 50px;
+        top: 225px;
+        left: 200px;
+    }
+
+    .cell-6 {
+        min-width: 50px;
+        min-height: 50px;
+        top: 225px;
+        right: 200px;
+    }
+
+    .cell-7 {
+        min-width: 50px;
+        min-height: 50px;
+        top: 100px;
+        right: 200px;
+    }
+}
+
 StashPanel {
     background-color: darkslategray;
 

@@ -134,7 +134,8 @@ internal class StashPanel : Panel
 
 		for ( int i = 0; i < CellCount; i++ )
 		{
-			Cells.AddChild<StashCell>();
+			var cell = Cells.AddChild<StashCell>();
+			cell.AddClass( $"cell-{i}" );
 		}
 
 		CellsNeedLayout = true;

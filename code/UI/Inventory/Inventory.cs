@@ -10,6 +10,7 @@ internal class Inventory : DungeonsPanel
 
 	public StashPanel Stash { get; set; }
 	public StashPanel Stash2 { get; set; }
+	public StashPanel StashEquipment { get; set; }
 
 	protected override CursorModes CursorMode => CursorModes.Hover;
 	protected override DisplayModes DisplayMode => DisplayModes.Toggle;
@@ -28,8 +29,12 @@ internal class Inventory : DungeonsPanel
 		if ( !pl.Stash2.IsValid() )
 			return;
 
+		if ( !pl.StashEquipment.IsValid() )
+			return;
+
 		StashManager.Current?.Register( Stash, pl.Stash );
 		StashManager.Current?.Register( Stash2, pl.Stash2 );
+		StashManager.Current?.Register( StashEquipment, pl.StashEquipment );
 	}
 
 }
