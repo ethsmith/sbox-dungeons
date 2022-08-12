@@ -96,54 +96,13 @@ internal partial class Player : AnimatedEntity
 
 		//Controller.Simulate();
 		Animator.Simulate();
-
-		var start = Input.Cursor.Origin;
-		var end = Input.Cursor.Origin + Input.Cursor.Direction * 5000f;
-		var tr = Trace.Ray( start, end )
-			.WorldOnly()
-			.Run();
-
-		if ( !InputBlocked )
-		{
-			if ( Input.Down( InputButton.PrimaryAttack ) )
-			{
-				Agent.SetDestination( tr.HitPosition );
-			}
-		}
-
 		Agent.Simulate();
-		UpdateTarget();
-	}
 
-	private Entity Target;
-	private void UpdateTarget()
-	{
-		var start = Input.Cursor.Origin;
-		var end = Input.Cursor.Origin + Input.Cursor.Direction * 5000f;
-		var tr = Trace.Ray( start, end )
-			.EntitiesOnly()
-			.RunAll();
+		HoveredEntity?.SetGlow( false );
+		HoveredEntity = FindByIndex( (int)Input.Position.x );
+		HoveredEntity?.SetGlow( true, Color.Red );
 
-		var newTarget = tr?.FirstOrDefault( x => x.Entity != null && x.Entity != this ).Entity;
-
-		if ( newTarget != Target )
-		{
-			Target?.SetGlow( false );
-			Target = newTarget;
-			Target?.SetGlow( true, Color.Red );
-		}
-	}
-
-	public bool InputBlocked => Input.Down( InputButton.Zoom );
-
-	public override void BuildInput( InputBuilder inputBuilder )
-	{
-		base.BuildInput( inputBuilder );
-
-		if ( DungeonsPanel.InputBlocked() )
-		{
-			inputBuilder.SetButton( InputButton.Zoom );
-		}
+		SimulateInput();
 	}
 
 }

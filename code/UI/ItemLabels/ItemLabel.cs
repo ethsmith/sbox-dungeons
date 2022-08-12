@@ -45,6 +45,11 @@ internal class ItemLabel : Panel
 		All.Remove( this );
 	}
 
+	public static Stashable HoveredItem()
+	{
+		return All.FirstOrDefault( x => x.HasHovered )?.Item;
+	}
+
 	// todo: much cleaner in OnMouseDown if I sort out other panels taking pointer priority
 	private static List<ItemLabel> All = new();
 	private static bool ClearPrimaryAttack;

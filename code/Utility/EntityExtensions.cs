@@ -12,6 +12,9 @@ public static class EntityExtensions
 		if ( !entity.IsValid() ) 
 			return;
 
+		if ( entity is not ModelEntity )
+			return;
+
 		var glow = entity.Components.GetOrCreate<Glow>();
 		glow.Active = active;
 		glow.Color = color;
