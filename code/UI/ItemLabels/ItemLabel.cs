@@ -11,6 +11,8 @@ namespace Dungeons.UI;
 internal class ItemLabel : Panel
 {
 
+	private static List<ItemLabel> All = new();
+
 	public Stashable Item { get; }
 
 	public ItemLabel( Stashable item )
@@ -48,30 +50,6 @@ internal class ItemLabel : Panel
 	public static Stashable HoveredItem()
 	{
 		return All.FirstOrDefault( x => x.HasHovered )?.Item;
-	}
-
-	// todo: much cleaner in OnMouseDown if I sort out other panels taking pointer priority
-	private static List<ItemLabel> All = new();
-	private static bool ClearPrimaryAttack;
-	[Event.BuildInput]
-	private static void OnBuildInput( InputBuilder b )
-	{
-		var hovered = All.FirstOrDefault( x => x.HasHovered );
-		if( hovered != null && b.Pressed( InputButton.PrimaryAttack ) )
-		{
-			(Local.Pawn as Player).Stash.Add( hovered.Item );
-			ClearPrimaryAttack = true;
-		}
-
-		if ( b.Released( InputButton.PrimaryAttack ) )
-		{
-			ClearPrimaryAttack = false;
-		}
-
-		if( ClearPrimaryAttack )
-		{
-			b.ClearButton( InputButton.PrimaryAttack );
-		}
 	}
 
 }

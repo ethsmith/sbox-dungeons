@@ -1,6 +1,9 @@
 ﻿
+using Dungeons.Stash;
 using Dungeons.UI;
 using Sandbox;
+using System;
+using System.Threading;
 
 namespace Dungeons;
 
@@ -9,6 +12,8 @@ internal partial class Player
 
 	[Net, Predicted]
 	public Entity HoveredEntity { get; set; }
+
+	private CancellationTokenSource ItemPickup = new();
 
 	public override void BuildInput( InputBuilder inputBuilder )
 	{
@@ -20,6 +25,20 @@ internal partial class Player
 
 	private void SimulateInput()
 	{
+		if ( !Input.Down( InputButton.PrimaryAttack ) )
+			return;
+
+		ItemPickup?.Cancel();
+		ItemPickup = null;
+
+		if ( HoveredEntity is Stashable item )
+		{
+			Agent.SetDestination( item.Position );
+			ItemPickup = new( TimeSpan.FromSeconds( 10 ) );
+			PickupItem( item, ItemPickup.Token );
+			return;
+		}
+
 		var start = Input.Cursor.Origin;
 		var end = Input.Cursor.Origin + Input.Cursor.Direction * 5000f;
 		var tr = Trace.Ray( start, end )
@@ -29,6 +48,24 @@ internal partial class Player
 		if ( tr.Hit && Input.Down( InputButton.PrimaryAttack ) )
 		{
 			Agent.SetDestination( tr.HitPosition );
+		}
+	}
+
+	private async void PickupItem( Stashable item, CancellationToken token )
+	{
+		while ( true )
+		{
+			if ( token.IsCancellationRequested ) break;
+			if ( !item.IsValid() || item.Parent.IsValid() ) break;
+
+			if ( item.Position.Distance( Position ) > 16 )
+			{
+				await Task.Delay( 10 );
+				continue;
+			}
+
+			Stash.Add( item );
+			break;
 		}
 	}
 
