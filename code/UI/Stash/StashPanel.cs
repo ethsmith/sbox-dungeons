@@ -57,7 +57,7 @@ internal class StashPanel : Panel
 	{
 		switch ( name.ToLower() )
 		{
-			case "cellcount":
+			case "cells":
 				int.TryParse( value, out CellCount );
 				return;
 			case "columns":
