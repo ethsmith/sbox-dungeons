@@ -8,10 +8,10 @@ Hud {
 ItemLabel {
     background-color: rgba(black .65);
     padding: 2px 6px;
+    cursor: pointer;
 
     &:hover {
         background-color: black;
-        pointer-events: all;
     }
 }
 

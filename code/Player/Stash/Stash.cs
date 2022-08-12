@@ -33,6 +33,7 @@ internal partial class StashEntity : Entity
 		items.Add( item );
 		item.Parent = this;
 		item.LocalPosition = 0;
+		item.Detail.StashSlot = 0;
 
 		// todo: set in first open slot
 
