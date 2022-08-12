@@ -46,7 +46,7 @@ internal partial class StashableDetail : BaseNetworkable, INetworkSerializer
 		}
 	}
 
-	public byte Durability
+	public int Durability
 	{
 		get => data.Durability;
 		set
