@@ -19,10 +19,6 @@ Inventory {
         position: absolute;
     }
 
-    StashableIcon {
-        background-color: dodgerblue;
-        margin: 7px;
-    }
     // helmet
     .cell-0 {
         min-width: 100px;
@@ -99,12 +95,13 @@ StashPanel {
         background-color: rgba(black .5);
 
         &:hover {
-            background-color: rgba(black .85);
+            //background-color: rgba(black .85);
         }
     }
 }
 
 StashableIcon {
     width: 100%;
-    background-color: black;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
 }

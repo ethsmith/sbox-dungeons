@@ -1,4 +1,5 @@
 ﻿
+using Dungeons.Data;
 using Dungeons.Stash;
 using Sandbox;
 using Sandbox.UI;
@@ -14,12 +15,14 @@ internal class ItemLabel : Panel
 	private static List<ItemLabel> All = new();
 
 	public Stashable Item { get; }
+	private ItemResource ItemResource;
 
 	public ItemLabel( Stashable item )
 	{
 		Item = item;
+		ItemResource = ResourceLibrary.GetAll<ItemResource>().FirstOrDefault( x => x.ResourceName == item.Detail.Identity );
 
-		Add.Label( $"Item #{item.NetworkIdent}" );
+		Add.Label( ItemResource?.DisplayName ?? "Unknown" );
 		Style.Position = PositionMode.Absolute;
 
 		All.Add( this );

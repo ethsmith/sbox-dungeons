@@ -1,7 +1,9 @@
 ﻿
+using Dungeons.Data;
 using Dungeons.Stash;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
+using System.Linq;
 
 namespace Dungeons.UI;
 
@@ -10,23 +12,35 @@ internal class StashableIcon : Panel
 
 	public Stashable Stashable { get; private set; }
 
+	private ItemResource Item;
+
 	public StashableIcon( Stashable stashable )
 	{
 		Stashable = stashable;
 
-		Add.Label( $"#{stashable.NetworkIdent}, #{stashable.Detail.StashSlot}" );
+		Item = ResourceLibrary.GetAll<ItemResource>().FirstOrDefault( x => x.ResourceName == stashable.Detail.Identity );
+		if ( Item == null )
+		{
+			Add.Label( $"#{stashable.NetworkIdent}, #{stashable.Detail.StashSlot}" );
+			return;
+		}
+
+		Style.SetBackgroundImage( Item.Icon );
 	}
 
 	protected override void OnMouseOver( MousePanelEvent e )
 	{
 		base.OnMouseOver( e );
 
-		if ( HasClass( "dragging" ) ) return;
+		var name = Item?.DisplayName ?? "Unknown";
+		var durability = Stashable.Detail.Durability;
+		var maxDurability = Item?.Durability ?? 0;
+		var quantity = Stashable.Detail.Quantity;
 
 		Tippy.Create( this, Tippy.Pivots.TopRight )
-			.WithMessage( @$"Item #{Stashable.NetworkIdent}
-Durability: {Stashable.Detail.Durability}
-Quantity: {Stashable.Detail.Quantity}" );
+			.WithMessage( @$"{name}
+Durability: {durability}/{maxDurability}
+Quantity: {quantity}" );
 	}
 
 }
