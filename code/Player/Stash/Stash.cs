@@ -30,14 +30,24 @@ internal partial class StashEntity : Entity
 
 		if ( !item.IsValid() ) return false;
 		if ( items.Contains( item ) ) return false;
-		items.Add( item );
+		
 		item.Parent = this;
 		item.LocalPosition = 0;
-		item.Detail.StashSlot = 0;
-
-		// todo: set in first open slot
+		item.Detail.StashSlot = GetAvailableSlot();
+		items.Add( item );
 
 		return true;
+	}
+
+	private int GetAvailableSlot()
+	{
+		for ( int i = 0; i < SlotCount; i++ )
+		{
+			if ( Items.Any( x => x.Detail.StashSlot == i ) )
+				continue;
+			return i;
+		}
+		return -1;
 	}
 
 	public override int GetHashCode()
