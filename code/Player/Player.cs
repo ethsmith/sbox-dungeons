@@ -65,6 +65,8 @@ internal partial class Player : AnimatedEntity
 		LightRadius.Color = Color.White.Darken( .9f );
 
 		Stash = new();
+		Stash.Parent = this;
+		Stash.LocalPosition = 0;
 		Stash.SlotCount = 60;
 		Stash.Add( new Stashable( new Data.StashableDetailData()
 		{
@@ -75,9 +77,13 @@ internal partial class Player : AnimatedEntity
 		} ) );
 
 		Stash2 = new();
+		Stash2.Parent = this;
+		Stash2.LocalPosition = 0;
 		Stash2.SlotCount = 6;
 
 		StashEquipment = new();
+		StashEquipment.Parent = this;
+		StashEquipment.LocalPosition = 0;
 		StashEquipment.SlotCount = 8;
 
 		SetModel( "models/citizen/citizen.vmdl" );
