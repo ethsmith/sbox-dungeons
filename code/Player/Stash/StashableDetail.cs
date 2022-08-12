@@ -10,7 +10,7 @@ internal partial class StashableDetail : BaseNetworkable, INetworkSerializer
 
 	private StashableDetailData data = new();
 
-	public int Identity
+	public string Identity
 	{
 		get => data.Identity;
 		set

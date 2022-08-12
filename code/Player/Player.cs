@@ -1,4 +1,5 @@
 ﻿
+using Dungeons.Data;
 using Dungeons.Stash;
 using Dungeons.UI;
 using Sandbox;
@@ -68,13 +69,9 @@ internal partial class Player : AnimatedEntity
 		Stash.Parent = this;
 		Stash.LocalPosition = 0;
 		Stash.SlotCount = 60;
-		Stash.Add( new Stashable( new Data.StashableDetailData()
-		{
-			Durability = 24,
-			Identity = 0,
-			Quantity = 1,
-			StashSlot = 3
-		} ) );
+		Stash.Add( new Stashable( ItemGenerator.Random() ) );
+		Stash.Add( new Stashable( ItemGenerator.Random() ) );
+		Stash.Add( new Stashable( ItemGenerator.Random() ) );
 
 		Stash2 = new();
 		Stash2.Parent = this;
