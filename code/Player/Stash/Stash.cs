@@ -21,7 +21,12 @@ internal partial class StashEntity : Entity
 
 	public bool Add( Stashable item )
 	{
-		Host.AssertServer();
+		if ( IsClient )
+		{
+			AddItemToStash( NetworkIdent, item.NetworkIdent );
+
+			return true;
+		}
 
 		if ( !item.IsValid() ) return false;
 		if ( items.Contains( item ) ) return false;
@@ -60,6 +65,31 @@ internal partial class StashEntity : Entity
 		foreach( var item in items ) item.Delete();
 
 		items.Clear();
+	}
+
+	[ConCmd.Server]
+	public static void AddItemToStash( int stashIdent, int itemIdent )
+	{
+		var caller = ConsoleSystem.Caller;
+		if ( caller == null ) return;
+		//todo: verify ownership
+
+		var stashable = Entity.FindByIndex( itemIdent ) as Stashable;
+		if ( !stashable.IsValid() ) return;
+
+		var targetStash = Entity.FindByIndex( stashIdent ) as StashEntity;
+		if ( !targetStash.IsValid() ) return;
+
+		var previousStash = stashable.Parent as StashEntity;
+		if ( targetStash == previousStash ) return;
+
+		if( targetStash.Add( stashable ) )
+		{
+			if ( previousStash.IsValid() )
+			{
+				previousStash.Remove( stashable );
+			}
+		}
 	}
 
 }

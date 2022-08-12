@@ -9,31 +9,27 @@ internal class Inventory : DungeonsPanel
 {
 
 	public StashPanel Stash { get; set; }
+	public StashPanel Stash2 { get; set; }
 
 	protected override CursorModes CursorMode => CursorModes.Hover;
 	protected override DisplayModes DisplayMode => DisplayModes.Toggle;
 	protected override InputButton ToggleButton => InputButton.Score;
 
-	public Inventory()
-	{
-		StashManager.Current?.Register( Stash );
-	}
-
 	public override void Tick()
 	{
 		base.Tick();
 
-		if ( Local.Pawn is not Player pl || !pl.Stash.IsValid() )
+		if ( Local.Pawn is not Player pl )
 			return;
 
-		foreach ( var item in pl.Stash.Items )
-		{
-			if ( Stash.Contains( item.NetworkIdent ) ) 
-				continue;
+		if ( !pl.Stash.IsValid() )
+			return;
 
-			var icon = new StashableIcon( item );
-			Stash.InsertItem( item.NetworkIdent, () => item.Detail.StashSlot, icon );
-		}
+		if ( !pl.Stash2.IsValid() )
+			return;
+
+		StashManager.Current?.Register( Stash, pl.Stash );
+		StashManager.Current?.Register( Stash2, pl.Stash2 );
 	}
 
 }

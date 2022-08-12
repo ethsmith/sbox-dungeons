@@ -116,6 +116,14 @@ internal class StashPanel : Panel
 		return false;
 	}
 
+	public IEnumerable<int> AllItems()
+	{
+		foreach( var item in Items )
+		{
+			yield return item.Item1;
+		}
+	}
+
 	private void BuildCells()
 	{
 		Cells?.Delete( true );

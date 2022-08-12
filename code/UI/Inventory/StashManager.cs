@@ -2,6 +2,7 @@
 using Dungeons.Stash;
 using Sandbox;
 using Sandbox.UI;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Dungeons.UI;
@@ -12,6 +13,7 @@ internal class StashManager : Panel
 	public static StashManager Current;
 
 	private Stashable PickedItem;
+	private List<(StashPanel, StashEntity)> Stashes = new();
 
 	public StashManager()
 	{
@@ -25,29 +27,39 @@ internal class StashManager : Panel
 		Style.PointerEvents = "none";
 	}
 
-	public void Register( StashPanel stashPanel )
+	public void Register( StashPanel stashPanel, StashEntity stashEntity )
 	{
+		if ( Stashes.Any( x => x.Item1 == stashPanel && x.Item2 == stashEntity ) )
+			return;
+
+		Stashes.RemoveAll( x => x.Item1 == stashPanel || x.Item2 == stashEntity );
+		Stashes.Add( (stashPanel, stashEntity) );
+
 		stashPanel.AddEventListener( "onmousedown", HandleCellClicked );
 	}
 
 	private void HandleCellClicked( PanelEvent e )
 	{
-		var stashPanel = e.Target.Ancestors.OfType<StashPanel>().FirstOrDefault();
+		var targetStash = e.Target.Ancestors.OfType<StashPanel>().FirstOrDefault();
 		var cell = e.Target.AncestorsAndSelf.OfType<StashCell>().FirstOrDefault();
 
-		if ( stashPanel == null || cell == null )
+		if ( targetStash == null || cell == null )
 			return;
 
 		var cellIndex = cell.SiblingIndex - 1;
 
 		if ( PickedItem.IsValid() )
 		{
+			var toStash = Stashes.Where( x => x.Item1 == targetStash ).First().Item2;
+			toStash.Add( PickedItem );
+
 			PickedItem.SetStashSlot( cellIndex );
 			PickedItem = null;
+
 			return;
 		}
 
-		if ( stashPanel.TryGetItem( cellIndex, out int itemId ) )
+		if ( targetStash.TryGetItem( cellIndex, out int itemId ) )
 		{
 			PickedItem = Entity.FindByIndex( itemId ) as Stashable;
 		}
@@ -57,10 +69,40 @@ internal class StashManager : Panel
 	{
 		base.DrawBackground( ref state );
 
-		if( PickedItem.IsValid() )
+		if ( PickedItem.IsValid() )
 		{
-			Render.Draw2D.Color = Color.Black;
+			Render.Draw2D.Color = Color.White.WithAlpha( .25f );
 			Render.Draw2D.Box( new Rect( Mouse.Position - 24, 48 ) );
+		}
+	}
+
+	public override void Tick()
+	{
+		base.Tick();
+
+		foreach ( var item in Stashes )
+		{
+			EnsureItems( item.Item1, item.Item2 );
+		}
+	}
+
+	private void EnsureItems( StashPanel stashPanel, StashEntity stashEntity )
+	{
+		foreach ( var item in stashPanel.AllItems().ToList() )
+		{
+			if ( !stashEntity.Items.Any( x => x.NetworkIdent == item ) )
+			{
+				stashPanel.RemoveItem( item );
+			}
+		}
+
+		foreach ( var item in stashEntity.Items )
+		{
+			if ( stashPanel.Contains( item.NetworkIdent ) )
+				continue;
+
+			var icon = new StashableIcon( item );
+			stashPanel.InsertItem( item.NetworkIdent, () => item.Detail.StashSlot, icon );
 		}
 	}
 
