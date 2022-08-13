@@ -68,6 +68,7 @@ internal partial class Player : AnimatedEntity
 		Stash.Owner = this;
 		Stash.LocalPosition = 0;
 		Stash.SlotCount = 40;
+		Stash.AddConstraint( new OccupiedConstraint() );
 		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
 		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
 		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
@@ -88,6 +89,7 @@ internal partial class Player : AnimatedEntity
 		StashEquipment.LocalPosition = 0;
 		StashEquipment.SlotCount = 8;
 		StashEquipment.AddConstraint( new ItemTypeConstraint() );
+		StashEquipment.AddConstraint( new OccupiedConstraint() );
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );
@@ -97,7 +99,9 @@ internal partial class Player : AnimatedEntity
 	{
 		base.ClientSpawn();
 
+		Stash.AddConstraint( new OccupiedConstraint() );
 		StashEquipment.AddConstraint( new ItemTypeConstraint() );
+		StashEquipment.AddConstraint( new OccupiedConstraint() );
 	}
 
 	public override void Simulate( Client cl )

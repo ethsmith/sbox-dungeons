@@ -39,6 +39,14 @@ StashPanel {
         box-shadow: 0 0 12px rgba(black .25);
         border: 1px solid $tan;
 
+        &.constraint-fails {
+            background-color: rgba($red .5);
+        }
+
+        &.constraint-passes {
+            background-color: rgba($green .5);
+        }
+
         &:hover {
             box-shadow: 0px 0px 0px rgba(black .15);
             border-color: $tan-hover;

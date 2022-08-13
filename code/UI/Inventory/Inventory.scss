@@ -21,14 +21,6 @@ Inventory {
     StashCell {
         position: absolute;
         border-radius: 1px;
-
-        &.constraint-fails {
-            background-color: rgba($red .5);
-        }
-
-        &.constraint-passes {
-            background-color: rgba($green .5);
-        }
     }
     // helmet
     .cell-0 {

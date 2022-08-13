@@ -5,11 +5,6 @@ using System.Linq;
 
 namespace Dungeons.Stash;
 
-abstract class StashConstraint
-{
-	public abstract bool AcceptsItem( Stashable item, int cell );
-}
-
 internal partial class StashEntity : Entity
 {
 
@@ -22,7 +17,7 @@ internal partial class StashEntity : Entity
 
 	public StashEntity()
 	{
-		Transmit = TransmitType.Owner;
+		Transmit = TransmitType.Always;
 	}
 
 	public bool Add( Stashable item )
@@ -72,6 +67,7 @@ internal partial class StashEntity : Entity
 
 	public void AddConstraint( StashConstraint constraint )
 	{
+		constraint.Stash = this;
 		Constraints.Add( constraint );
 	}
 
