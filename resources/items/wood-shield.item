@@ -3,7 +3,7 @@
 	data = 
 	{
 		DisplayName = "Wood Shield"
-		Icon = resource:"resources/icons/shields/wood-shield.png"
+		Icon = resource:"resources/textures/items/shields/wood-shield.png"
 		Durability = 120
 	}
 }

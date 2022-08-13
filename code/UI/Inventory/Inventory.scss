@@ -1,14 +1,17 @@
 ﻿
+@import "../_vars.scss";
+
 Inventory {
     position: absolute;
-    background-color: #2b2b2b;
     right: 0;
     top: 0;
     height: 100%;
     width: 770px;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 60px;
+    background-image: $img-bg-container;
+    background-size: 100% 100%;
 }
 
 .equipment {
@@ -36,14 +39,14 @@ Inventory {
         min-width: 100px;
         min-height: 100px;
         top: 250px;
-        left: 175px;
+        left: 150px;
     }
     // boots
     .cell-3 {
         min-width: 100px;
         min-height: 100px;
         top: 250px;
-        right: 175px;
+        right: 150px;
     }
     // belt
     .cell-4 {
@@ -56,47 +59,35 @@ Inventory {
         max-width: 50px;
         max-height: 50px;
         top: 175px;
-        left: 225px;
+        left: 200px;
     }
     // right ring
     .cell-6 {
         max-width: 50px;
         max-height: 50px;
         top: 175px;
-        right: 225px;
+        right: 200px;
     }
     // amulet
     .cell-7 {
         max-width: 50px;
         max-height: 50px;
         top: 100px;
-        right: 225px;
+        right: 200px;
     }
     // main hand
     .cell-8 {
         min-width: 100px;
         min-height: 150px;
         top: 75px;
-        left: 100px;
+        left: 75px;
     }
     // off hand
     .cell-9 {
         min-width: 100px;
         min-height: 150px;
         top: 75px;
-        right: 100px;
-    }
-}
-
-StashPanel {
-    background-color: darkslategray;
-
-    StashCell {
-        background-color: rgba(black .5);
-
-        &:hover {
-            //background-color: rgba(black .85);
-        }
+        right: 75px;
     }
 }
 

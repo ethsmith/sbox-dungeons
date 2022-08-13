@@ -3,7 +3,7 @@
 	data = 
 	{
 		DisplayName = "Leather Belt"
-		Icon = resource:"resources/icons/belts/leather-belt.png"
+		Icon = resource:"resources/textures/items/belts/leather-belt.png"
 		Durability = 120
 	}
 }
