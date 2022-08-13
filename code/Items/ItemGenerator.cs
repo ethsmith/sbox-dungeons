@@ -3,7 +3,7 @@ using Dungeons.Data;
 using Sandbox;
 using System.Linq;
 
-namespace Dungeons;
+namespace Dungeons.Items;
 
 internal static class ItemGenerator
 {

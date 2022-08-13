@@ -4,6 +4,7 @@
 	{
 		DisplayName = "Wood Shield"
 		Icon = resource:"resources/textures/items/shields/wood-shield.png"
+		ItemType = "OffHand"
 		Durability = 120
 	}
 }

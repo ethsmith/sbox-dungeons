@@ -1,4 +1,5 @@
 ﻿
+using Dungeons.Items;
 using Dungeons.Stash;
 using Sandbox;
 
@@ -86,6 +87,7 @@ internal partial class Player : AnimatedEntity
 		StashEquipment.Owner = this;
 		StashEquipment.LocalPosition = 0;
 		StashEquipment.SlotCount = 8;
+		StashEquipment.AddConstraint( new ItemTypeConstraint() );
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );
