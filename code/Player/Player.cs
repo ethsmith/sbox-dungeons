@@ -93,6 +93,13 @@ internal partial class Player : AnimatedEntity
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );
 	}
 
+	public override void ClientSpawn()
+	{
+		base.ClientSpawn();
+
+		StashEquipment.AddConstraint( new ItemTypeConstraint() );
+	}
+
 	public override void Simulate( Client cl )
 	{
 		base.Simulate( cl );

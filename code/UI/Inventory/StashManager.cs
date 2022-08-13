@@ -36,6 +36,46 @@ internal class StashManager : Panel
 		Stashes.Add( (stashPanel, stashEntity) );
 
 		stashPanel.AddEventListener( "onmousedown", HandleCellClicked );
+		stashPanel.AddEventListener( "onmouseover", HandleCellHovered );
+		stashPanel.AddEventListener( "onmouseout", HandleCellExit );
+	}
+
+	private void HandleCellHovered( PanelEvent e )
+	{
+		if ( PickedItem == null ) return;
+
+		var targetStash = e.Target.Ancestors.OfType<StashPanel>().FirstOrDefault();
+		var cell = e.Target.AncestorsAndSelf.OfType<StashCell>().FirstOrDefault();
+
+		if ( targetStash == null || cell == null )
+			return;
+
+		var cellIndex = cell.SiblingIndex - 1;
+		var hoveredStash = Stashes.Where( x => x.Item1 == targetStash ).First().Item2;
+		var slotIsOkay = hoveredStash.AcceptsItem( PickedItem, cellIndex );
+
+		if ( slotIsOkay )
+		{
+			cell.AddClass( "constraint-passes" );
+		}
+		else
+		{
+			cell.AddClass( "constraint-fails" );
+		}
+	}
+
+	private void HandleCellExit(PanelEvent e )
+	{
+		if ( PickedItem == null ) return;
+
+		var targetStash = e.Target.Ancestors.OfType<StashPanel>().FirstOrDefault();
+		var cell = e.Target.AncestorsAndSelf.OfType<StashCell>().FirstOrDefault();
+
+		if ( targetStash == null || cell == null )
+			return;
+
+		cell.RemoveClass( "constraint-passes" );
+		cell.RemoveClass( "constraint-fails" );
 	}
 
 	private void HandleCellClicked( PanelEvent e )
@@ -51,6 +91,14 @@ internal class StashManager : Panel
 		if ( PickedItem.IsValid() )
 		{
 			var toStash = Stashes.Where( x => x.Item1 == targetStash ).First().Item2;
+			if ( !toStash.AcceptsItem( PickedItem, cellIndex ) )
+			{
+				return;
+			}
+
+			cell.RemoveClass( "constraint-passes" );
+			cell.RemoveClass( "constraint-fails" );
+
 			StashEntity.ServerCmd_MoveItem( toStash.NetworkIdent, PickedItem.NetworkIdent, cellIndex );
 
 			PickedItem = null;
