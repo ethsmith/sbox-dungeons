@@ -16,6 +16,7 @@ internal partial class Player
 	public Entity HoveredEntity { get; set; }
 
 	private CancellationTokenSource ItemPickup = new();
+	private bool SkipInputUntilMouseRelease;
 
 	public override void BuildInput( InputBuilder inputBuilder )
 	{
@@ -28,6 +29,12 @@ internal partial class Player
 	private void SimulateInput()
 	{
 		if ( !Input.Down( InputButton.PrimaryAttack ) )
+		{
+			SkipInputUntilMouseRelease = false;
+			return;
+		}
+
+		if ( SkipInputUntilMouseRelease )
 			return;
 
 		ItemPickup?.Cancel();
@@ -35,6 +42,7 @@ internal partial class Player
 
 		if ( HoveredEntity is Stashable item )
 		{
+			SkipInputUntilMouseRelease = true;
 			Agent.SetDestination( item.Position );
 			ItemPickup = new( TimeSpan.FromSeconds( 10 ) );
 			PickupItem( item, ItemPickup.Token );
