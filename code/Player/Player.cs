@@ -70,6 +70,16 @@ internal partial class Player : AnimatedEntity
 		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
 		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
 		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
+		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
+		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
+		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
+		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
+		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
+		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
+		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
+		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
+		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
+		Stash.AddWithNextAvailableSlot( new Stashable( ItemGenerator.Random() ) );
 
 		StashEquipment = new();
 		StashEquipment.Parent = this;

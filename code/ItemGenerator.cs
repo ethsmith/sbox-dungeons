@@ -11,7 +11,7 @@ internal static class ItemGenerator
 	public static StashableDetailData Random()
 	{
 		var allresources = ResourceLibrary.GetAll<ItemResource>().ToList();
-		var rndname = Rand.FromList( allresources );
+		var rndname = allresources[Rand.Int( allresources.Count - 1 )];
 		var result = new StashableDetailData();
 		result.Identity = rndname.ResourceName;
 		result.Durability = rndname.Durability;
