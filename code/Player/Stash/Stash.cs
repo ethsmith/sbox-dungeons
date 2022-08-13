@@ -34,9 +34,10 @@ internal partial class StashEntity : Entity
 
 	public bool AddWithNextAvailableSlot( Stashable item )
 	{
+		var slot = FirstAvailableSlot();
 		if ( Add( item ) )
 		{
-			item.Detail.StashSlot = FirstAvailableSlot();
+			item.Detail.StashSlot = slot;
 			return true;
 		}
 		return false;
