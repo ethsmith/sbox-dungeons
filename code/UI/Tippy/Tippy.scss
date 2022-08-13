@@ -1,11 +1,14 @@
 ﻿
+@import "../_vars.scss";
+
 Tippy {
     position: absolute;
     z-index: 9999;
-    padding: 5px 20px;
-    background-color: black;
     color: white;
+    padding: 20px 30px;
     pointer-events: none;
+    background-image: $img-bg-tooltip;
+    background-size: 100% 100%;
 
     &.unset {
         opacity: 0;
