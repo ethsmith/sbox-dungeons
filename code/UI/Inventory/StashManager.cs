@@ -51,9 +51,8 @@ internal class StashManager : Panel
 		if ( PickedItem.IsValid() )
 		{
 			var toStash = Stashes.Where( x => x.Item1 == targetStash ).First().Item2;
-			toStash.Add( PickedItem );
+			StashEntity.ServerCmd_MoveItem( toStash.NetworkIdent, PickedItem.NetworkIdent, cellIndex );
 
-			PickedItem.SetStashSlot( cellIndex );
 			PickedItem = null;
 
 			return;

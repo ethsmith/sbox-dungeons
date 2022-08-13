@@ -45,7 +45,11 @@ internal partial class Player
 			SkipInputUntilMouseRelease = true;
 			Agent.SetDestination( item.Position );
 			ItemPickup = new( TimeSpan.FromSeconds( 10 ) );
-			PickupItem( item, ItemPickup.Token );
+
+			if ( IsServer )
+			{
+				PickupItemAsync( item, ItemPickup.Token );
+			}
 			return;
 		}
 
@@ -61,7 +65,7 @@ internal partial class Player
 		}
 	}
 
-	private async void PickupItem( Stashable item, CancellationToken token )
+	private async void PickupItemAsync( Stashable item, CancellationToken token )
 	{
 		while ( true )
 		{
@@ -74,7 +78,7 @@ internal partial class Player
 				continue;
 			}
 
-			Stash.Add( item );
+			Stash.AddWithNextAvailableSlot( item );
 			break;
 		}
 	}
