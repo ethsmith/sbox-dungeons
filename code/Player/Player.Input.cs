@@ -38,7 +38,7 @@ internal partial class Player
 		ItemPickup?.Cancel();
 		ItemPickup = null;
 
-		if ( HoveredEntity is Stashable item )
+		if ( HoveredEntity is Stashable item && Input.Pressed( InputButton.PrimaryAttack ) )
 		{
 			SkipInputUntilMouseRelease = true;
 			Agent.SetDestination( item.Position );
