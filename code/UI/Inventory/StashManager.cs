@@ -131,6 +131,15 @@ internal class StashManager : Panel
 		{
 			EnsureItems( item.Item1, item.Item2 );
 		}
+
+		foreach( var stash in Stashes )
+		{
+			for( int i = 0; i <= stash.Item2.SlotCount + 1; i++ )
+			{
+				var eligible = PickedItem.IsValid() && stash.Item2.AcceptsItem( PickedItem, i );
+				stash.Item1.GetCell( i )?.SetClass( "constraint-eligible", eligible );
+			} 
+		}
 	}
 
 	private void EnsureItems( StashPanel stashPanel, StashEntity stashEntity )

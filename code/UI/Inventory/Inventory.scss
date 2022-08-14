@@ -21,6 +21,10 @@ Inventory {
     StashCell {
         position: absolute;
         border-radius: 1px;
+
+        &.constraint-eligible {
+            border: 1px solid rgba( $green .5 );
+        }
     }
     // helmet
     .cell-0 {

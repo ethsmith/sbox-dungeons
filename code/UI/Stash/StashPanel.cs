@@ -124,6 +124,11 @@ internal class StashPanel : Panel
 		}
 	}
 
+	public StashCell GetCell( int index )
+	{
+		return Cells.GetChild( index ) as StashCell;
+	}
+
 	private void BuildCells()
 	{
 		Cells?.Delete( true );
