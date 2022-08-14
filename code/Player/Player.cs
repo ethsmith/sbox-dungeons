@@ -1,4 +1,5 @@
 ﻿
+using Dungeons.Attributes;
 using Dungeons.Items;
 using Dungeons.Stash;
 using Sandbox;
@@ -31,6 +32,9 @@ internal partial class Player : AnimatedEntity
 		get => Components.Get<NavigationAgent>();
 		set => Components.Add( value );
 	}
+
+	[Net]
+	public StatSystem Stats { get; set; }
 
 	[Net]
 	public StashEntity Stash { get; set; }
@@ -90,6 +94,10 @@ internal partial class Player : AnimatedEntity
 		StashEquipment.SlotCount = 8;
 		StashEquipment.AddConstraint( new ItemTypeConstraint() );
 		StashEquipment.AddConstraint( new OccupiedConstraint() );
+
+		Stats = new();
+		Stats.Add( StatTypes.Life, StatModifiers.Flat, 55 );
+		Stats.Add( StatTypes.Life, StatModifiers.Additive, 20 );
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );

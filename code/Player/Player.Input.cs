@@ -1,6 +1,7 @@
 ﻿
 using Dungeons.Stash;
 using Dungeons.UI;
+using Dungeons.Attributes;
 using Sandbox;
 using System;
 using System.Threading;
@@ -27,10 +28,7 @@ internal partial class Player
 	private void SimulateInput()
 	{
 		if ( !Input.Down( InputButton.PrimaryAttack ) )
-		{
 			SkipInputUntilMouseRelease = false;
-			return;
-		}
 
 		if ( SkipInputUntilMouseRelease )
 			return;
