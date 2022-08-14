@@ -1,5 +1,4 @@
 ﻿
-using Dungeons.Data;
 using Dungeons.Stash;
 using Dungeons.Items;
 using Sandbox.UI;
@@ -37,11 +36,18 @@ internal class StashableIcon : Panel
 		var durability = Stashable.Detail.Durability;
 		var maxDurability = Item?.Durability ?? 0;
 		var quantity = Stashable.Detail.Quantity;
+		var affixstr = "";
+
+		foreach( var affix in Stashable.Detail.Affixes )
+		{
+			affixstr += $"\n{affix.Identifier}, seed {affix.Seed}";
+		}
 
 		Tippy.Create( this, Tippy.Pivots.TopRight )
 			.WithMessage( @$"{name}
 Durability: {durability}/{maxDurability}
-Quantity: {quantity}" );
+Quantity: {quantity}
+{affixstr}" );
 	}
 
 }

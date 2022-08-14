@@ -2,6 +2,7 @@
 using Dungeons.Data;
 using Dungeons.Utility;
 using Sandbox;
+using System.Collections.Generic;
 
 namespace Dungeons.Stash;
 
@@ -54,6 +55,18 @@ internal partial class StashableDetail : BaseNetworkable, INetworkSerializer
 			Host.AssertServer();
 
 			data.Durability = value;
+			WriteNetworkData();
+		}
+	}
+
+	public List<AffixData> Affixes
+	{
+		get => data.Affixes;
+		set 
+		{
+			Host.AssertServer();
+
+			data.Affixes = value;
 			WriteNetworkData();
 		}
 	}

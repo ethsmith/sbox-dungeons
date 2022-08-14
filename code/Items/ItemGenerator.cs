@@ -17,6 +17,12 @@ internal static class ItemGenerator
 		result.Durability = rndname.Durability;
 		result.Quantity = 1;
 
+		result.Affixes.Add( new() 
+		{
+			Identifier = "added-life",
+			Seed = 1
+		} );
+
 		return result;
 	}
 
