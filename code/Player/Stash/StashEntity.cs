@@ -87,6 +87,8 @@ internal partial class StashEntity : Entity
 		return -1;
 	}
 
+	// note: if this shit fails I want it to fail in one spot, at the rpc
+
 	[ConCmd.Server]
 	public static void ServerCmd_DropItem( int networkIdent )
 	{
@@ -137,6 +139,10 @@ internal partial class StashEntity : Entity
 		if( toStash.Add( item ) )
 		{
 			item.Detail.StashSlot = slotIndex;
+		}
+		else
+		{
+			Log.Error( "Something got fucked" );
 		}
 	}
 
