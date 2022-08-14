@@ -1,8 +1,11 @@
 ﻿
 using Dungeons.Attributes;
+using Dungeons.Data;
 using Dungeons.Items;
 using Dungeons.Stash;
 using Sandbox;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Dungeons;
 
@@ -125,6 +128,81 @@ internal partial class Player : AnimatedEntity
 		HoveredEntity?.SetGlow( true, Color.Red );
 
 		SimulateInput();
+	}
+
+	public void OnItemAdded( StashEntity stash, Stashable item )
+	{
+		Host.AssertServer();
+
+		if ( stash == StashEquipment )
+		{
+			AddItemAffixes( item );
+		}
+	}
+
+	public void OnItemRemoved( StashEntity stash, Stashable item )
+	{
+		Host.AssertServer();
+
+		if( stash == StashEquipment )
+		{
+			RemoveItemAffixes( item );
+		}
+	}
+
+	private Dictionary<Stashable, List<int>> EquippedAffixes = new();
+	private void AddItemAffixes( Stashable item ) 
+	{
+		Host.AssertServer();
+
+		foreach( var affixData in item.Detail.Affixes )
+		{
+			if( AddAffix( affixData, out int statId ) )
+			{
+				if ( !EquippedAffixes.ContainsKey( item ) )
+					EquippedAffixes.Add( item, new() );
+				EquippedAffixes[item].Add( statId );
+			}
+		}
+	}
+
+	private void RemoveItemAffixes( Stashable item )
+	{
+		Host.AssertServer();
+
+		if ( !EquippedAffixes.ContainsKey( item ) )
+			return;
+
+		foreach( var affix in EquippedAffixes[item] )
+		{
+			Stats.Remove( affix );
+		}
+
+		EquippedAffixes.Remove( item );
+	}
+
+	private bool AddAffix( AffixData affixData, out int statId )
+	{
+		statId = -1;
+
+		var affix = ResourceLibrary.GetAll<AffixResource>()
+			.Where( x => x.ResourceName == affixData.Identifier )
+			.FirstOrDefault();
+
+		if ( affix == null ) 
+			return false;
+
+		if ( affix.Tiers.Count == 0 )
+			return false;
+
+		var stat = affix.Stat;
+		var modifier = affix.Modifier;
+		Rand.SetSeed( affixData.Seed );
+		var tier = Rand.Int( affix.Tiers.Count );
+		var amount = Rand.Float( affix.Tiers[tier].MinimumRoll, affix.Tiers[tier].MaximumRoll );
+
+		statId = Stats.Add( stat, modifier, amount );
+		return true;
 	}
 
 }

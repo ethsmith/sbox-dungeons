@@ -31,6 +31,8 @@ internal partial class StashEntity : Entity
 		item.Parent = this;
 		item.LocalPosition = 0;
 
+		GetPlayer()?.OnItemAdded( this, item );
+
 		return true;
 	}
 
@@ -59,6 +61,8 @@ internal partial class StashEntity : Entity
 		if ( !Items.Contains( item ) ) 
 			return false;
 
+		GetPlayer()?.OnItemRemoved( this, item );
+
 		Items.Remove( item );
 		item.Parent = null;
 
@@ -69,6 +73,18 @@ internal partial class StashEntity : Entity
 	{
 		constraint.Stash = this;
 		Constraints.Add( constraint );
+	}
+
+	private Player GetPlayer()
+	{
+		var parent = Parent;
+		while( parent != null )
+		{
+			if ( parent is Player pl ) 
+				return pl;
+			parent = parent.Parent;
+		}
+		return null;
 	}
 
 	private bool SlotsOpen( int slot )
