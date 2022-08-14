@@ -88,6 +88,22 @@ internal partial class StashEntity : Entity
 	}
 
 	[ConCmd.Server]
+	public static void ServerCmd_DropItem( int networkIdent )
+	{
+		//todo: verify ownership
+
+		var stashable = FindByIndex( networkIdent ) as Stashable;
+		if ( !stashable.IsValid() ) 
+			return;
+
+		if ( stashable.Parent is not StashEntity stash ) 
+			return;
+
+		stash.Remove( stashable );
+		stashable.Detail.StashSlot = -1;
+	}
+
+	[ConCmd.Server]
 	public static void ServerCmd_MoveItem( int stashIdent, int itemIdent, int slotIndex )
 	{
 		//todo: verify ownership

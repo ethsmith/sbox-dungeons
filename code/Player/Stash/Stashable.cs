@@ -21,30 +21,4 @@ internal partial class Stashable : Entity
 		Detail.Set( data );
 	}
 
-	public void Drop()
-	{
-		if ( IsClient )
-		{
-			ServerCmd_Drop( NetworkIdent );
-			return;
-		}
-
-		(Parent as StashEntity).Remove( this );
-		Detail.StashSlot = -1;
-		Parent = null;
-	}
-
-	[ConCmd.Server]
-	public static void ServerCmd_Drop( int networkIdent )
-	{
-		var caller = ConsoleSystem.Caller;
-		if ( caller == null ) return;
-		//todo: verify ownership
-
-		var stashable = Entity.FindByIndex( networkIdent ) as Stashable;
-		if ( !stashable.IsValid() ) return;
-
-		stashable.Drop();
-	}
-
 }

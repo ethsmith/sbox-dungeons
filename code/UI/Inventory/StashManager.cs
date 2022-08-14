@@ -173,7 +173,8 @@ internal class StashManager : Panel
 		if ( !b.Down( InputButton.PrimaryAttack ) )
 			return;
 
-		PickedItem.Drop();
+		StashEntity.ServerCmd_DropItem( PickedItem.NetworkIdent );
+
 		PickedItem = null;
 		ClearPrimaryAttack = true;
 		b.ClearButton( InputButton.PrimaryAttack );
