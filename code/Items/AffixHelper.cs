@@ -30,7 +30,7 @@ internal static class AffixHelper
 		return result;
 	}
 
-	private static AffixValues ToValue( this ImplicitAffixData data, int seed )
+	private static AffixValues ToValue( this ImplicitStat data, int seed )
 	{
 		Rand.SetSeed( seed );
 

@@ -9,8 +9,8 @@
 		Implicits = 
 		[
 			{
-				Minimum = 8
-				Maximum = 14
+				Minimum = 5
+				Maximum = 12
 			},
 		]
 	}
