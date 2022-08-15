@@ -150,19 +150,20 @@ internal partial class Player : AnimatedEntity
 		}
 	}
 
-	private Dictionary<Stashable, List<int>> EquippedAffixes = new();
+	private Dictionary<Stashable, List<int>> EquippedAffixes;
 	private void AddItemAffixes( Stashable item ) 
 	{
 		Host.AssertServer();
 
-		foreach( var affixData in item.Detail.Affixes )
+		EquippedAffixes ??= new();
+
+		if ( !EquippedAffixes.ContainsKey( item ) )
+			EquippedAffixes.Add( item, new() );
+
+		foreach ( var stat in item.Detail.GetStats() )
 		{
-			if( AddAffix( affixData, out int statId ) )
-			{
-				if ( !EquippedAffixes.ContainsKey( item ) )
-					EquippedAffixes.Add( item, new() );
-				EquippedAffixes[item].Add( statId );
-			}
+			var statId = Stats.Add( stat.Stat, stat.Modifier, stat.Amount );
+			EquippedAffixes[item].Add( statId );
 		}
 	}
 
@@ -170,7 +171,7 @@ internal partial class Player : AnimatedEntity
 	{
 		Host.AssertServer();
 
-		if ( !EquippedAffixes.ContainsKey( item ) )
+		if ( !EquippedAffixes?.ContainsKey( item ) ?? false )
 			return;
 
 		foreach( var affix in EquippedAffixes[item] )
@@ -179,30 +180,6 @@ internal partial class Player : AnimatedEntity
 		}
 
 		EquippedAffixes.Remove( item );
-	}
-
-	private bool AddAffix( AffixData affixData, out int statId )
-	{
-		statId = -1;
-
-		var affix = ResourceLibrary.GetAll<AffixResource>()
-			.Where( x => x.ResourceName == affixData.Identifier )
-			.FirstOrDefault();
-
-		if ( affix == null ) 
-			return false;
-
-		if ( affix.Tiers.Count == 0 )
-			return false;
-
-		var stat = affix.Stat;
-		var modifier = affix.Modifier;
-		Rand.SetSeed( affixData.Seed );
-		var tier = Rand.Int( affix.Tiers.Count );
-		var amount = Rand.Float( affix.Tiers[tier].MinimumRoll, affix.Tiers[tier].MaximumRoll );
-
-		statId = Stats.Add( stat, modifier, amount );
-		return true;
 	}
 
 }

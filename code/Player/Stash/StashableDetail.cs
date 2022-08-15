@@ -59,6 +59,18 @@ internal partial class StashableDetail : BaseNetworkable, INetworkSerializer
 		}
 	}
 
+	public int Seed
+	{
+		get => data.Seed;
+		set
+		{
+			Host.AssertServer();
+
+			data.Seed = value;
+			WriteNetworkData();
+		}
+	}
+
 	public List<AffixData> Affixes
 	{
 		get => data.Affixes;

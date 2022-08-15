@@ -16,6 +16,7 @@ internal static class ItemGenerator
 		result.Identity = rndname.ResourceName;
 		result.Durability = rndname.Durability;
 		result.Quantity = 1;
+		result.Seed = Rand.Int( int.MaxValue - 1 );
 
 		result.Affixes.Add( new() 
 		{
