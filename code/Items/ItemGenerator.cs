@@ -1,7 +1,7 @@
 ﻿
 using Dungeons.Data;
-using Sandbox;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Dungeons.Items;
@@ -11,22 +11,16 @@ internal static class ItemGenerator
 
 	public static ItemData Random()
 	{
-		var rnd = new System.Random();
-
-		var allresources = ResourceLibrary.GetAll<ItemResource>().ToList();
-		var rndname = allresources[rnd.Next( allresources.Count )];
 		var result = new ItemData();
-		result.Identity = rndname.ResourceName;
-		result.Durability = rndname.Durability;
-		result.Quantity = 1;
-		result.Seed = rnd.Next( int.MaxValue );
-		result.Rarity = RandomRarity( rnd );
+		var rnd = new System.Random();
+		var itemtype = RandomItem( rnd );
 
-		result.Affixes.Add( new() 
-		{
-			Identifier = "added-life",
-			Seed = rnd.Next( int.MaxValue )
-		} );
+		result.Identity = itemtype.ResourceName;
+		result.Durability = itemtype.Durability;
+		result.Seed = rnd.Next( int.MaxValue );
+		result.Quantity = 1;
+		result.Rarity = RandomRarity( rnd );
+		result.Affixes = RandomAffixes( itemtype, result.Rarity, rnd );
 
 		return result;
 	}
@@ -36,6 +30,76 @@ internal static class ItemGenerator
 	{
 		RarityValues ??= Enum.GetValues<ItemRarity>();
 		return RarityValues[random.Next( RarityValues.Length )];
+	}
+
+	private static List<AffixData> RandomAffixes( ItemResource item, ItemRarity rarity, Random random )
+	{
+		var result = new List<AffixData>();
+
+		if ( rarity == ItemRarity.Normal || rarity == ItemRarity.Unique )
+			return result;
+
+		var pool = ResourceLibrary.GetAll<AffixResource>().ToList();
+		var prefixcount = 0;
+		var suffixcount = 0;
+
+		// at least 1 affix
+		if( rarity == ItemRarity.Magic )
+		{
+			prefixcount = random.Next( 0, 2 );
+			suffixcount = random.Next( 0, 2 );
+
+			if( prefixcount == 0 && suffixcount == 0 )
+			{
+				if( random.Next(0, 2) == 0 )
+				{
+					prefixcount = 1;
+				}
+				else
+				{
+					suffixcount = 1;
+				}
+			}
+		}
+
+		// 1-3 prefixes, 1-3 suffixes, no less than 3 total
+		if ( rarity == ItemRarity.Rare )
+		{
+			prefixcount = random.Next( 1, 4 );
+			suffixcount = random.Next( 1, 4 );
+
+			if( prefixcount + suffixcount < 3 )
+			{
+				if ( random.Next( 0, 2 ) == 0 )
+				{
+					prefixcount++;
+				}
+				else
+				{
+					suffixcount++;
+				}
+			}
+		}
+
+		var prefixes = pool.Where( x => x.Type == AffixTypes.Prefix ).OrderBy( x => random.Next( 999 ) ).Take( prefixcount );
+		var suffixes = pool.Where( x => x.Type == AffixTypes.Suffix ).OrderBy( x => random.Next( 999 ) ).Take( prefixcount );
+
+		foreach( var affix in prefixes.Concat( suffixes ) )
+		{
+			result.Add( new AffixData()
+			{
+				Identifier = affix.ResourceName,
+				Seed = random.Next( int.MaxValue )
+			} );
+		}
+
+		return result;
+	}
+
+	private static ItemResource RandomItem( Random random )
+	{
+		var allresources = ResourceLibrary.GetAll<ItemResource>().ToList();
+		return allresources[random.Next( allresources.Count )];
 	}
 
 }
