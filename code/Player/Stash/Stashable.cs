@@ -16,7 +16,7 @@ internal partial class Stashable : Entity
 		Transmit = TransmitType.Always;
 	}
 
-	public Stashable( StashableDetailData data ) : this()
+	public Stashable( ItemData data ) : this()
 	{
 		Detail.Set( data );
 	}

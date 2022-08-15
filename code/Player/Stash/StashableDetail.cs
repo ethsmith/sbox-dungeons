@@ -10,7 +10,7 @@ namespace Dungeons.Stash;
 internal partial class StashableDetail : BaseNetworkable, INetworkSerializer
 {
 
-	private StashableDetailData data = new();
+	private ItemData data = new();
 
 	public string Identity
 	{
@@ -96,7 +96,7 @@ internal partial class StashableDetail : BaseNetworkable, INetworkSerializer
 		}
 	}
 
-	public void Set( StashableDetailData data )
+	public void Set( ItemData data )
 	{
 		Host.AssertServer();
 
@@ -105,8 +105,8 @@ internal partial class StashableDetail : BaseNetworkable, INetworkSerializer
 		WriteNetworkData();
 	}
 
-	public void Read( ref NetRead read ) => data = read.ReadString().JsonDeserialize<StashableDetailData>();
+	public void Read( ref NetRead read ) => data = read.ReadString().JsonDeserialize<ItemData>();
 	public void Write( NetWrite write ) => write.Write( data.JsonSerialize() );
-	public StashableDetailData GetStorableObject() => data.JsonClone();
+	public ItemData GetStorableObject() => data.JsonClone();
 
 }

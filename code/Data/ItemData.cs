@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Dungeons.Data;
 
-internal class StashableDetailData
+internal class ItemData
 {
 
 	public string Identity { get; set; }

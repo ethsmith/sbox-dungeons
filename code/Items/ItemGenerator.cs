@@ -9,13 +9,13 @@ namespace Dungeons.Items;
 internal static class ItemGenerator
 {
 
-	public static StashableDetailData Random()
+	public static ItemData Random()
 	{
 		var rnd = new System.Random();
 
 		var allresources = ResourceLibrary.GetAll<ItemResource>().ToList();
 		var rndname = allresources[rnd.Next( allresources.Count )];
-		var result = new StashableDetailData();
+		var result = new ItemData();
 		result.Identity = rndname.ResourceName;
 		result.Durability = rndname.Durability;
 		result.Quantity = 1;
