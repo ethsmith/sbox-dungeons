@@ -6,5 +6,12 @@
 		Icon = resource:"resources/textures/items/shields/wood-shield.png"
 		ItemType = "OffHand"
 		Durability = 120
+		Implicits = 
+		[
+			{
+				Minimum = 14
+				Maximum = 21
+			},
+		]
 	}
 }

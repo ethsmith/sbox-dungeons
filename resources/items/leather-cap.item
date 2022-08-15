@@ -6,5 +6,12 @@
 		Icon = resource:"resources/textures/items/helmets/leather-cap.png"
 		ItemType = "Helmet"
 		Durability = 120
+		Implicits = 
+		[
+			{
+				Minimum = 7
+				Maximum = 12
+			},
+		]
 	}
 }
