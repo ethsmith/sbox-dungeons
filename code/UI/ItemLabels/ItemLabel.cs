@@ -20,7 +20,7 @@ internal class ItemLabel : Panel
 	public ItemLabel( Stashable item )
 	{
 		Item = item;
-		ItemResource = ResourceLibrary.GetAll<ItemResource>().FirstOrDefault( x => x.ResourceName == item.Detail.Identity );
+		ItemResource = ResourceLibrary.GetAll<ItemResource>().FirstOrDefault( x => x.ResourceName == item.ItemData.Identity );
 
 		Add.Label( ItemResource?.DisplayName ?? "Unknown" );
 		Style.Position = PositionMode.Absolute;

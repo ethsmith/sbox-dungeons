@@ -14,7 +14,7 @@ internal static class AffixHelper
 
 	// todo: this still doesn't feel right
 
-	public static IEnumerable<AffixValues> GetStats( this StashableDetail detail )
+	public static IEnumerable<AffixValues> GetStats( this ItemDataNetworkable detail )
 	{
 		var result = new List<AffixValues>();
 

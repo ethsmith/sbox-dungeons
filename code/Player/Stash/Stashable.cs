@@ -8,17 +8,17 @@ internal partial class Stashable : Entity
 {
 
 	[Net]
-	public StashableDetail Detail { get; set; }
+	public ItemDataNetworkable ItemData { get; set; }
 
 	public Stashable()
 	{
-		Detail = new();
+		ItemData = new();
 		Transmit = TransmitType.Always;
 	}
 
 	public Stashable( ItemData data ) : this()
 	{
-		Detail.Set( data );
+		ItemData.Set( data );
 	}
 
 }

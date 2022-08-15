@@ -1,0 +1,58 @@
+﻿
+@import "../_vars.scss";
+
+ItemTooltip {
+    color: white;
+    pointer-events: none;
+    background-size: 100% 100%;
+    background-image: $img-bg-tooltip;
+    min-width: 300px;
+    flex-direction: column;
+    pointer-events: none;
+    padding: 20px;
+
+    .name {
+        padding: 5px;
+        justify-content: center;
+        background-size: 100% 100%;
+        font-size: 20px;
+        text-shadow: 2px 2px 1px black;
+    }
+
+    .implicits {
+        align-items: center;
+        justify-content: center;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba($red .55);
+    }
+
+    .affixes {
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+    }
+
+    &.normal {
+        .name {
+            color: $rarity-normal;
+        }
+    }
+
+    &.rare {
+        .name {
+            color: $rarity-rare;
+        }
+    }
+
+    &.magic {
+        .name {
+            color: $rarity-magic;
+        }
+    }
+
+    &.unique {
+        .name {
+            color: $rarity-unique;
+        }
+    }
+}

@@ -158,7 +158,7 @@ internal class StashManager : Panel
 				continue;
 
 			var icon = new ItemIcon( item );
-			stashPanel.InsertItem( item.NetworkIdent, () => item.Detail.StashSlot, icon );
+			stashPanel.InsertItem( item.NetworkIdent, () => item.ItemData.StashSlot, icon );
 		}
 	}
 

@@ -7,91 +7,91 @@ using System.Collections.Generic;
 
 namespace Dungeons.Stash;
 
-internal partial class StashableDetail : BaseNetworkable, INetworkSerializer
+internal partial class ItemDataNetworkable : BaseNetworkable, INetworkSerializer
 {
 
-	private ItemData data = new();
+	public ItemData Data { get; private set; } = new();
 
 	public string Identity
 	{
-		get => data.Identity;
+		get => Data.Identity;
 		set
 		{
 			Host.AssertServer();
 
-			data.Identity = value;
+			Data.Identity = value;
 			WriteNetworkData();
 		}
 	}
 
 	public int StashSlot
 	{
-		get => data.StashSlot;
+		get => Data.StashSlot;
 		set
 		{
 			Host.AssertServer();
 
-			data.StashSlot = value;
+			Data.StashSlot = value;
 			WriteNetworkData();
 		}
 	}
 
 	public int Quantity
 	{
-		get => data.Quantity;
+		get => Data.Quantity;
 		set
 		{
 			Host.AssertServer();
 
-			data.Quantity = value;
+			Data.Quantity = value;
 			WriteNetworkData();
 		}
 	}
 
 	public int Durability
 	{
-		get => data.Durability;
+		get => Data.Durability;
 		set
 		{
 			Host.AssertServer();
 
-			data.Durability = value;
+			Data.Durability = value;
 			WriteNetworkData();
 		}
 	}
 
 	public int Seed
 	{
-		get => data.Seed;
+		get => Data.Seed;
 		set
 		{
 			Host.AssertServer();
 
-			data.Seed = value;
+			Data.Seed = value;
 			WriteNetworkData();
 		}
 	}
 
 	public List<AffixData> Affixes
 	{
-		get => data.Affixes;
+		get => Data.Affixes;
 		set 
 		{
 			Host.AssertServer();
 
-			data.Affixes = value;
+			Data.Affixes = value;
 			WriteNetworkData();
 		}
 	}
 
 	public ItemRarity Rarity
 	{
-		get => data.Rarity;
+		get => Data.Rarity;
 		set
 		{
 			Host.AssertServer();
 
-			data.Rarity = value;
+			Data.Rarity = value;
 			WriteNetworkData();
 		}
 	}
@@ -100,13 +100,13 @@ internal partial class StashableDetail : BaseNetworkable, INetworkSerializer
 	{
 		Host.AssertServer();
 
-		this.data = data ?? throw new System.Exception( "NULL ARGUMENT" );
+		Data = data ?? throw new System.Exception( "NULL ARGUMENT" );
 
 		WriteNetworkData();
 	}
 
-	public void Read( ref NetRead read ) => data = read.ReadString().JsonDeserialize<ItemData>();
-	public void Write( NetWrite write ) => write.Write( data.JsonSerialize() );
-	public ItemData GetStorableObject() => data.JsonClone();
+	public void Read( ref NetRead read ) => Data = read.ReadString().JsonDeserialize<ItemData>();
+	public void Write( NetWrite write ) => write.Write( Data.JsonSerialize() );
+	public ItemData GetStorableObject() => Data.JsonClone();
 
 }

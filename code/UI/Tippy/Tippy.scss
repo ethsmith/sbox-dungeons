@@ -3,12 +3,8 @@
 
 Tippy {
     position: absolute;
-    z-index: 9999;
-    color: white;
-    padding: 20px 30px;
     pointer-events: none;
-    background-image: $img-bg-tooltip;
-    background-size: 100% 100%;
+    z-index: 9999;
 
     &.unset {
         opacity: 0;

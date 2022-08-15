@@ -24,7 +24,7 @@ internal class ItemTypeConstraint : StashConstraint
 	public override bool AcceptsItem( Stashable item, int cell )
 	{
 		var resource = ResourceLibrary.GetAll<ItemResource>()
-			.Where( x => x.ResourceName == item.Detail.Identity )
+			.Where( x => x.ResourceName == item.ItemData.Identity )
 			.FirstOrDefault();
 
 		if ( resource == null ) 

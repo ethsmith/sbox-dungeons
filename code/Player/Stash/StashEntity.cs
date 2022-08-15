@@ -48,7 +48,7 @@ internal partial class StashEntity : Entity
 		var slot = FirstAvailableSlot();
 		if ( Add( item ) )
 		{
-			item.Detail.StashSlot = slot;
+			item.ItemData.StashSlot = slot;
 			return true;
 		}
 		return false;
@@ -89,7 +89,7 @@ internal partial class StashEntity : Entity
 
 	private bool SlotsOpen( int slot )
 	{
-		return !Items.Any( x => x.Detail.StashSlot == slot );
+		return !Items.Any( x => x.ItemData.StashSlot == slot );
 	}
 
 	private int FirstAvailableSlot()
@@ -118,7 +118,7 @@ internal partial class StashEntity : Entity
 			return;
 
 		stash.Remove( stashable );
-		stashable.Detail.StashSlot = -1;
+		stashable.ItemData.StashSlot = -1;
 	}
 
 	[ConCmd.Server]
@@ -143,7 +143,7 @@ internal partial class StashEntity : Entity
 
 		if ( toStash.Items.Contains( item ) )
 		{
-			item.Detail.StashSlot = slotIndex;
+			item.ItemData.StashSlot = slotIndex;
 			return;
 		}
 
@@ -154,7 +154,7 @@ internal partial class StashEntity : Entity
 
 		if( toStash.Add( item ) )
 		{
-			item.Detail.StashSlot = slotIndex;
+			item.ItemData.StashSlot = slotIndex;
 		}
 		else
 		{

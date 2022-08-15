@@ -159,7 +159,7 @@ internal partial class Player : AnimatedEntity
 		if ( !EquippedAffixes.ContainsKey( item ) )
 			EquippedAffixes.Add( item, new() );
 
-		foreach ( var stat in item.Detail.GetStats() )
+		foreach ( var stat in item.ItemData.GetStats() )
 		{
 			var statId = Stats.Add( stat.Stat, stat.Modifier, stat.Amount );
 			EquippedAffixes[item].Add( statId );
