@@ -1,4 +1,5 @@
 ﻿
+using Dungeons.Items;
 using System.Collections.Generic;
 
 namespace Dungeons.Data;
@@ -12,6 +13,7 @@ internal class StashableDetailData
 	public int Durability { get; set; }
 	public int Seed { get; set; }
 	public List<AffixData> Affixes { get; set; } = new();
+	public ItemRarity Rarity { get; set; }
 
 }
 

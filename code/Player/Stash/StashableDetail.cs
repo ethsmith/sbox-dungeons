@@ -1,5 +1,6 @@
 ﻿
 using Dungeons.Data;
+using Dungeons.Items;
 using Dungeons.Utility;
 using Sandbox;
 using System.Collections.Generic;
@@ -79,6 +80,18 @@ internal partial class StashableDetail : BaseNetworkable, INetworkSerializer
 			Host.AssertServer();
 
 			data.Affixes = value;
+			WriteNetworkData();
+		}
+	}
+
+	public ItemRarity Rarity
+	{
+		get => data.Rarity;
+		set
+		{
+			Host.AssertServer();
+
+			data.Rarity = value;
 			WriteNetworkData();
 		}
 	}
