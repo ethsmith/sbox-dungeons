@@ -6,5 +6,12 @@
 		Icon = resource:"resources/textures/items/belts/leather-belt.png"
 		ItemType = "Belt"
 		Durability = 120
+		Implicits = 
+		[
+			{
+				Minimum = 8
+				Maximum = 14
+			},
+		]
 	}
 }
