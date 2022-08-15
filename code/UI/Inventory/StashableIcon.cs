@@ -37,16 +37,27 @@ internal class StashableIcon : Panel
 		var maxDurability = Item?.Durability ?? 0;
 		var quantity = Stashable.Detail.Quantity;
 		var affixstr = "";
+		var implstr = "";
+
+		foreach( var impl in Item.Implicits )
+		{
+			var value = impl.ToValue( Stashable.Detail.Seed ).UserDescription();
+			implstr += $"{value}\n";
+		}
 
 		foreach( var affix in Stashable.Detail.Affixes )
 		{
-			affixstr += $"\n{affix.Identifier}, seed {affix.Seed}";
+			var affixDescription = affix.ToValue().UserDescription();
+			affixstr += $"\n{affixDescription}";
 		}
+
+		implstr = implstr.Trim( '\n' );
+		affixstr = affixstr.Trim( '\n' );
 
 		Tippy.Create( this, Tippy.Pivots.TopRight )
 			.WithMessage( @$"{name}
-Durability: {durability}/{maxDurability}
-Quantity: {quantity}
+{implstr}
+--------------------------
 {affixstr}" );
 	}
 

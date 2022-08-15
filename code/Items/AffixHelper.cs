@@ -3,6 +3,7 @@ using Dungeons.Attributes;
 using Dungeons.Data;
 using Dungeons.Stash;
 using Sandbox;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,7 +31,7 @@ internal static class AffixHelper
 		return result;
 	}
 
-	private static AffixValues ToValue( this ImplicitStat data, int seed )
+	public static AffixValues ToValue( this ImplicitStat data, int seed )
 	{
 		Rand.SetSeed( seed );
 
@@ -42,7 +43,7 @@ internal static class AffixHelper
 		};
 	}
 
-	private static AffixValues ToValue( this AffixData data )
+	public static AffixValues ToValue( this AffixData data )
 	{
 		var affix = ResourceLibrary.GetAll<AffixResource>()
 			.Where( x => x.ResourceName == data.Identifier )
@@ -52,7 +53,7 @@ internal static class AffixHelper
 		if ( affix.Tiers.Count == 0 ) return default;
 
 		Rand.SetSeed( data.Seed );
-		var tier = Rand.Int( affix.Tiers.Count );
+		var tier = Rand.Int( affix.Tiers.Count - 1 );
 		var amount = Rand.Float( affix.Tiers[tier].MinimumRoll, affix.Tiers[tier].MaximumRoll );
 
 		return new AffixValues()
@@ -65,9 +66,32 @@ internal static class AffixHelper
 
 	internal struct AffixValues
 	{
+
 		public StatTypes Stat;
 		public StatModifiers Modifier;
 		public float Amount;
+
+		public override string ToString()
+		{
+			return $"({Stat}, {Modifier}, {Amount})";
+		}
+
+		public string UserDescription()
+		{
+			var amount = (int)Math.Round( Amount );
+			switch ( Modifier )
+			{
+				case StatModifiers.Flat:
+					return $"+{amount} to {Stat}";
+				case StatModifiers.Additive:
+					return $"{amount}% increased {Stat}";
+				case StatModifiers.Multiplicative:
+					return $"{amount}% more {Stat}";
+			}
+
+			return this.ToString();
+		}
+
 	}
 
 }
