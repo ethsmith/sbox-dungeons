@@ -7,14 +7,14 @@ using System.Linq;
 
 namespace Dungeons.UI;
 
-internal class StashableIcon : Panel
+internal class ItemIcon : Panel
 {
 
 	public Stashable Stashable { get; private set; }
 
 	private ItemResource Item;
 
-	public StashableIcon( Stashable stashable )
+	public ItemIcon( Stashable stashable )
 	{
 		Stashable = stashable;
 
