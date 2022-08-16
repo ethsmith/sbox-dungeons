@@ -70,10 +70,10 @@ partial class DungeonsGame : Sandbox.Game
 		Map.Scene.GradientFog.MaximumOpacity = .8f;
 		Map.Scene.GradientFog.StartHeight = 0;
 		Map.Scene.GradientFog.EndHeight = 800;
-		Map.Scene.GradientFog.DistanceFalloffExponent = 1;
-		Map.Scene.GradientFog.VerticalFalloffExponent = 2;
-		Map.Scene.GradientFog.StartDistance = 175;
-		Map.Scene.GradientFog.EndDistance = 300;
+		Map.Scene.GradientFog.DistanceFalloffExponent = 0;
+		Map.Scene.GradientFog.VerticalFalloffExponent = 0;
+		Map.Scene.GradientFog.StartDistance = 0;
+		Map.Scene.GradientFog.EndDistance = 100;
 	}
 
 }

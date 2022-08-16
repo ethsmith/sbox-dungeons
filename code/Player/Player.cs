@@ -100,7 +100,7 @@ internal partial class Player : AnimatedEntity
 
 		Stats = new();
 		Stats.Add( StatTypes.Life, StatModifiers.Flat, 55 );
-		Stats.Add( StatTypes.LightRadius, StatModifiers.Flat, 100 );
+		Stats.Add( StatTypes.LightRadius, StatModifiers.Flat, 45 );
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );
@@ -128,6 +128,14 @@ internal partial class Player : AnimatedEntity
 		HoveredEntity?.SetGlow( true, Color.Red );
 
 		SimulateInput();
+
+		if ( IsClient )
+		{
+			var lr = Stats.Calculate( StatTypes.LightRadius );
+			LightRadius.Brightness = 50f;
+			LightRadius.OuterConeAngle = lr;
+			LightRadius.InnerConeAngle = lr * .7f;
+		}
 	}
 
 	public void OnItemAdded( StashEntity stash, Stashable item )
