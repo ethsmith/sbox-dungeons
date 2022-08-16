@@ -4,8 +4,17 @@ using Sandbox.UI;
 
 namespace Dungeons.UI;
 
-internal class Minimap : Panel
+internal class Minimap : DungeonsPanel
 {
+
+	protected override CursorModes CursorMode => CursorModes.None;
+	protected override InputButton ToggleButton => InputButton.Score;
+	protected override DisplayModes DisplayMode => DisplayModes.Toggle;
+
+	public Minimap()
+	{
+		SetClass( "open", true );
+	}
 
 	public override void DrawBackground( ref RenderState state )
 	{

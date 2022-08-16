@@ -13,7 +13,7 @@ internal class Inventory : DungeonsPanel
 
 	protected override CursorModes CursorMode => CursorModes.Hover;
 	protected override DisplayModes DisplayMode => DisplayModes.Toggle;
-	protected override InputButton ToggleButton => InputButton.Score;
+	protected override InputButton ToggleButton => InputButton.Menu;
 
 	public override void Tick()
 	{
