@@ -13,6 +13,7 @@ internal class AffixResource : GameResource
 	public StatTypes Stat { get; set; }
 	public StatModifiers Modifier { get; set; }
 	public List<AffixTier> Tiers { get; set; }
+	public List<ItemTypes> ItemTypes { get; set; }
 
 }
 

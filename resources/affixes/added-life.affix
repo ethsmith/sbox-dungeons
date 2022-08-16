@@ -18,5 +18,14 @@
 				MaximumRoll = 24
 			},
 		]
+		ItemTypes = 
+		[
+			"Helmet",
+			"BodyArmour",
+			"Belt",
+			"Gloves",
+			"Boots",
+			"OffHand",
+		]
 	}
 }

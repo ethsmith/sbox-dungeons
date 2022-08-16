@@ -43,7 +43,7 @@ internal static class ItemGenerator
 		if ( rarity == ItemRarity.Normal || rarity == ItemRarity.Unique )
 			return result;
 
-		var pool = ResourceLibrary.GetAll<AffixResource>().ToList();
+		var pool = ResourceLibrary.GetAll<AffixResource>().Where( x => x.ItemTypes.Contains( item.ItemType ) ).ToList();
 		var prefixcount = 0;
 		var suffixcount = 0;
 
