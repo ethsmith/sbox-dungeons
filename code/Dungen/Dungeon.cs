@@ -151,6 +151,7 @@ internal partial class DungeonEntity : Entity
 		if ( Host.IsServer )
 		{
 			SpawnEntities();
+			AdjustFog();
 		}
 
 		Event.Run( "dungeon.postgen", this );
@@ -265,6 +266,13 @@ internal partial class DungeonEntity : Entity
 			return true;
 
 		return false;
+	}
+
+	private void AdjustFog()
+	{
+		var fogstr = Rand.Float( .75f, 1f );
+		Map.Scene.GradientFog.Color = Color.Black;
+		Map.Scene.GradientFog.MaximumOpacity = fogstr;
 	}
 
 }
