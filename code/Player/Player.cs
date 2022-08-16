@@ -100,6 +100,7 @@ internal partial class Player : AnimatedEntity
 
 		Stats = new();
 		Stats.Add( StatTypes.Life, StatModifiers.Flat, 55 );
+		Stats.Add( StatTypes.LightRadius, StatModifiers.Flat, 100 );
 
 		SetModel( "models/citizen/citizen.vmdl" );
 		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16, -16, 0 ), new Vector3( 16, 16, 64 ) );

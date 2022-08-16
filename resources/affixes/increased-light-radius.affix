@@ -1,0 +1,36 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		Type = "Suffix"
+		Stat = "LightRadius"
+		Modifier = "Additive"
+		Tiers = 
+		[
+			{
+				ItemLevel = 1
+				MinimumRoll = 3
+				MaximumRoll = 8
+			},
+			{
+				ItemLevel = 6
+				MinimumRoll = 10
+				MaximumRoll = 15
+			},
+			{
+				ItemLevel = 12
+				MinimumRoll = 17
+				MaximumRoll = 25
+			},
+		]
+		ItemTypes = 
+		[
+			"Helmet",
+			"BodyArmour",
+			"Belt",
+			"Gloves",
+			"Boots",
+			"OffHand",
+		]
+	}
+}
