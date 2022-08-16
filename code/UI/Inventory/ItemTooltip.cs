@@ -43,7 +43,7 @@ internal class ItemTooltip : Panel
 		foreach ( var affix in Item.Affixes )
 		{
 			var desc = affix.ToValue().UserDescription();
-			AffixCanvas.Add.Label( desc + $" (i{affix.Level})" );
+			AffixCanvas.Add.Label( desc + $" (i{affix.Tier})" );
 		}
 	}
 

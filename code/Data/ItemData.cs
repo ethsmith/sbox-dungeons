@@ -21,6 +21,6 @@ internal class ItemData
 internal struct AffixData
 {
 	public string Identifier { get; set; }
-	public int Level { get; set; }
+	public int Tier { get; set; }
 	public float Roll { get; set; }
 }

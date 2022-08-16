@@ -8,11 +8,12 @@
 		Tiers = 
 		[
 			{
+				ItemLevel = 1
 				MinimumRoll = 4
 				MaximumRoll = 12
 			},
 			{
-				ItemLevel = 1
+				ItemLevel = 6
 				MinimumRoll = 14
 				MaximumRoll = 24
 			},

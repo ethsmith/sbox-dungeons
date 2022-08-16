@@ -9,19 +9,22 @@ namespace Dungeons.Items;
 internal static class ItemGenerator
 {
 
-	public static ItemData Random()
+	public static ItemData Random( int level )
 	{
 		var result = new ItemData();
 		var rnd = new System.Random();
+		var seed = rnd.Next( int.MaxValue );
 		var itemtype = RandomItem( rnd );
+		var rarity = RandomRarity( rnd );
+		var affixes = RandomAffixes( itemtype, level, rarity, rnd );
 
 		result.Identity = itemtype.ResourceName;
 		result.Durability = itemtype.Durability;
-		result.Seed = rnd.Next( int.MaxValue );
+		result.Seed = seed;
+		result.Level = level;
+		result.Rarity = rarity;
+		result.Affixes = affixes;
 		result.Quantity = 1;
-		result.Level = rnd.Next( 1, 84 );
-		result.Rarity = RandomRarity( rnd );
-		result.Affixes = RandomAffixes( itemtype, result.Level, result.Rarity, rnd );
 
 		return result;
 	}
@@ -83,20 +86,17 @@ internal static class ItemGenerator
 		}
 
 		var prefixes = pool.Where( x => x.Type == AffixTypes.Prefix ).OrderBy( x => random.Next( 999 ) ).Take( prefixcount );
-		var suffixes = pool.Where( x => x.Type == AffixTypes.Suffix ).OrderBy( x => random.Next( 999 ) ).Take( prefixcount );
+		var suffixes = pool.Where( x => x.Type == AffixTypes.Suffix ).OrderBy( x => random.Next( 999 ) ).Take( suffixcount );
 
 		foreach( var affix in prefixes.Concat( suffixes ) )
 		{
-			var level = affix.Tiers.Where( x => x.ItemLevel <= itemLevel )
-				.OrderBy( x => random.Next(999) )
-				.FirstOrDefault();
-			var roll = random.NextSingle();
-
+			var eligibleTiers = affix.Tiers.Where( x => x.ItemLevel <= itemLevel );
+			var tier = random.Next( eligibleTiers.Count() );
 			result.Add( new AffixData()
 			{
 				Identifier = affix.ResourceName,
-				Level = level.ItemLevel,
-				Roll = roll
+				Tier = tier,
+				Roll = random.NextSingle()
 			} );
 		}
 
