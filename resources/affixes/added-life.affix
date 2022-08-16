@@ -12,7 +12,6 @@
 				MaximumRoll = 12
 			},
 			{
-				Tier = 1
 				MinimumRoll = 14
 				MaximumRoll = 24
 			},

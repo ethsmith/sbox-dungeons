@@ -4,6 +4,7 @@
 	{
 		DisplayName = "Leather Cap"
 		Icon = resource:"resources/textures/items/helmets/leather-cap.png"
+		ItemLevel = 1
 		ItemType = "Helmet"
 		Durability = 120
 		Implicits = 

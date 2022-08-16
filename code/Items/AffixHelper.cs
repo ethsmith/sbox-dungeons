@@ -52,9 +52,10 @@ internal static class AffixHelper
 		if ( affix == null ) return default;
 		if ( affix.Tiers.Count == 0 ) return default;
 
-		Rand.SetSeed( data.Seed );
 		var tier = Rand.Int( affix.Tiers.Count - 1 );
-		var amount = Rand.Float( affix.Tiers[tier].MinimumRoll, affix.Tiers[tier].MaximumRoll );
+		var minroll = (float)affix.Tiers[data.Level].MinimumRoll;
+		var maxroll = (float)affix.Tiers[data.Level].MaximumRoll;
+		var amount = minroll.LerpTo( maxroll, data.Roll );
 
 		return new AffixValues()
 		{

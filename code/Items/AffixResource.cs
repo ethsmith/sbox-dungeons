@@ -25,7 +25,7 @@ internal enum AffixTypes
 
 internal struct AffixTier
 {
-	public int Tier { get; set; }
+	public int ItemLevel { get; set; }
 	public int MinimumRoll { get; set; }
 	public int MaximumRoll { get; set; }
 }

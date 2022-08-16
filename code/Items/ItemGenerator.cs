@@ -19,8 +19,9 @@ internal static class ItemGenerator
 		result.Durability = itemtype.Durability;
 		result.Seed = rnd.Next( int.MaxValue );
 		result.Quantity = 1;
+		result.Level = rnd.Next( 1, 84 );
 		result.Rarity = RandomRarity( rnd );
-		result.Affixes = RandomAffixes( itemtype, result.Rarity, rnd );
+		result.Affixes = RandomAffixes( itemtype, result.Level, result.Rarity, rnd );
 
 		return result;
 	}
@@ -32,7 +33,7 @@ internal static class ItemGenerator
 		return RarityValues[random.Next( RarityValues.Length )];
 	}
 
-	private static List<AffixData> RandomAffixes( ItemResource item, ItemRarity rarity, Random random )
+	private static List<AffixData> RandomAffixes( ItemResource item, int itemLevel, ItemRarity rarity, Random random )
 	{
 		var result = new List<AffixData>();
 
@@ -86,10 +87,16 @@ internal static class ItemGenerator
 
 		foreach( var affix in prefixes.Concat( suffixes ) )
 		{
+			var level = affix.Tiers.Where( x => x.ItemLevel <= itemLevel )
+				.OrderBy( x => random.Next(999) )
+				.FirstOrDefault();
+			var roll = random.NextSingle();
+
 			result.Add( new AffixData()
 			{
 				Identifier = affix.ResourceName,
-				Seed = random.Next( int.MaxValue )
+				Level = level.ItemLevel,
+				Roll = roll
 			} );
 		}
 
