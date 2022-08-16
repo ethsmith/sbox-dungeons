@@ -13,6 +13,7 @@ internal class ItemTooltip : Panel
 
 	public ItemData Item { get; }
 	public ItemResource Resource { get; }
+	public Label ItemName { get; protected set; }
 	public Panel AffixCanvas { get; protected set; }
 	public Panel ImplicitCanvas { get; protected set; }
 
@@ -22,6 +23,8 @@ internal class ItemTooltip : Panel
 		Resource = ResourceLibrary.GetAll<ItemResource>().FirstOrDefault( x => x.ResourceName == Item.Identity );
 
 		AddClass( item.Rarity.ToString().ToLower() );
+
+		ItemName.Text = Resource.DisplayName + $" (i{item.Level})";
 
 		BuildAffixes();
 	}
@@ -40,7 +43,7 @@ internal class ItemTooltip : Panel
 		foreach ( var affix in Item.Affixes )
 		{
 			var desc = affix.ToValue().UserDescription();
-			AffixCanvas.Add.Label( desc );
+			AffixCanvas.Add.Label( desc + $" (i{affix.Level})" );
 		}
 	}
 

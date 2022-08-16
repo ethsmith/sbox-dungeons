@@ -12,6 +12,7 @@
 				MaximumRoll = 12
 			},
 			{
+				ItemLevel = 1
 				MinimumRoll = 14
 				MaximumRoll = 24
 			},
