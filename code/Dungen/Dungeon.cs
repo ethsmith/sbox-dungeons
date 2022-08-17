@@ -123,6 +123,10 @@ internal partial class DungeonEntity : Entity
 		{
 			var idx1 = Rand.Int( cells.Count - 1 );
 			var idx2 = Rand.Int( cells.Count - 3 );
+
+			if ( cells[idx1].Node != null || cells[idx2].Node != null ) 
+				continue;
+
 			var name1 = i == 0 ? "start" : (i == 1 ? "loot" : "empty");
 			var name2 = i == 0 ? "end" : (i == 1 ? "boss" : "empty");
 			cells[idx1].SetNode<DungeonNode>( name1 );

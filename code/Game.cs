@@ -60,7 +60,7 @@ partial class DungeonsGame : Sandbox.Game
 
 		Dungeon = new DungeonEntity()
 		{
-			Seed = 32
+			Seed = Rand.Int( 999 )
 		};
 
 		Dungeon.Generate();
