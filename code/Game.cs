@@ -1,6 +1,7 @@
 ﻿
 using Sandbox;
 using Dungeons.UI;
+using System.Linq;
 
 namespace Dungeons;
 
@@ -18,11 +19,6 @@ partial class DungeonsGame : Sandbox.Game
 		{
 			new Hud();
 		}
-	}
-
-	public override void Simulate( Client cl )
-	{
-		base.Simulate( cl );
 	}
 
 	public override void ClientJoined( Client cl )
@@ -74,6 +70,32 @@ partial class DungeonsGame : Sandbox.Game
 		Map.Scene.GradientFog.VerticalFalloffExponent = 0;
 		Map.Scene.GradientFog.StartDistance = 0;
 		Map.Scene.GradientFog.EndDistance = 100;
+	}
+
+	public void GenerateDungeon()
+	{
+		Dungeon?.Delete();
+		Dungeon = new DungeonEntity()
+		{
+			Seed = Rand.Int( 999 )
+		};
+		Dungeon.Generate();
+
+		var startRoom = Dungeon.FindRoom( "start" );
+		if ( startRoom == null ) return;
+
+		foreach( var ent in Entity.All )
+		{
+			if ( ent is not Player pl ) continue;
+			pl.Position = startRoom.WorldRect.Center;
+		}
+	}
+
+	[ConCmd.Server]
+	public static void Generate()
+	{
+		var game = Entity.All.FirstOrDefault( x => x is DungeonsGame ) as DungeonsGame;
+		game.GenerateDungeon();
 	}
 
 }

@@ -71,6 +71,16 @@ internal partial class DungeonEntity : Entity
 		Generate();
 	}
 
+	protected override void OnDestroy()
+	{
+		base.OnDestroy();
+
+		entities?.ForEach( x => x.Delete() );
+		entities = new();
+
+		WallGeometry?.Destroy();
+	}
+
 	// Customizable parameters, =>'s for now to test
 	public int DungeonWidth => 8;
 	public int DungeonHeight => 8;

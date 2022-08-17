@@ -70,13 +70,9 @@ internal partial class NavigationEntity : Entity
 			return 0;
 		}
 
-		var length = CalculatedPath.Count;
-		if ( length > points.Length )
-		{
-			throw new Exception( "Supplied path array is too short, required length: " + length );
-		}
+		var length = Math.Min( CalculatedPath.Count, points.Length );
 
-		for ( int i = 0; i < CalculatedPath.Count; i++ )
+		for ( int i = 0; i < length; i++ )
 		{
 			points[i] = ToWorld( CalculatedPath[i] );
 		}
@@ -361,7 +357,7 @@ internal partial class NavigationEntity : Entity
 		CalculatedPath.RemoveAll( x => x == -1 );
 	}
 
-	int[] LineCache = new int[128];
+	int[] LineCache = new int[1024];
 	private bool LineOfSight( int from, int to )
 	{
 		var lineCount = GetStraightLine( from, to, 3, LineCache );
