@@ -2,6 +2,7 @@
 using Sandbox;
 using Sandbox.UI;
 using System;
+using System.Collections.Generic;
 
 namespace Dungeons.UI;
 
@@ -75,7 +76,41 @@ internal class Minimap : Panel
 
 			DrawEntity( ent, MonsterColor );
 		}
+
+		const int chunksize = 80;
+		var fullrect = dungeon.WorldRect;
+		var splits = fullrect.Size / chunksize;
+
+		draw.Color = Color.Black;
+
+		for ( int x = 0; x < splits.x; x++ )
+		{
+			for( int y = 0; y < splits.y; y++ )
+			{
+				var idx = x * 10000 + y;
+				var pos = new Vector3( x * chunksize, y * chunksize );
+
+				if ( !Visited.Contains( idx ) )
+				{
+					var dist = pos.Distance( Local.Pawn.Position );
+					if ( dist < 300 )
+					{
+						Visited.Add( idx );
+						continue;
+					}
+				}
+				else
+				{
+					continue;
+				}
+
+				var rect = WorldRectToPanel( this, new Rect( pos.x, pos.y, chunksize, chunksize ) );
+				draw.Box( rect.Expand( 1 ) );
+			}
+		}
 	}
+
+	private static HashSet<int> Visited = new();
 
 	private Rect WorldRectToPanel( Panel panel, Rect rect )
 	{
