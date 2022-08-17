@@ -44,11 +44,13 @@ internal class Minimap : DungeonsPanel
 			}
 		}
 
-		var myrect = new Rect( Local.Pawn.Position - 16f, 32 );
-		myrect = WorldRectToPanel( myrect );
+		DrawEntity( Local.Pawn, Color.Yellow );
 
-		draw.Color = Color.Yellow;
-		draw.Circle( myrect.Center, 5f );
+		foreach( var ent in Entity.All )
+		{
+			if ( ent is not Monster ) continue;
+			DrawEntity( ent, Color.Red );
+		}
 	}
 
 	private Rect WorldRectToPanel( Rect rect )
@@ -69,6 +71,20 @@ internal class Minimap : DungeonsPanel
 		pos += Box.Rect.Position;
 
 		return new Rect( pos, size );
+	}
+
+	private void DrawEntity( Entity entity, Color color )
+	{
+		if ( !entity.IsValid() ) 
+			return;
+
+		Render.Draw2D.Color = color;
+
+		var myrect = new Rect( entity.Position - 16f, 32 );
+		myrect = WorldRectToPanel( myrect );
+
+		Render.Draw2D.Color = color;
+		Render.Draw2D.Box( myrect );
 	}
 
 }
