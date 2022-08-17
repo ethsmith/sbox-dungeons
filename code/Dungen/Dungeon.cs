@@ -134,10 +134,14 @@ internal partial class DungeonEntity : Entity
 
 			if ( next == null ) break;
 
-			var name1 = i == 0 ? "start" : (i == 1 ? "loot" : "empty");
-			var name2 = i == 0 ? "end" : (i == 1 ? "boss" : "empty");
-			current.SetNode<DungeonNode>( name1 );
-			next.SetNode<DungeonNode>( name2 );
+			var name = i switch
+			{
+				0 => "start",
+				7 => "end",
+				_ => "empty"
+			};
+
+			current.SetNode<DungeonNode>( name );
 			routes.Add( new( this, new DungeonEdge( current, next ) ) );
 
 			current = next;
