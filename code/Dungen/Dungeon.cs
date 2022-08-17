@@ -119,19 +119,28 @@ internal partial class DungeonEntity : Entity
 		}
 
 		// add a few random routes for testing
-		for ( int i = 0; i < 4; i++ )
-		{
-			var idx1 = Rand.Int( cells.Count - 1 );
-			var idx2 = Rand.Int( cells.Count - 3 );
 
-			if ( cells[idx1].Node != null || cells[idx2].Node != null ) 
-				continue;
+		var current = Cells
+			.Where( x => x.Node == null )
+			.OrderBy( x => Rand.Int( 9999 ) )
+			.FirstOrDefault();
+
+		for( int i = 0; i < 8; i++ )
+		{
+			var next = Cells
+				.Where( x => x.Node == null && x != current )
+				.OrderBy( x => Rand.Int( 9999 ) )
+				.FirstOrDefault();
+
+			if ( next == null ) break;
 
 			var name1 = i == 0 ? "start" : (i == 1 ? "loot" : "empty");
 			var name2 = i == 0 ? "end" : (i == 1 ? "boss" : "empty");
-			cells[idx1].SetNode<DungeonNode>( name1 );
-			cells[idx2].SetNode<DungeonNode>( name2 );
-			routes.Add( new( this, new DungeonEdge( cells[idx1], cells[idx2] ) ) );
+			current.SetNode<DungeonNode>( name1 );
+			next.SetNode<DungeonNode>( name2 );
+			routes.Add( new( this, new DungeonEdge( current, next ) ) );
+
+			current = next;
 		}
 
 		foreach ( var route in routes )
