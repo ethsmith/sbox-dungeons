@@ -195,8 +195,8 @@ internal partial class NavigationEntity : Entity
 		{
 			if ( agent != -1 )
 			{
-				RemoveAgent( agent );
 				agentPosition = AgentToIndex[agent];
+				RemoveAgent( agent );
 			}
 
 			if ( IsOccupied( start ) )
