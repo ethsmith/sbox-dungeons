@@ -9,10 +9,18 @@ internal class Minimap : Panel
 
 	private TextureDrawer Drawer;
 	private Panel PlayerIcon;
+	private Panel Map;
+	private Panel MapContainer;
 
 	public Minimap()
 	{
-		PlayerIcon = Add.Panel( "player-icon" );
+		MapContainer = Add.Panel( "map-container" );
+		MapContainer.Style.Overflow = OverflowMode.Hidden;
+		MapContainer.Style.Width = Length.Percent( 100 );
+		MapContainer.Style.Height = Length.Percent( 100 );
+
+		Map = MapContainer.Add.Panel( "map" );
+		PlayerIcon = Map.Add.Panel( "player-icon" );
 
 		var size = 512;
 		var texture = new Texture2DBuilder()
@@ -21,9 +29,11 @@ internal class Minimap : Panel
 			.WithData( new byte[size * size * 4] )
 			.Finish();
 
-		Style.SetBackgroundImage( texture );
-		Style.BackgroundSizeX = Length.Percent( 100 );
-		Style.BackgroundSizeY = Length.Percent( 100 );
+		Map.Style.SetBackgroundImage( texture );
+		Map.Style.BackgroundSizeX = Length.Percent( 100 );
+		Map.Style.BackgroundSizeY = Length.Percent( 100 );
+		Map.Style.Width = Length.Percent( 100 );
+		Map.Style.Height = Length.Percent( 100 );
 
 		Drawer = new( texture );
 
@@ -34,13 +44,19 @@ internal class Minimap : Panel
 	{
 		base.Tick();
 
-		if ( !Local.Pawn.IsValid() ) 
+		if ( !Local.Pawn.IsValid() )
 			return;
 
 		var pos = WorldToDrawerFraction( Local.Pawn.Position );
 		PlayerIcon.Style.Position = PositionMode.Absolute;
 		PlayerIcon.Style.Left = Length.Fraction( pos.x );
 		PlayerIcon.Style.Top = Length.Fraction( pos.y );
+
+		var sx = pos.x * Map.Box.RectInner.Width * ScaleFromScreen;
+		var sy = pos.y * Map.Box.RectInner.Height * ScaleFromScreen;
+
+		Map.Style.Left = -sx + ( Box.RectInner.Width * .5f * ScaleFromScreen );
+		Map.Style.Top = -sy + ( Box.RectInner.Height * .5f * ScaleFromScreen );
 	}
 
 	private void DrawDungeon()
@@ -50,8 +66,17 @@ internal class Minimap : Panel
 		foreach ( var room in dungeon.Rooms )
 		{
 			var rect = WorldToDrawerRect( room.WorldRect );
-			Drawer.DrawRectangle( rect.Shrink( 2 ), Color.White );
-			Drawer.DrawFilledRectangle( rect.Shrink( 3 ), Color.Black.WithAlpha( .5f ) );
+			Drawer.DrawFilledRectangle( rect, Color.Gray.WithAlpha( .05f ) );
+			Drawer.DrawRectangle( rect, Color.White );
+		}
+
+		foreach( var route in dungeon.Routes )
+		{
+			foreach( var door in route.Doors )
+			{
+				var rect = WorldToDrawerRect( door.WorldRect );
+				Drawer.DrawFilledRectangle( rect, Color.Gray.WithAlpha( .05f ) );
+			}
 		}
 
 		Drawer.Apply();
