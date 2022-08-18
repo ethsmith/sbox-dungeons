@@ -11,6 +11,7 @@ internal class Minimap : Panel
 	private Panel PlayerIcon;
 	private Panel Map;
 	private Panel MapContainer;
+	private int DungeonId;
 
 	public Minimap()
 	{
@@ -36,8 +37,6 @@ internal class Minimap : Panel
 		Map.Style.Height = Length.Percent( 100 );
 
 		Drawer = new( texture );
-
-		DrawDungeon();
 	}
 
 	public override void Tick()
@@ -46,6 +45,15 @@ internal class Minimap : Panel
 
 		if ( !Local.Pawn.IsValid() )
 			return;
+
+		if ( !DungeonEntity.Current.IsValid() )
+			return;
+
+		if ( DungeonId != DungeonEntity.Current.NetworkIdent )
+		{
+			DungeonId = DungeonEntity.Current.NetworkIdent;
+			DrawDungeon();
+		}
 
 		var pos = WorldToDrawerFraction( Local.Pawn.Position );
 		PlayerIcon.Style.Position = PositionMode.Absolute;
