@@ -14,6 +14,8 @@ public class TextureDrawer
 	private readonly int Width;
 	private readonly int Height;
 
+	public Vector2 Size => new( Width, Height );
+
 	public TextureDrawer( Texture texture )
 	{
 		Texture = texture;
