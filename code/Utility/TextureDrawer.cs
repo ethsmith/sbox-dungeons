@@ -4,12 +4,10 @@ using System;
 
 namespace Dungeons;
 
-// ported from https://github.com/ProtoTurtle/UnityBitmapDrawing/blob/d73a977ad918ef1c6b3fa820432291dbed388e54/src/BitmapDrawing.cs
-
 public class TextureDrawer
 {
 
-	private readonly Texture Texture;
+	public readonly Texture Texture;
 	private readonly byte[] Data;
 	private readonly int Width;
 	private readonly int Height;
@@ -39,6 +37,21 @@ public class TextureDrawer
 	public void Apply()
 	{
 		Texture.Update( Data );
+	}
+
+	public void CopyPixels( TextureDrawer from, int x, int y, int width, int height )
+	{
+		for ( int px = x; px < x + width; px++ )
+		{
+			for( int py = y; py < y + height; py++ )
+			{
+				var idx = ToIndex( px, py );
+				Data[idx] = from.Data[idx++];
+				Data[idx] = from.Data[idx++];
+				Data[idx] = from.Data[idx++];
+				Data[idx] = from.Data[idx++];
+			}
+		}
 	}
 
 	public void DrawCircle( int x, int y, int radius, Color color, bool filled = false )
@@ -211,3 +224,25 @@ public class TextureDrawer
 	}
 
 }
+
+
+/**
+The MIT License (MIT)
+Copyright (c) 2014 Lauri Hosio
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+ */
+
