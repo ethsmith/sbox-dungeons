@@ -65,8 +65,9 @@ Minimap {
     padding: 20px;
 
     .map {
-        min-width: 500px;
-        min-height: 500px;
+        min-width: 513px;
+        min-height: 513px;
+        image-rendering: point;
     }
 
     .player-icon {

@@ -75,7 +75,9 @@ internal class Minimap : Panel
 		{
 			var rect = WorldToDrawerRect( room.WorldRect );
 			Drawer.DrawFilledRectangle( rect, Color.Gray.WithAlpha( .05f ) );
-			Drawer.DrawRectangle( rect, Color.White );
+			Drawer.DrawRectangle( rect, Color.Gray );
+			Drawer.DrawRectangle( rect.Shrink( 1 ), Color.Gray );
+			Drawer.DrawRectangle( rect.Shrink( 2 ), Color.Gray );
 		}
 
 		foreach( var route in dungeon.Routes )
