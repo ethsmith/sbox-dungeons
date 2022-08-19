@@ -1,6 +1,7 @@
 ﻿
 using Sandbox;
 using Sandbox.UI;
+using System;
 using System.Collections.Generic;
 
 namespace Dungeons.UI;
@@ -149,32 +150,32 @@ internal class Minimap : Panel
 		if ( !DungeonEntity.Current.IsValid() )
 			return;
 
-		const int chunksize = 64;
-		var dungeon = DungeonEntity.Current;
-		var fullrect = dungeon.WorldRect;
-		var splits = fullrect.Size / chunksize;
-		var needsupdate = false;
+		const int chunksize = 48;
+		const int seedistance = 300;
+		const int iter = seedistance / chunksize;
 
-		for ( int x = 0; x < splits.x; x++ )
+		var needsupdate = false;
+		var playerpos = Local.Pawn.Position.SnapToGrid( chunksize );
+
+		for( int x = -iter; x < iter; x++ )
 		{
-			for ( int y = 0; y < splits.y; y++ )
+			for( int y = -iter; y < iter; y++ )
 			{
-				var idx = x * 10000 + y;
+				var samplepoint = playerpos + new Vector3( x * chunksize, y * chunksize, 0 );
+				var idx = (int)samplepoint.x * 10000 + (int)samplepoint.y;
 
 				if ( ExploredCells.Contains( idx ) ) 
 					continue;
 
-				var pos = new Vector3( x * chunksize, y * chunksize );
-				var dist = pos.Distance( Local.Pawn.Position );
-
-				if ( dist > 300 )
+				var dist = playerpos.Distance( samplepoint );
+				if ( dist > seedistance )
 					continue;
 
-				var localrect = WorldToDrawerRect( new Rect( pos.x, pos.y, chunksize, chunksize ) );
-				var copyx = MathX.FloorToInt( localrect.Position.x );
-				var copyy = MathX.FloorToInt( localrect.Position.y );
-				var copyw = MathX.CeilToInt( localrect.Size.x );
-				var copyh = MathX.CeilToInt( localrect.Size.y );
+				var localrect = WorldToDrawerRect( new Rect( samplepoint.x, samplepoint.y, chunksize, chunksize ) );
+				var copyx = (int)Math.Round( localrect.Position.x );
+				var copyy = (int)Math.Round( localrect.Position.y );
+				var copyw = (int)Math.Round( localrect.Size.x );
+				var copyh = (int)Math.Round( localrect.Size.y );
 
 				needsupdate = true;
 				ExploredCells.Add( idx );
