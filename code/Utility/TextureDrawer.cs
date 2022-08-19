@@ -39,6 +39,14 @@ public class TextureDrawer
 		Texture.Update( Data );
 	}
 
+	public void Empty()
+	{
+		for( int i = 0; i < Data.Length; i++ )
+		{
+			Data[i] = 0;
+		}
+	}
+
 	public void CopyPixels( TextureDrawer from, int x, int y, int width, int height )
 	{
 		for ( int px = x; px < x + width; px++ )

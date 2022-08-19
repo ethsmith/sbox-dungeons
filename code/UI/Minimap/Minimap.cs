@@ -64,7 +64,7 @@ internal class Minimap : Panel
 		if ( DungeonId != DungeonEntity.Current.NetworkIdent )
 		{
 			DungeonId = DungeonEntity.Current.NetworkIdent;
-			DrawDungeon( FullMinimap );
+			DrawDungeon();
 		}
 
 		var pos = WorldToDrawerFraction( Local.Pawn.Position );
@@ -79,19 +79,21 @@ internal class Minimap : Panel
 		Map.Style.Top = -sy + ( Box.RectInner.Height * .5f * ScaleFromScreen );
 	}
 
-	private void DrawDungeon( TextureDrawer drawer )
+	private void DrawDungeon()
 	{
 		ExploredCells.Clear();
+		ExploredMinimap.Empty();
+		ExploredMinimap.Apply();
 
 		var dungeon = DungeonEntity.Current;
 
 		foreach ( var room in dungeon.Rooms )
 		{
 			var rect = WorldToDrawerRect( room.WorldRect );
-			drawer.DrawFilledRectangle( rect, Color.Gray.WithAlpha( .05f ) );
-			drawer.DrawRectangle( rect, Color.Gray );
-			drawer.DrawRectangle( rect.Shrink( 1 ), Color.Gray );
-			drawer.DrawRectangle( rect.Shrink( 2 ), Color.Gray );
+			FullMinimap.DrawFilledRectangle( rect, Color.Gray.WithAlpha( .05f ) );
+			FullMinimap.DrawRectangle( rect, Color.Gray );
+			FullMinimap.DrawRectangle( rect.Shrink( 1 ), Color.Gray );
+			FullMinimap.DrawRectangle( rect.Shrink( 2 ), Color.Gray );
 		}
 
 		foreach( var route in dungeon.Routes )
@@ -99,11 +101,11 @@ internal class Minimap : Panel
 			foreach( var door in route.Doors )
 			{
 				var rect = WorldToDrawerRect( door.WorldRect );
-				drawer.DrawFilledRectangle( rect, Color.Gray.WithAlpha( .05f ) );
+				FullMinimap.DrawFilledRectangle( rect, Color.Gray.WithAlpha( .05f ) );
 			}
 		}
 
-		drawer.Apply();
+		FullMinimap.Apply();
 	}
 
 	private Rect WorldToDrawerRect( Rect rect )
