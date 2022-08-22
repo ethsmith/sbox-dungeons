@@ -36,6 +36,21 @@ internal class DungeonsPanel : Panel
 		All.Remove( this );
 	}
 
+	public void Toggle()
+	{
+		SetClass( "open", !HasClass( "open" ) );
+	}
+
+	public void Open()
+	{
+		SetClass( "open", true );
+	}
+
+	public void Close()
+	{
+		RemoveClass( "open" );
+	}
+
 	private bool wantsdrag;
 	private bool dragging;
 	private Vector2 dragstart;

@@ -12,6 +12,7 @@ Inventory {
     padding: 60px;
     background-image: $img-bg-container;
     background-size: 100% 100%;
+    pointer-events: all;
 }
 
 .equipment {

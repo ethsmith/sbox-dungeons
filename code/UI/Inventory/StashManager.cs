@@ -24,7 +24,7 @@ internal class StashManager : Panel
 		Style.Top = 0;
 		Style.ZIndex = 999;
 		Style.Position = PositionMode.Absolute;
-		Style.PointerEvents = "none";
+		Style.PointerEvents = PointerEvents.None;
 	}
 
 	public void Register( StashPanel stashPanel, StashEntity stashEntity )

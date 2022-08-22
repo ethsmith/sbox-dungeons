@@ -2,10 +2,14 @@
 @import "_vars.scss";
 
 Hud {
-    pointer-events: visible;
+    pointer-events: none;
     color: white;
     font-size: 16px;
     font-family: BreeSerif;
+}
+
+Button {
+    cursor: pointer;
 }
 
 ItemLabel {
@@ -20,10 +24,6 @@ ItemLabel {
 }
 
 .dungeons-panel {
-    &:hover {
-        pointer-events: all;
-    }
-
     &.display-toggle {
         opacity: 0;
 

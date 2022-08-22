@@ -82,7 +82,7 @@ internal partial class Player
 	private Entity GetHoveredEntity()
 	{
 		var hoveredItem = ItemLabel.HoveredItem();
-		if( hoveredItem.IsValid() )
+		if ( hoveredItem.IsValid() )
 		{
 			return hoveredItem;
 		}
@@ -93,10 +93,10 @@ internal partial class Player
 			.EntitiesOnly()
 			.RunAll();
 
-		if ( trs == null ) 
+		if ( trs == null )
 			return null;
 
-		foreach( var tr in trs ) 
+		foreach ( var tr in trs )
 		{
 			if ( tr.Entity.IsValid() )
 				return tr.Entity;

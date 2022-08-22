@@ -1,0 +1,57 @@
+﻿
+@import "../_vars.scss";
+
+ActionBar {
+    position: absolute;
+    width: 100%;
+    height: 159px;
+    bottom: 0;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: all;
+
+    .bar {
+        bottom: 0;
+        height: 77px;
+        width: 736px;
+        background-image: $img-actionbar;
+        background-size: 100% 100%;
+
+        .menu {
+            width: 500px;
+            height: 32px;
+            position: absolute;
+            bottom: 75px;
+            left: 75px;
+
+            .button {
+                width: 32px;
+                height: 32px;
+                background-image: $img-button-square;
+                background-size: 100% 100%;
+                color: white;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        .globe {
+            position: absolute;
+            width: 168px;
+            height: 159px;
+            bottom: 0px;
+
+            &.health {
+                background-image: $img-actionbar-globe-left;
+                background-size: 100% 100%;
+                left: -90px;
+            }
+
+            &.energy {
+                background-image: $img-actionbar-globe-right;
+                background-size: 100% 100%;
+                right: -90px;
+            }
+        }
+    }
+}
